@@ -17,3 +17,15 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
     });
   });
 }
+
+/* PWA install prompt capture — surfaced in the command palette & top bar. */
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  const promptEvent = e as Event & { prompt: () => Promise<void> };
+  window.__cpInstallAvailable = true;
+  window.__cpInstall = () => {
+    void promptEvent.prompt();
+    window.__cpInstallAvailable = false;
+  };
+  window.dispatchEvent(new Event('cp-install-available'));
+});

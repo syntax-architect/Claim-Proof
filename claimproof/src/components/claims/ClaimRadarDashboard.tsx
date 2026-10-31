@@ -141,7 +141,7 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
       <div className={cn('space-y-6', className)}>
         <PageHeader
           icon={Radar}
-          kicker="MODULE C · ₹699 UPGRADE"
+          kicker="MODULE C · PRO UPGRADE"
           title="ClaimRadar Pro"
           subtitle="Return-dispute deadline tracking & 1-click evidence packaging"
         />
@@ -179,8 +179,8 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
               className="mt-8"
               onClick={() => openPaywall({ scope: 'claimRadar', plan: 'claimradar' })}
             >
-              Unlock ClaimRadar Pro — ₹699{' '}
-              <span className="ml-1 font-mono text-sm text-on-accent/70 line-through">₹1,199</span>
+              Unlock ClaimRadar Pro — ₹4,499/yr{' '}
+              <span className="ml-1 font-mono text-sm text-on-accent/70 line-through">₹7,188</span>
             </Button>
           </div>
         </Card>

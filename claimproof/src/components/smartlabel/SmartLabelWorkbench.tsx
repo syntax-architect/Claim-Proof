@@ -22,7 +22,7 @@ import { db } from '../../db/schema';
 import { processLabelFiles, type CropOptions, type ProgressFn } from '../../services/pdfLabelProcessor';
 import { saveLabelBatch } from '../../services/labelDataStore';
 import { addLabelsCropped, checkLabelQuota, getTodayUsage, FREE_LABELS_PER_DAY } from '../../lib/quota';
-import { downloadBlob, formatRupees, truncate } from '../../lib/utils';
+import { downloadBlob, formatRupees, truncate, cn } from '../../lib/utils';
 import { navigateTo } from '../../lib/router';
 import { usePaywall } from '../../providers/PaywallProvider';
 import {
@@ -40,7 +40,6 @@ import {
   useToast
   } from '../ui';
 import type { CourierPartner, CropPreset, ExtractedLabel } from '../../types';
-import { cn } from '../../lib/utils';
 import { useLicense } from '../../services/licenseService';
 
 type Stage = 'drop' | 'parsing' | 'review' | 'exporting' | 'done' | 'error';
@@ -151,7 +150,8 @@ export default function SmartLabelWorkbench() {
       try {
         const onProgress: ProgressFn = (done, total, stageText) =>
           setProgress({ done, total, stage: stageText });
-        const result = await processLabelFiles(batch, { ...options, valmoPlusAsValmo: false }, onProgress);
+        const isFree = license.plan === 'free';
+        const result = await processLabelFiles(batch, { ...options, valmoPlusAsValmo: false, isFree }, onProgress);
         setLabels(result.labels);
         setStage('review');
         toast.success(
@@ -224,7 +224,8 @@ export default function SmartLabelWorkbench() {
     setStage('exporting');
     setProgress({ done: 0, total: files.length, stage: 'Re-reading PDFs…' });
     try {
-      const result = await processLabelFiles(files, options, (done, total, stageText) =>
+      const isFree = license.plan === 'free';
+      const result = await processLabelFiles(files, { ...options, isFree }, (done, total, stageText) =>
         setProgress({ done, total, stage: stageText })
       );
       downloadBlob(new Blob([result.pdfBytes as BlobPart], { type: 'application/pdf' }), result.fileName);
@@ -406,7 +407,7 @@ export default function SmartLabelWorkbench() {
                     className={cn(
                       'flex flex-col items-center gap-2 rounded-xl border p-3 transition-all',
                       options.preset === p.value
-                        ? 'border-proof-500/60 bg-proof-500/10 shadow-[0_10px_28px_-16px_rgba(5,150,105,0.5)]'
+                        ? 'border-proof-500/60 bg-proof-500/10 shadow-[0_10px_28px_-16px_rgba(37,99,235,0.55)]'
                         : 'border-line bg-ink-850/60 hover:border-line-bright'
                     )}
                   >
@@ -435,7 +436,11 @@ export default function SmartLabelWorkbench() {
                   checked={options.withManifest}
                   onChange={(v) => setOptions((o) => ({ ...o, withManifest: v }))}
                   label="Picklist manifest page"
-                  hint="Courier handover summary prepended"
+                  hint={
+                    license.plan === 'free'
+                      ? "Courier handover summary with ClaimProof verified seal"
+                      : "Clean white-label courier handover summary"
+                  }
                 />
                 <Toggle
                   checked={options.valmoPlusAsValmo}

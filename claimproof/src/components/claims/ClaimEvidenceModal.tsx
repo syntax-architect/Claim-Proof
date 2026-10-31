@@ -20,8 +20,7 @@ import { revealAwbFolder } from '../../services/vaultWriter';
 import { recordingTypeLabel } from '../../lib/claimRules';
 import { formatIST } from '../../lib/dateUtils';
 import { formatBytes } from '../../lib/utils';
-import { useToast } from '../ui';
-import { Badge, Button, Modal, Spinner } from '../ui';
+import { Badge, Button, Modal, Spinner, useToast } from '../ui';
 import type { ClaimItem, RecordingMeta } from '../../types';
 
 interface Side {

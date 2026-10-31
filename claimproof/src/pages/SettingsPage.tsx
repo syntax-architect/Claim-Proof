@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import {
-  Cable,
+import { Cable,
   Database,
   Download,
   FolderCheck,
@@ -10,7 +9,8 @@ import {
   QrCode,
   Smartphone,
   Trash2,
-  Usb
+  Usb,
+  Volume2
 } from 'lucide-react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/schema';
@@ -19,7 +19,8 @@ import { isPhonePairingConfigured, pairingQrPayload } from '../services/phonePai
 import { renderUpiQr } from '../lib/upi';
 import { formatISTShort } from '../lib/dateUtils';
 import { downloadBlob } from '../lib/utils';
-import { Badge, Button, Card, PageHeader, StatusDot, useToast } from '../components/ui';
+import { Badge, Button, Card, PageHeader, StatusDot, Toggle, useToast } from '../components/ui';
+import { isBeepsMuted, setBeepsMuted } from '../lib/audioBeeps';
 
 function Section({
   icon: Icon,
@@ -52,6 +53,7 @@ export default function SettingsPage() {
   const toast = useToast();
   const [connecting, setConnecting] = useState(false);
   const [sampleQr, setSampleQr] = useState<string | null>(null);
+  const [beepsMuted, setBeepsMutedState] = useState(() => isBeepsMuted());
 
   const vaultStatus = useLiveQuery(() => getVaultStatus(), []);
   const paired = isPhonePairingConfigured();
@@ -185,6 +187,22 @@ export default function SettingsPage() {
               <Cable className="h-3.5 w-3.5" />
             </div>
           </div>
+        </Section>
+
+        <Section
+          icon={Volume2}
+          title="Scanner sounds"
+          sub="Beeps for scan · start · saved · flag"
+        >
+          <Toggle
+            checked={!beepsMuted}
+            onChange={(next) => {
+              setBeepsMuted(!next);
+              setBeepsMutedState(!next);
+            }}
+            label="Enable audio feedback"
+            hint="Loud, distinct beeps so packers never have to look at the screen"
+          />
         </Section>
 
         <Section icon={Database} title="Data & backups" sub="IndexedDB metadata — media stays on disk">

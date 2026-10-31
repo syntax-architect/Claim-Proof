@@ -6,11 +6,11 @@ import os
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 VB = 64.0
-GREEN = (52, 211, 153, 255)
-GREEN_SOFT = (110, 231, 183, 255)
+BLUE = (59, 130, 246, 255)
+BLUE_SOFT = (147, 197, 253, 255)
 AMBER = (251, 191, 36, 255)
-BG = (10, 14, 19, 255)
-BORDER = (27, 36, 50, 255)
+BG = (16, 19, 27, 255)
+BORDER = (32, 38, 52, 255)
 
 
 def px(v: float, s: int) -> float:
@@ -36,14 +36,14 @@ def make(size: int, path: str, maskable: bool = False) -> None:
         (s - off, s - off, -1, -1),
         (off, s - off, 1, -1),
     ]:
-        d.line([(cx, cy + dy * arm), (cx, cy)], fill=GREEN, width=w)
-        d.line([(cx, cy), (cx + dx * arm, cy)], fill=GREEN, width=w)
+        d.line([(cx, cy + dy * arm), (cx, cy)], fill=BLUE, width=w)
+        d.line([(cx, cy), (cx + dx * arm, cy)], fill=BLUE, width=w)
 
     # Parcel box
     d.rounded_rectangle(
         [px(23, s), px(25, s), px(41, s), px(39, s)],
         radius=px(2.5, s),
-        outline=GREEN_SOFT,
+        outline=BLUE_SOFT,
         width=max(2, int(px(3, s))),
     )
 

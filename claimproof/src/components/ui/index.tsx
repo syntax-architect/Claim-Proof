@@ -42,7 +42,7 @@ export function Card({
       className={cn(
         'glass',
         hover && 'hover:-translate-y-0.5 hover:border-line-bright',
-        glow && 'border-proof-500/35 shadow-[0_10px_36px_-16px_rgba(5,150,105,0.35)]',
+        glow && 'border-proof-500/35 shadow-[0_10px_36px_-16px_rgba(37,99,235,0.45)]',
         className
       )}
     >
@@ -329,7 +329,7 @@ const RING_COLORS: Record<string, string> = {
   proof: 'var(--cp-accent-solid)',
   warn: '#f59e0b',
   danger: '#ef4444',
-  info: '#0ea5e9',
+  info: '#06b6d4',
   neutral: 'var(--cp-surface-3)'
 };
 
@@ -436,7 +436,7 @@ export function Toggle({
     >
       <span
         className={cn(
-          'absolute top-0.5 h-3.5 w-3.5 rounded-full bg-[#ffffff] shadow transition-transform duration-200',
+          'absolute top-0.5 h-3.5 w-3.5 rounded-full bg-[#ffffff] shadow-sm ring-1 ring-black/10 transition-transform duration-200',
           checked ? 'translate-x-[19px]' : 'translate-x-0.5'
         )}
       />
@@ -539,7 +539,7 @@ export function Modal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.18 }}
         >
-          <div className="absolute inset-0 bg-ink-950/85 backdrop-blur-sm" onClick={onClose} />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             className={cn(
               'glass relative flex max-h-[88vh] w-full flex-col border-line-bright bg-ink-900/95 shadow-2xl',
@@ -662,14 +662,14 @@ export function LogoMark({ size = 34, className }: { size?: number; className?: 
       className={cn('shrink-0', className)}
       aria-hidden="true"
     >
-      <rect width="64" height="64" rx="14" fill="#0A0E13" stroke="#1B2432" />
-      <g stroke="#34D399" strokeWidth="4.5" strokeLinecap="round" fill="none">
+      <rect width="64" height="64" rx="14" fill="#10131B" stroke="#1B2432" />
+      <g stroke="#3B82F6" strokeWidth="4.5" strokeLinecap="round" fill="none">
         <path d="M14 23 V17 a3 3 0 0 1 3 -3 h6" />
         <path d="M41 14 h6 a3 3 0 0 1 3 3 v6" />
         <path d="M50 41 v6 a3 3 0 0 1 -3 3 h-6" />
         <path d="M23 50 h-6 a3 3 0 0 1 -3 -3 v-6" />
       </g>
-      <rect x="23" y="25" width="18" height="14" rx="2.5" fill="none" stroke="#6EE7B7" strokeWidth="3" />
+      <rect x="23" y="25" width="18" height="14" rx="2.5" fill="none" stroke="#93C5FD" strokeWidth="3" />
       <path d="M35.5 27.5 l-5 4.5 h3.4 l-2.4 4.5 5.6 -5.2 h-3.4 z" fill="#FBBF24" />
     </svg>
   );

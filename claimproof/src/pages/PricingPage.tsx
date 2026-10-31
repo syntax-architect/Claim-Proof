@@ -22,11 +22,10 @@ import {
   verifyAndActivateToken
 } from '../services/licenseService';
 import { formatISTShort } from '../lib/dateUtils';
-import { formatRupees, truncate } from '../lib/utils';
+import { cn, formatRupees, truncate } from '../lib/utils';
 import { usePaywall } from '../providers/PaywallProvider';
 import { Badge, Button, Card, Field, PageHeader, useToast } from '../components/ui';
 import type { BillingInterval, PlanId } from '../types';
-import { cn } from '../lib/utils';
 
 interface PlanConfig {
   id: PlanId;
@@ -66,7 +65,7 @@ const PLANS: PlanConfig[] = [
     annualStrike: 7188,
     dailyAnnualCost: 12,
     annualSavingsPercent: 37,
-    tag: 'MOST POPULAR · 80% SELLERS',
+    tag: 'MOST POPULAR',
     best: true,
     features: [
       'Everything in Starter Station',
@@ -97,8 +96,8 @@ const PLANS: PlanConfig[] = [
 const COMPARISON: { feature: string; free: string; starter: string; pro: string; warehouse: string }[] = [
   { feature: 'Label cropping & sorting', free: '40 / day', starter: 'Unlimited', pro: 'Unlimited', warehouse: 'Unlimited' },
   { feature: 'AWB proof videos', free: '10 / day (watermarked)', starter: 'Unlimited HD', pro: 'Unlimited HD', warehouse: 'Unlimited HD' },
-  { feature: 'Forensic IST timestamp overlay', free: 'Basic', starter: '✓ Burnt-in', pro: '✓ Burnt-in', warehouse: '✓ Burnt-in' },
-  { feature: 'Picklist & Courier handover manifests', free: '✓', starter: '✓', pro: '✓', warehouse: '✓' },
+  { feature: 'Forensic IST timestamp overlay', free: '✓ Standard', starter: '✓ Burnt-in HD', pro: '✓ Burnt-in HD', warehouse: '✓ Burnt-in HD' },
+  { feature: 'Picklist & Courier handover manifests', free: '✓ (ClaimProof seal)', starter: '✓ White-label (Clean)', pro: '✓ White-label (Clean)', warehouse: '✓ White-label (Clean)' },
   { feature: 'Auto 4-photo evidence collage', free: '—', starter: '—', pro: '✓ (T+0.5, 3, 6, 9s)', warehouse: '✓ (T+0.5, 3, 6, 9s)' },
   { feature: 'Marketplace claim deadline radar', free: '—', starter: '—', pro: '✓ (72h / 14d / 30d)', warehouse: '✓ (72h / 14d / 30d)' },
   { feature: 'Return matcher + dispute dossier generator', free: '—', starter: '—', pro: '✓', warehouse: '✓' },
@@ -209,7 +208,7 @@ export default function PricingPage() {
       </Card>
 
       {/* ROI & Trust Callout Banner */}
-      <Card className="border-proof-500/30 bg-proof-950/20 p-5">
+      <Card className="border-proof-500/30 bg-proof-500/10 p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-proof-500/20 text-proof-300">
             <Receipt className="h-5 w-5" />

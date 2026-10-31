@@ -47,7 +47,6 @@ import {
   Kbd,
   Modal,
   PageHeader,
-  StatusDot,
   Toggle,
   useToast
 } from '../ui';
@@ -80,6 +79,10 @@ const HUD_STEPS = [
 ];
 
 type Stage = 'idle' | 'recording' | 'saving';
+
+/* Colors inside the canvas stage overlays are intentionally literal (slate-50,
+ * #94a3b8, #3a4a5e, bg-[#0b1017], bg-[#17202c], text-[#64748b], emerald/amber/
+ * red-3xx, bg-black/15) — the video canvas is always dark regardless of theme. */
 
 export function VideoRecorderStation({ className }: { className?: string }) {
   const toast = useToast();
@@ -134,7 +137,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
       playErrorBeep();
       toast.error(
         'Daily free recording limit reached',
-        `${FREE_AWBS_PER_DAY} AWB videos per day on Free — go unlimited from ₹499.`
+        `${FREE_AWBS_PER_DAY} AWB videos per day on Free — go unlimited from ₹349/mo.`
       );
       openPaywall({ scope: 'recordings', reason: 'Free plan allows 10 recorded AWBs per day' });
       return;
@@ -411,7 +414,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
     <div className={cn('space-y-5', className)}>
       <PageHeader
         icon={Video}
-        kicker="MODULE B · THE ₹499 ENGINE"
+        kicker="MODULE B · THE PROOF ENGINE"
         title="ClaimProof AWB Recorder"
         subtitle="Scan → uncut video starts itself → scan the next parcel to chain instantly"
         actions={
@@ -455,7 +458,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
             {/* Idle overlay */}
             {stage === 'idle' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="scanline absolute inset-x-6 h-px animate-scan-y rounded-full bg-proof-400/60 shadow-[0_0_12px_rgba(16,185,129,0.45)]" />
+                <div className="scanline absolute inset-x-6 h-px animate-scan-y rounded-full bg-proof-400/60 shadow-[0_0_12px_rgba(59,130,246,0.5)]" />
                 <div className="absolute left-4 top-14 h-7 w-7 border-l-2 border-t-2 border-proof-400/60" />
                 <div className="absolute right-4 top-14 h-7 w-7 border-r-2 border-t-2 border-proof-400/60" />
                 <div className="absolute bottom-16 left-4 h-7 w-7 border-b-2 border-l-2 border-proof-400/60" />

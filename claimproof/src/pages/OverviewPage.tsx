@@ -1,7 +1,11 @@
+import { motion } from 'framer-motion';
 import {
   AlertTriangle,
   ArrowRight,
+  CheckCircle2,
   ChevronRight,
+  FolderOpen,
+  IndianRupee,
   Package,
   Radar,
   ScanBarcode,
@@ -20,9 +24,11 @@ import {
   markConsumablesShown
 } from '../lib/quota';
 import { claimWindowLabel, recordingTypeLabel } from '../lib/claimRules';
-import { formatCountdown, formatISTShort, greeting, istDateKey } from '../lib/dateUtils';
+import { ddMmm, formatCountdown, formatISTShort, greeting, istDateKey } from '../lib/dateUtils';
 import { istDayStartEpoch, type Route } from '../lib/router';
-import { Badge, Button, Card, EmptyState, PageHeader, StatCard, Stagger, StaggerItem } from '../components/ui';
+import { cn } from '../lib/utils';
+import { getVaultStatus } from '../services/vaultWriter';
+import { Badge, Button, Card, EmptyState, PageHeader, Ring, StatCard, Stagger, StaggerItem } from '../components/ui';
 import { useLicense } from '../services/licenseService';
 import { usePaywall } from '../providers/PaywallProvider';
 
@@ -71,9 +77,130 @@ function PipelineCard({
   );
 }
 
+function WeekChart({ data }: { data: { key: string; labels: number; recordings: number }[] }) {
+  const max = Math.max(1, ...data.map((d) => Math.max(d.labels, d.recordings)));
+  return (
+    <div className="flex items-end justify-between gap-2 pt-4 sm:gap-3">
+      {data.map((d, i) => (
+        <div key={d.key} className="flex min-w-0 flex-1 flex-col items-center gap-2">
+          <div className="flex h-24 w-full items-end justify-center gap-1">
+            <motion.div
+              className="w-2 rounded-t-[4px] bg-proof-500 sm:w-3"
+              initial={{ height: 0 }}
+              animate={{ height: `${Math.max(4, (d.labels / max) * 100)}%` }}
+              transition={{ delay: i * 0.05, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              title={`${d.labels} labels cropped`}
+            />
+            <motion.div
+              className="w-2 rounded-t-[4px] bg-info-500 sm:w-3"
+              initial={{ height: 0 }}
+              animate={{ height: `${Math.max(4, (d.recordings / max) * 100)}%` }}
+              transition={{ delay: i * 0.05 + 0.06, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              title={`${d.recordings} proof clips`}
+            />
+          </div>
+          <div className="font-mono text-[9px] text-slate-500">{ddMmm(new Date(`${d.key}T12:00:00+05:30`).getTime())}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SetupChecklist({
+  navigate,
+  batches,
+  recordings,
+  claimsTotal,
+  vaultStatus,
+  plan
+}: {
+  navigate: (r: Route) => void;
+  batches: number | undefined;
+  recordings: number | undefined;
+  claimsTotal: number | undefined;
+  vaultStatus: string | undefined;
+  plan: string;
+}) {
+  const steps = [
+    { label: 'Crop a label batch', done: (batches ?? 0) > 0, route: 'labels' as Route, icon: ScanBarcode },
+    { label: 'Record a parcel proof video', done: (recordings ?? 0) > 0, route: 'recorder' as Route, icon: Video },
+    { label: 'Connect the evidence vault', done: vaultStatus === 'connected', route: 'settings' as Route, icon: FolderOpen },
+    { label: 'Prepare a claim pack', done: (claimsTotal ?? 0) > 0, route: 'claims' as Route, icon: Radar },
+    { label: 'Go premium with a plan', done: plan !== 'free', route: 'pricing' as Route, icon: IndianRupee }
+  ];
+  const done = steps.filter((s) => s.done).length;
+  const all = done === steps.length;
+  return (
+    <div>
+      <div className="flex items-center gap-4">
+        <Ring progress={done / steps.length} size={56} stroke={6} tone={all ? 'proof' : 'info'}>
+          <span className="font-mono text-xs font-bold text-slate-200 mono-tabular">
+            {done}/{steps.length}
+          </span>
+        </Ring>
+        <div className="min-w-0">
+          <div className="font-display text-base font-bold text-white">
+            {all ? 'Station fully armed' : 'Set up your station'}
+          </div>
+          <div className="text-xs text-slate-500">
+            {all ? 'Every module is live — happy packing.' : 'Five quick steps to a fully armed packing station.'}
+          </div>
+        </div>
+      </div>
+      <div className="mt-4 space-y-0.5">
+        {steps.map((s) => (
+          <button
+            key={s.label}
+            type="button"
+            onClick={() => navigate(s.route)}
+            className="group flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-ink-800/50"
+          >
+            <span
+              className={cn(
+                'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors',
+                s.done ? 'border-transparent bg-proof-500' : 'border-line-bright'
+              )}
+            >
+              {s.done ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-white" style={{ color: '#ffffff' }} />
+              ) : (
+                <span className="h-1.5 w-1.5 rounded-full bg-slate-600" />
+              )}
+            </span>
+            <span
+              className={cn(
+                'flex-1 text-sm',
+                s.done ? 'text-slate-500 line-through decoration-slate-600' : 'text-slate-200'
+              )}
+            >
+              {s.label}
+            </span>
+            <s.icon className="h-3.5 w-3.5 shrink-0 text-slate-600 transition-colors group-hover:text-slate-400" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function OverviewPage({ navigate }: { navigate: (r: Route) => void }) {
   const license = useLicense();
   const { openPaywall } = usePaywall();
+
+  const week = useLiveQuery(async () => {
+    const out: { key: string; labels: number; recordings: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const start = istDayStartEpoch(Date.now() - i * 86_400_000);
+      const key = istDateKey(new Date(start + 12 * 3_600_000));
+      const usage = await db.usage_counters.get(key);
+      const recordings = await db.recordings.where('startedAt').between(start, start + 86_400_000).count();
+      out.push({ key, labels: usage?.labelsCropped ?? 0, recordings });
+    }
+    return out;
+  }, []);
+  const batchesCount = useLiveQuery(() => db.batches.count(), []);
+  const claimsTotal = useLiveQuery(() => db.claims.count(), []);
+  const vaultStatus = useLiveQuery(() => getVaultStatus(), []);
 
   const usage = useLiveQuery(() => getTodayUsage(), []);
   const consumables = useLiveQuery(
@@ -109,9 +236,7 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
 
   const nearestClaim = pendingClaims && pendingClaims.length > 0 ? pendingClaims[0] : undefined;
   const showConsumables =
-    consumables &&
-    consumablesAlertDue(consumables.cumulative, consumables.lastShown) &&
-    (recentRecordings?.length ?? 0) >= 0;
+    consumables && consumablesAlertDue(consumables.cumulative, consumables.lastShown);
 
   const activity = useLiveQuery(
     async () => {
@@ -281,6 +406,33 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
       </div>
 
       {/* ── Consumables reorder widget ───────────────────────────── */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
+        <Card className="p-5 lg:col-span-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="font-display text-base font-bold text-white">Last 7 days</div>
+            <div className="flex items-center gap-3 text-[11px] text-slate-500">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-sm bg-proof-500" /> Labels
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-sm bg-info-500" /> Clips
+              </span>
+            </div>
+          </div>
+          <WeekChart data={week ?? []} />
+        </Card>
+        <Card className="p-5 lg:col-span-2">
+          <SetupChecklist
+            navigate={navigate}
+            batches={batchesCount}
+            recordings={totalRecordings}
+            claimsTotal={claimsTotal}
+            vaultStatus={vaultStatus}
+            plan={license.plan}
+          />
+        </Card>
+      </div>
+
       {showConsumables && (
         <Card className="flex flex-col gap-4 border-warn-500/30 p-5 sm:flex-row sm:items-center">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-warn-500/25 bg-warn-500/12 text-warn-300">

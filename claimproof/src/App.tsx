@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ToastProvider } from './components/ui';
 import Sidebar, { MobileNav } from './components/shell/Sidebar';
 import TopBar from './components/shell/TopBar';
+import { CommandPalette } from './components/shell/CommandPalette';
 import OverviewPage from './pages/OverviewPage';
 import SmartLabelWorkbench from './components/smartlabel/SmartLabelWorkbench';
 import { VideoRecorderStation } from './components/recorder/VideoRecorderStation';
@@ -34,6 +36,23 @@ function CurrentPage({ route, navigate }: { route: Route; navigate: (r: Route) =
 
 export default function App() {
   const [route, navigate] = useHashRoute();
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+    };
+    const onOpen = () => setPaletteOpen(true);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('cp-open-palette', onOpen);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('cp-open-palette', onOpen);
+    };
+  }, []);
 
   return (
     <ToastProvider>
@@ -56,6 +75,7 @@ export default function App() {
           </div>
         </div>
         <PaywallModal />
+        <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
       </PaywallProvider>
     </ToastProvider>
   );

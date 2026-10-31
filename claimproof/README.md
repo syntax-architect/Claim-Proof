@@ -11,8 +11,8 @@
 | Module | What it does | Price |
 |---|---|---|
 | **SmartLabel SKU+** (Module A) | Drag-and-drop up to 15 label PDFs → extracts AWB / Order ID / SKU / Size / Qty / courier → vector-crops to 4×6, 4×4 or 4-per-A4 → stamps `SKU \| Size \| Qty \| date` → multi-qty guard (red border + badge) → sorts by Courier → SKU → Qty → prepends a Warehouse Picklist & Courier Handover manifest. | Free (40 labels/day) |
-| **ClaimProof AWB** (Module B) | Scan a barcode (USB gun, webcam `BarcodeDetector`/ZXing, or phone companion) → uncut video starts instantly with a burnt-in forensic bar (`VERIFIED UNCUT PROOF | AWB | ORDER | SKU (Qty) | live IST timestamp`) → 4 timed JPEG stills (T+0.5/3/6/9 s) stitched into a 2×2 evidence collage → scan the next parcel and the clip chains in <100 ms. Files land in `<vault>/<date>/<Dispatch|Return>/<AWB>/`. | Free 10/day (watermarked) · ₹499 unlimited |
-| **ClaimRadar Pro** (Module C) | Flag bad returns with `F2` during Return Unboxing Mode → live deadline radar per marketplace rubric (Meesho SAFE / AJIO / Snapdeal 72 h · Flipkart SPF 14 d · Amazon SAFE-T 30 d) → side-by-side dispatch-vs-return matcher → auto-generated dispute text → 1-click evidence packaging. | ₹699 (₹1,199 value) |
+| **ClaimProof AWB** (Module B) | Scan a barcode (USB gun, webcam `BarcodeDetector`/ZXing, or phone companion) → uncut video starts instantly with a burnt-in forensic bar (`VERIFIED UNCUT PROOF | AWB | ORDER | SKU (Qty) | live IST timestamp`) → 4 timed JPEG stills (T+0.5/3/6/9 s) stitched into a 2×2 evidence collage → scan the next parcel and the clip chains in <100 ms. Files land in `<vault>/<date>/<Dispatch|Return>/<AWB>/`. | Free 10/day (watermarked) · unlimited from ₹2,499/yr (₹349/mo) |
+| **ClaimRadar Pro** (Module C) | Flag bad returns with `F2` during Return Unboxing Mode → live deadline radar per marketplace rubric (Meesho SAFE / AJIO / Snapdeal 72 h · Flipkart SPF 14 d · Amazon SAFE-T 30 d) → side-by-side dispatch-vs-return matcher → auto-generated dispute text → 1-click evidence packaging. | ₹4,499/yr (₹599/mo) · ₹7,188 value |
 | **Monetization** (Module D) | Freemium quota engine, UPI QR checkout modal, ES256 offline-verifiable license JWTs bound to a device fingerprint, Supabase SQL schema + Razorpay webhook Edge Function. | — |
 
 ## Quick start
@@ -48,17 +48,22 @@ src/
 ├─ db/schema.ts                 # Dexie (IndexedDB): orders, recordings, claims,
 │                               #   license_state, usage_counters, media_cache…
 ├─ lib/
-│  ├─ pdfLabelProcessor (services/)  # pdfjs parse → pdf-lib vector crop/stamp/sort/manifest
 │  ├─ cameraScanner.ts          # BarcodeDetector + ZXing fallback (~30 fps offscreen)
-│  ├─ recordingPipeline.ts      # canvas compositor + MediaRecorder (mp4/webm @1.2 Mbps)
-│  │                            #   + forensic bar + 4-photo collage stitcher
-│  ├─ vaultWriter.ts            # File System Access API vault (Downloads fallback)
 │  ├─ hidScanner.ts             # USB/Bluetooth HID gun listener (<80 ms bursts + Enter)
 │  ├─ audioBeeps.ts             # Web Audio start/saved/error/flag beeps (zero assets)
 │  ├─ claimRules.ts             # marketplace deadline rubrics + claim builder
 │  ├─ quota.ts                  # freemium counters (40 labels / 10 videos per day)
-│  ├─ licenseService.ts         # ES256 JWT verify (WebCrypto) + device fingerprint
 │  ├─ upi.ts                    # UPI intent links + QR rendering
+│  ├─ theme.ts                  # light/dark theme store
+│  └─ router.ts                 # hash router + IST day helpers
+├─ services/
+│  ├─ pdfLabelProcessor.ts      # pdfjs parse → pdf-lib vector crop/stamp/sort/manifest
+│  ├─ recordingPipeline.ts      # canvas compositor + MediaRecorder @1.2 Mbps + collage
+│  ├─ vaultWriter.ts            # File System Access API vault (Downloads fallback)
+│  ├─ licenseService.ts         # ES256 JWT verify (WebCrypto) + device fingerprint
+│  ├─ claimEngine.ts            # evidence matching + dispute-text generator
+│  ├─ mediaLibrary.ts           # IndexedDB blob cache + vault reader for replay
+│  ├─ labelDataStore.ts         # label batch persistence
 │  └─ phonePairing.ts           # Supabase Realtime room-code companion (optional)
 ├─ components/
 │  ├─ smartlabel/               # Module A workbench (drop → parse → review → export)
@@ -79,7 +84,7 @@ src/
 1. `supabase db push` (or run `supabase/migrations/001_claimproof_licensing.sql` in the SQL editor).
 2. `supabase secrets set RAZORPAY_WEBHOOK_SECRET=… LICENSE_SIGNING_KEY_JWK_B64=$(base64 -w0 scripts/.license-dev-keys.json) LICENSE_JWT_KID=cp-dev-1`
 3. `supabase functions deploy razorpay-webhook --no-verify-jwt`
-4. Point the Razorpay dashboard webhook (`payment.captured`) at the function URL. It verifies the HMAC signature, de-duplicates via `cp_webhook_events`, registers the device, stores the license and returns the signed ES256 token the app verifies fully offline.
+4. Point the Razorpay dashboard webhook (`payment.captured`) at the function URL. It verifies the HMAC signature, de-duplicates via `cp_webhook_events`, registers the device, stores the license and returns the signed ES256 token the app verifies fully offline. Each captured payment mints a 365-day license — for monthly UPI Autopay mandates (the paywall's recurring copy), wire Razorpay Subscriptions and extend the function to honour `subscription.*` events before going live.
 5. Replace the placeholder VPA `claimproof@upi` in `src/lib/upi.ts` with your Razorpay/Cashfree dynamic-QR flow.
 
 > Rotate keys with `npm run gen:keys` — the private JWK must only ever live in the Edge Function secret store.

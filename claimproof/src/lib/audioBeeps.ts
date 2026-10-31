@@ -3,6 +3,28 @@
 
 let ctx: AudioContext | null = null;
 
+/* User-facing mute (Settings / command palette) — persisted. */
+let muted = (() => {
+  try {
+    return localStorage.getItem('cp_beeps_muted') === '1';
+  } catch {
+    return false;
+  }
+})();
+
+export function setBeepsMuted(m: boolean): void {
+  muted = m;
+  try {
+    localStorage.setItem('cp_beeps_muted', m ? '1' : '0');
+  } catch {
+    /* private mode */
+  }
+}
+
+export function isBeepsMuted(): boolean {
+  return muted;
+}
+
 function ac(): AudioContext | null {
   try {
     if (!ctx) {
@@ -29,6 +51,7 @@ function tone(
 ): void {
   const c = ac();
   if (!c) return;
+  if (muted) return;
   try {
     const t0 = c.currentTime + at;
     const osc = c.createOscillator();

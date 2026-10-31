@@ -16,6 +16,7 @@ export interface CropOptions {
   multiQtyGuard: boolean;
   valmoPlusAsValmo: boolean;
   withManifest: boolean;
+  isFree?: boolean;
 }
 
 export interface ProcessResult {
@@ -519,15 +520,21 @@ function drawManifest(
   const pageW = 595.28;
   const pageH = 841.89;
   const margin = 42;
+  const manifestPages: import('pdf-lib').PDFPage[] = [];
   let page = outDoc.addPage([pageW, pageH]);
+  manifestPages.push(page);
   let y = pageH - margin;
+
+  const isFree = opts.isFree ?? true;
 
   const newPage = () => {
     page = outDoc.addPage([pageW, pageH]);
+    manifestPages.push(page);
     y = pageH - margin;
   };
   const ensure = (needed: number) => {
-    if (y - needed < margin + 30) newPage();
+    const bottomCutoff = isFree ? margin + 50 : margin + 25;
+    if (y - needed < bottomCutoff) newPage();
   };
 
   /* Header block. */
@@ -602,7 +609,7 @@ function drawManifest(
     y -= 16;
   }
 
-  ensure(40);
+  ensure(isFree ? 85 : 40);
   page.drawLine({ start: { x: margin, y: y - 2 }, end: { x: pageW - margin, y: y - 2 }, thickness: 1, color: line });
   y -= 18;
   page.drawText(`GRAND TOTAL: ${grandParcels} parcels · ${grandUnits} units`, {
@@ -612,7 +619,7 @@ function drawManifest(
     font: helvBold,
     color: ink
   });
-  y -= 20;
+  y -= 18;
   page.drawText('Scan every AWB in ClaimProof before sealing — claim windows start at return scan.', {
     x: colX[0],
     y,
@@ -620,6 +627,77 @@ function drawManifest(
     font: helv,
     color: muted
   });
+
+  if (isFree) {
+    y -= 14;
+    page.drawRectangle({
+      x: margin,
+      y: y - 36,
+      width: pageW - 2 * margin,
+      height: 36,
+      color: rgb(0.95, 0.98, 0.96),
+      borderColor: accent,
+      borderWidth: 1
+    });
+    page.drawText('VERIFIED DISPATCH · PACKED WITH CLAIMPROOF.IN PROOF STUDIO', {
+      x: margin + 12,
+      y: y - 16,
+      size: 9,
+      font: helvBold,
+      color: accent
+    });
+    page.drawText('Uncut HD packing videos & burnt-in forensic IST timestamp recorded for every AWB in this manifest.', {
+      x: margin + 12,
+      y: y - 28,
+      size: 7.5,
+      font: helv,
+      color: ink
+    });
+    y -= 44;
+  }
+
+  // Draw viral footer on all manifest pages for Free tier users
+  if (isFree) {
+    for (const p of manifestPages) {
+      p.drawRectangle({
+        x: margin,
+        y: 14,
+        width: pageW - 2 * margin,
+        height: 22,
+        color: rgb(0.96, 0.98, 0.97),
+        borderColor: rgb(0.04, 0.47, 0.36),
+        borderWidth: 0.8
+      });
+      p.drawText('Packed with ClaimProof.in — Barcode Verified Proof Studio', {
+        x: margin + 10,
+        y: 21,
+        size: 8.5,
+        font: helvBold,
+        color: accent
+      });
+      const tagText = 'Free 4×6 Label Cropper & Return Dispute Proof · claimproof.in';
+      const tagW = helv.widthOfTextAtSize(tagText, 7.5);
+      p.drawText(tagText, {
+        x: pageW - margin - tagW - 10,
+        y: 21.5,
+        size: 7.5,
+        font: helv,
+        color: muted
+      });
+    }
+  } else {
+    // For paid users, a clean white-label confidentiality notice at the bottom
+    for (const p of manifestPages) {
+      const cleanText = 'CONFIDENTIAL WAREHOUSE DISPATCH MANIFEST · AUTHORIZED COURIER HANDOVER';
+      p.drawText(cleanText, {
+        x: margin,
+        y: 18,
+        size: 7.5,
+        font: helv,
+        color: muted
+      });
+    }
+  }
 }
 
 /* ── public entry point ──────────────────────────────────────────────── */

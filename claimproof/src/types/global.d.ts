@@ -32,6 +32,8 @@ interface FileSystemHandle {
 
 interface Window {
   BarcodeDetector?: typeof BarcodeDetector;
+  __cpInstall?: () => void;
+  __cpInstallAvailable?: boolean;
   showDirectoryPicker?(options?: {
     id?: string;
     mode?: 'read' | 'readwrite';

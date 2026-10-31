@@ -68,7 +68,7 @@ function RecordingPlayer({
       width="xl"
       footer={
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="font-mono text-[11px] text-slate-500">
+          <div className="min-w-0 truncate font-mono text-[11px] text-slate-500">
             {vaultSubPath(recording.type, recording.startedAt, recording.awb)}/
           </div>
           <div className="flex gap-2">

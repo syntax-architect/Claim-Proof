@@ -6,6 +6,7 @@ import {
   IndianRupee,
   Layers,
   Moon,
+  Search,
   Sun,
   Video
 } from 'lucide-react';
@@ -63,6 +64,13 @@ export default function TopBar({ route }: { route: Route }) {
     return () => clearInterval(t);
   }, []);
 
+  /* Keep the toggle icon in sync when the theme changes from the command palette. */
+  useEffect(() => {
+    const sync = () => setTheme(currentTheme());
+    window.addEventListener('cp-theme-changed', sync);
+    return () => window.removeEventListener('cp-theme-changed', sync);
+  }, []);
+
   const recordingsToday = useLiveQuery(
     () => db.recordings.where('startedAt').aboveOrEqual(istDayStartEpoch()).count(),
     [istDateKey()]
@@ -79,7 +87,7 @@ export default function TopBar({ route }: { route: Route }) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-ink-950/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 w-full max-w-[100rem] items-center gap-3 px-4 sm:px-6">
+      <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <div className="md:hidden">
             <Logo />
@@ -95,6 +103,24 @@ export default function TopBar({ route }: { route: Route }) {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event('cp-open-palette'))}
+            className="glass-soft hidden h-9 items-center gap-2 px-3 text-slate-400 transition-colors hover:text-slate-200 md:flex"
+            title="Command menu (Ctrl+K)"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span className="text-xs">Commands</span>
+            <span className="font-mono text-[10px] text-slate-500">⌃K</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event('cp-open-palette'))}
+            aria-label="Open command menu"
+            className="glass-soft flex h-9 w-9 shrink-0 items-center justify-center text-slate-300 md:hidden"
+          >
+            <Search className="h-4 w-4" />
+          </button>
           <button
             type="button"
             onClick={() => setTheme((t) => toggleTheme(t))}

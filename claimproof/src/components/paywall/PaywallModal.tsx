@@ -7,7 +7,6 @@
 import { motion } from 'framer-motion';
 import {
   AlertTriangle,
-  BadgePercent,
   Check,
   Copy,
   Crop,
@@ -310,7 +309,7 @@ export function PaywallModal(): JSX.Element {
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-proof-500/60',
                 'hover:-translate-y-0.5',
                 plan.popular &&
-                  'md:-translate-y-1.5 md:shadow-[0_18px_44px_-22px_rgba(5,150,105,0.55)]',
+                  'md:-translate-y-1.5 md:shadow-[0_18px_44px_-22px_rgba(37,99,235,0.6)]',
                 isSelected
                   ? 'ring-2 ring-proof-400/80 bg-ink-850/90'
                   : plan.popular
@@ -321,7 +320,7 @@ export function PaywallModal(): JSX.Element {
               {plan.popular && (
                 <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
                   <Badge tone="proof" className="uppercase tracking-[0.14em]">
-                    Most Popular · 80% Sellers
+                    Most Popular
                   </Badge>
                 </div>
               )}
@@ -411,7 +410,7 @@ export function PaywallModal(): JSX.Element {
 
         <div className="mt-4 grid gap-5 sm:grid-cols-[220px,1fr]">
           <div className="mx-auto sm:mx-0">
-            <div className="qr-plate rounded-xl p-2 bg-white">
+            <div className="qr-plate rounded-xl p-2">
               {qr ? (
                 <img
                   src={qr}
@@ -423,11 +422,11 @@ export function PaywallModal(): JSX.Element {
               ) : (
                 <div className="flex h-[220px] w-[220px] items-center justify-center">
                   {qrFailed ? (
-                    <span className="px-6 text-center text-xs text-ink-600">
+                    <span className="px-6 text-center text-xs text-[#667085]">
                       QR unavailable — use “Open UPI app” instead.
                     </span>
                   ) : (
-                    <Spinner className="h-6 w-6 text-ink-900" />
+                    <Spinner className="h-6 w-6 text-[#667085]" />
                   )}
                 </div>
               )}

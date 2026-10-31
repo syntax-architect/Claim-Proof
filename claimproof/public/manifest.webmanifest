@@ -1,0 +1,22 @@
+{
+  "name": "ClaimProof Suite — SmartLabel SKU+ & AWB Proof Studio",
+  "short_name": "ClaimProof",
+  "description": "Local-first label cropper, barcode-verified packing video recorder and claim-deadline radar for Indian e-commerce sellers.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#06080C",
+  "theme_color": "#06080C",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "AWB Recorder", "short_name": "Recorder", "url": "/#/recorder" },
+    { "name": "SmartLabel Studio", "short_name": "Labels", "url": "/#/labels" },
+    { "name": "ClaimRadar", "short_name": "Claims", "url": "/#/claims" }
+  ]
+}

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.local
+.env
+.env.*
+scripts/.license-dev-keys.json
+.DS_Store

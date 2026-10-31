@@ -1,0 +1,15 @@
+# Workspace & temp files
+.zwork/
+*.zip
+*.mp4
+/package-lock.json
+
+# Project dependencies & build outputs
+node_modules/
+dist/
+*.local
+.env
+.env.*
+scripts/.license-dev-keys.json
+.DS_Store
+Thumbs.db

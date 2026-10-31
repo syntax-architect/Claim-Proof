@@ -1,0 +1,248 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ClaimProof Suite V2 — professional light/dark design system.
+   Semantic CSS variables flip per theme; Tailwind tokens map to them via
+   @theme inline so every existing utility re-themes automatically.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@theme inline {
+  /* Surfaces */
+  --color-ink-950: var(--cp-bg);
+  --color-ink-900: var(--cp-surface);
+  --color-ink-850: var(--cp-surface-2);
+  --color-ink-800: var(--cp-surface-2);
+  --color-ink-700: var(--cp-surface-3);
+  --color-ink-600: var(--cp-surface-3);
+  --color-ink-500: var(--cp-text-3);
+
+  /* Lines */
+  --color-line: var(--cp-line);
+  --color-line-bright: var(--cp-line-strong);
+
+  /* Brand accent (proof) */
+  --color-proof-50: var(--cp-accent-soft);
+  --color-proof-200: var(--cp-accent-text);
+  --color-proof-300: var(--cp-accent-text);
+  --color-proof-400: var(--cp-accent);
+  --color-proof-500: var(--cp-accent-solid);
+  --color-proof-600: var(--cp-accent-strong);
+  --color-proof-700: var(--cp-accent-strong);
+
+  /* Status accents — text tones darken in light mode for contrast */
+  --color-warn-300: var(--cp-warn-text);
+  --color-warn-400: var(--cp-warn-text);
+  --color-warn-500: #f59e0b;
+  --color-warn-600: #d97706;
+  --color-danger-300: var(--cp-danger-text);
+  --color-danger-400: var(--cp-danger-text);
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-info-300: var(--cp-info-text);
+  --color-info-400: var(--cp-info-text);
+  --color-info-500: #0ea5e9;
+
+  /* Text ramp — slate-* classes become theme-aware */
+  --color-slate-200: var(--cp-text);
+  --color-slate-300: var(--cp-text);
+  --color-slate-400: var(--cp-text-2);
+  --color-slate-500: var(--cp-text-3);
+  --color-slate-600: var(--cp-text-3);
+  --color-white: var(--cp-text);
+
+  /* Fixed tokens that never flip */
+  --color-on-accent: #ffffff;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --animate-rec-pulse: rec-pulse 1.6s ease-in-out infinite;
+  --animate-scan-y: scan-y 3.4s ease-in-out infinite;
+  --animate-rise: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.25s ease both;
+  --animate-ping-slow: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-float-slow: float-slow 11s ease-in-out infinite;
+  --animate-float-slower: float-slower 15s ease-in-out infinite;
+}
+
+/* ── Dark palette (default) ─────────────────────────────────────────── */
+.dark {
+  --cp-bg: #0b1017;
+  --cp-surface: #10161f;
+  --cp-surface-2: #17202c;
+  --cp-surface-3: #1f2a38;
+  --cp-line: rgba(148, 163, 184, 0.14);
+  --cp-line-strong: rgba(148, 163, 184, 0.26);
+  --cp-text: #e8ecf2;
+  --cp-text-2: #9aa6b5;
+  --cp-text-3: #6b7a8d;
+  --cp-accent: #10b981;
+  --cp-accent-text: #4ade9d;
+  --cp-accent-solid: #10b981;
+  --cp-accent-strong: #059669;
+  --cp-accent-soft: rgba(16, 185, 129, 0.11);
+  --cp-warn-text: #fbbf24;
+  --cp-danger-text: #f87171;
+  --cp-info-text: #38bdf8;
+  --cp-glass: rgba(16, 22, 31, 0.86);
+  --cp-shadow: none;
+  --cp-hero-1: rgba(16, 185, 129, 0.08);
+  --cp-hero-2: rgba(56, 189, 248, 0.06);
+  color-scheme: dark;
+}
+
+/* ── Light palette ──────────────────────────────────────────────────── */
+.light {
+  --cp-bg: #f3f5f8;
+  --cp-surface: #ffffff;
+  --cp-surface-2: #f2f5f8;
+  --cp-surface-3: #e7ecf2;
+  --cp-line: rgba(15, 23, 42, 0.1);
+  --cp-line-strong: rgba(15, 23, 42, 0.18);
+  --cp-text: #101828;
+  --cp-text-2: #475467;
+  --cp-text-3: #667085;
+  --cp-accent: #059669;
+  --cp-accent-text: #047857;
+  --cp-accent-solid: #059669;
+  --cp-accent-strong: #047857;
+  --cp-accent-soft: rgba(5, 150, 105, 0.09);
+  --cp-warn-text: #b45309;
+  --cp-danger-text: #dc2626;
+  --cp-info-text: #0369a1;
+  --cp-glass: rgba(255, 255, 255, 0.92);
+  --cp-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.07);
+  --cp-hero-1: rgba(5, 150, 105, 0.09);
+  --cp-hero-2: rgba(2, 105, 161, 0.07);
+  color-scheme: light;
+}
+
+@keyframes rec-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes scan-y {
+  0% { top: 4%; }
+  50% { top: 92%; }
+  100% { top: 4%; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 0.7; }
+  80%, 100% { transform: scale(2.1); opacity: 0; }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(24px, -18px, 0) scale(1.06); }
+}
+@keyframes float-slower {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-30px, 22px, 0) scale(0.95); }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  overflow-x: clip;
+}
+
+body {
+  background: var(--cp-bg);
+  color: var(--cp-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* Soft ambient hero glow — calm in both themes */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(1000px 480px at 10% -6%, var(--cp-hero-1), transparent 60%),
+    radial-gradient(860px 420px at 96% -2%, var(--cp-hero-2), transparent 58%);
+  transition: background 0.35s ease;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+::selection {
+  background: var(--cp-accent-soft);
+  color: var(--cp-text);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cp-surface-3) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--cp-surface-3);
+  border-radius: 999px;
+  border: 3px solid var(--cp-bg);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── Reusable surfaces ─────────────────────────────────────────────── */
+.glass {
+  border-radius: 1rem;
+  border: 1px solid var(--cp-line);
+  background: var(--cp-glass);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--cp-shadow);
+  transition: background-color 0.35s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+.glass-soft {
+  border-radius: 0.75rem;
+  border: 1px solid var(--cp-line);
+  background: color-mix(in srgb, var(--cp-surface-2) 78%, transparent);
+  transition: background-color 0.35s ease, border-color 0.25s ease;
+}
+.grid-bg {
+  background-image:
+    linear-gradient(var(--cp-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cp-line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.35;
+}
+.text-glow-proof {
+  color: var(--cp-accent-text);
+}
+.mono-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Literal white plate for QR codes (must stay white in both themes) */
+.qr-plate {
+  background: #ffffff !important;
+}
+
+/* Focus visibility */
+:focus-visible {
+  outline: 2px solid var(--cp-accent-solid);
+  outline-offset: 2px;
+}

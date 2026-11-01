@@ -1,0 +1,27 @@
+[
+  {
+    "page": 1,
+    "marketplace": "Amazon",
+    "awb": "3901827364551",
+    "orderId": "402-7364521-8875323",
+    "courier": "Xpressbees",
+    "sku": "AMZ-EAR-BLK-1",
+    "size": "ONE SIZE",
+    "color": "",
+    "qty": 1,
+    "invoiceTotal": 1499,
+    "confidence": {
+      "awb": 1,
+      "orderId": 1,
+      "courier": 1,
+      "marketplace": 1,
+      "sku": 1,
+      "qty": 1,
+      "size": 0.9,
+      "color": 0,
+      "invoiceTotal": 1
+    },
+    "needsManualEdit": false,
+    "missingFields": []
+  }
+]

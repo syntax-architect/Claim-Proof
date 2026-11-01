@@ -1,7 +1,14 @@
 node_modules/
 dist/
+dist-extension/
+coverage/
 *.local
 .env
 .env.*
+!.env.example
 scripts/.license-dev-keys.json
+test-results/
+playwright-report/
+e2e/screenshots/
+lighthouse*.json
 .DS_Store

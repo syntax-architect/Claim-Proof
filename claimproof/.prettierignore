@@ -1,0 +1,12 @@
+node_modules/
+dist/
+package-lock.json
+samples/
+scripts/
+supabase/
+*.pdf
+*.png
+*.svg
+*.ico
+*.mp4
+

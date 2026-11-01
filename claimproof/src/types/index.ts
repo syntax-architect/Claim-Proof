@@ -2,14 +2,7 @@
  * This file is the CONTRACT between every module. Keep it stable. */
 
 export type Marketplace =
-  | 'Meesho'
-  | 'Flipkart'
-  | 'Amazon'
-  | 'Myntra'
-  | 'AJIO'
-  | 'Snapdeal'
-  | 'GlowRoad'
-  | 'Unknown';
+  'Meesho' | 'Flipkart' | 'Amazon' | 'Myntra' | 'AJIO' | 'Snapdeal' | 'GlowRoad' | 'Unknown';
 
 export type CourierPartner =
   | 'Valmo'
@@ -23,6 +16,19 @@ export type CourierPartner =
   | 'Unknown';
 
 export type CropPreset = '4x6' | '4x4' | 'grid4';
+
+/** Confidence score (0.0 to 1.0) for individual extracted label fields. */
+export interface FieldConfidence {
+  awb: number;
+  orderId: number;
+  courier: number;
+  marketplace: number;
+  sku: number;
+  qty: number;
+  size: number;
+  color: number;
+  invoiceTotal: number;
+}
 
 /** One physical shipping label = one page of a source PDF, parsed by SmartLabel SKU+. */
 export interface ExtractedLabel {
@@ -42,6 +48,16 @@ export interface ExtractedLabel {
   invoiceTotal: number | null;
   /** Content bounding box in PDF user-space points (origin bottom-left) — anchors the crop. */
   contentBox: { x: number; y: number; w: number; h: number };
+  /** Confidence score (0.0 to 1.0) per extracted field. */
+  confidence?: FieldConfidence;
+  /** Flagged when critical fields (AWB or SKU) are missing or require manual review. */
+  needsManualEdit?: boolean;
+  /** Missing fields list when flagged. */
+  missingFields?: ('awb' | 'sku' | 'orderId' | 'courier')[];
+  /** Warning or error message explaining issues (e.g. scanned image-only). */
+  warning?: string;
+  /** True when the page contains no digital text layer (scanned or photo PDF). */
+  isImageOnly?: boolean;
 }
 
 /** A label persisted to IndexedDB — pre-loaded into memory so the recorder can auto-match AWBs. */
@@ -87,12 +103,7 @@ export interface RecordingMeta {
 }
 
 export type FlagReason =
-  | 'Damaged'
-  | 'Used/Worn'
-  | 'Wrong/Swapped item'
-  | 'Missing item'
-  | 'Empty package'
-  | 'Other';
+  'Damaged' | 'Used/Worn' | 'Wrong/Swapped item' | 'Missing item' | 'Empty package' | 'Other';
 
 export type ClaimStatus = 'pending' | 'prepared' | 'submitted' | 'won' | 'lost';
 
@@ -121,17 +132,28 @@ export type BillingInterval = 'monthly' | 'annual';
 export type LicensePlan = 'free' | PlanId;
 
 export type ProFeature =
-  | 'unlimitedLabels'
-  | 'unlimitedRecording'
-  | 'collage'
-  | 'claimRadar'
-  | 'matcher';
+  'unlimitedLabels' | 'unlimitedRecording' | 'collage' | 'claimRadar' | 'matcher';
+
+export type SubscriptionStatus =
+  | 'active'
+  | 'authenticated'
+  | 'payment_failed'
+  | 'halted'
+  | 'cancelled'
+  | 'expired'
+  | 'revoked';
 
 export interface LicenseState {
   plan: LicensePlan;
   billingInterval?: BillingInterval;
   seats: number;
   deviceFingerprint: string;
+  boundDevices?: string[];
+  customerId?: string;
+  subscriptionId?: string;
+  subscriptionStatus?: SubscriptionStatus;
+  renewsAt?: number | null;
+  graceExpiresAt?: number | null;
   activatedAt?: number;
   expiresAt?: number | null;
   /** Raw ES256 license JWT (offline-verifiable). */
@@ -139,6 +161,22 @@ export interface LicenseState {
   /** True when activated via the in-app demo path instead of a signed token. */
   demo?: boolean;
   licenseeName?: string;
+}
+
+export type ActivationErrorCode =
+  | 'INVALID_TOKEN'
+  | 'EXPIRED'
+  | 'INVALID_SIGNATURE'
+  | 'WRONG_ISSUER'
+  | 'WRONG_PLAN'
+  | 'MISSING_CUSTOMER_ID'
+  | 'DEVICE_MISMATCH';
+
+export interface ActivationResult {
+  ok: boolean;
+  error?: string;
+  code?: ActivationErrorCode;
+  canMove?: boolean;
 }
 
 export interface DailyUsage {

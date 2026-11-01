@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Info,
   Loader2,
+  RefreshCw,
   X,
   XCircle,
   type LucideIcon
@@ -108,10 +109,13 @@ type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   primary:
     'bg-proof-500 text-on-accent font-semibold hover:bg-proof-600 active:bg-proof-700 shadow-sm hover:shadow-md active:scale-[0.98]',
-  secondary: 'bg-ink-700/70 text-slate-100 border border-line hover:bg-ink-600 hover:border-line-bright active:scale-[0.98]',
+  secondary:
+    'bg-ink-700/70 text-slate-100 border border-line hover:bg-ink-600 hover:border-line-bright active:scale-[0.98]',
   ghost: 'text-slate-400 hover:text-slate-200 hover:bg-ink-800/70',
-  outline: 'border border-proof-500/45 text-proof-300 hover:bg-proof-500/10 hover:border-proof-500/70 active:scale-[0.98]',
-  danger: 'bg-danger-500/90 text-white hover:bg-danger-500 border border-danger-400/40 active:scale-[0.98]'
+  outline:
+    'border border-proof-500/45 text-proof-300 hover:bg-proof-500/10 hover:border-proof-500/70 active:scale-[0.98]',
+  danger:
+    'bg-danger-600 text-on-accent font-semibold hover:bg-danger-700 border border-danger-500/50 active:scale-[0.98]'
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
@@ -157,10 +161,18 @@ export function Button({
       {loading ? (
         <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
       ) : (
-        Icon && <Icon className={size === 'xs' || size === 'sm' ? 'h-3.5 w-3.5 shrink-0' : 'h-4 w-4 shrink-0'} />
+        Icon && (
+          <Icon
+            className={size === 'xs' || size === 'sm' ? 'h-3.5 w-3.5 shrink-0' : 'h-4 w-4 shrink-0'}
+          />
+        )
       )}
       {children}
-      {IconRight && <IconRight className={size === 'xs' || size === 'sm' ? 'h-3.5 w-3.5 shrink-0' : 'h-4 w-4 shrink-0'} />}
+      {IconRight && (
+        <IconRight
+          className={size === 'xs' || size === 'sm' ? 'h-3.5 w-3.5 shrink-0' : 'h-4 w-4 shrink-0'}
+        />
+      )}
     </button>
   );
 }
@@ -236,9 +248,7 @@ export function StatusDot({
   return (
     <span className={cn('relative inline-flex h-2 w-2 shrink-0', className)}>
       <span className={cn('absolute inset-0 rounded-full', color)} />
-      {pulse && (
-        <span className={cn('absolute inset-0 animate-ping-slow rounded-full', color)} />
-      )}
+      {pulse && <span className={cn('absolute inset-0 animate-ping-slow rounded-full', color)} />}
     </span>
   );
 }
@@ -266,10 +276,22 @@ function CountUp({ value, duration = 750 }: { value: number; duration?: number }
 }
 
 const STAT_TONES = {
-  proof: { chip: 'bg-proof-500/12 text-proof-300 border-proof-500/25', bar: 'from-proof-600 to-proof-400' },
-  warn: { chip: 'bg-warn-500/12 text-warn-300 border-warn-500/25', bar: 'from-warn-600 to-warn-400' },
-  danger: { chip: 'bg-danger-500/12 text-danger-300 border-danger-500/25', bar: 'from-danger-600 to-danger-400' },
-  info: { chip: 'bg-info-500/12 text-info-300 border-info-500/25', bar: 'from-info-500 to-info-300' }
+  proof: {
+    chip: 'bg-proof-500/12 text-proof-300 border-proof-500/25',
+    bar: 'from-proof-600 to-proof-400'
+  },
+  warn: {
+    chip: 'bg-warn-500/12 text-warn-300 border-warn-500/25',
+    bar: 'from-warn-600 to-warn-400'
+  },
+  danger: {
+    chip: 'bg-danger-500/12 text-danger-300 border-danger-500/25',
+    bar: 'from-danger-600 to-danger-400'
+  },
+  info: {
+    chip: 'bg-info-500/12 text-info-300 border-info-500/25',
+    bar: 'from-info-500 to-info-300'
+  }
 } as const;
 
 export function StatCard({
@@ -293,7 +315,9 @@ export function StatCard({
 }) {
   const t = STAT_TONES[tone];
   const pct =
-    progress && progress.max > 0 ? Math.min(100, Math.round((progress.value / progress.max) * 100)) : null;
+    progress && progress.max > 0
+      ? Math.min(100, Math.round((progress.value / progress.max) * 100))
+      : null;
   return (
     <Card hover className={cn('relative overflow-hidden p-5', className)}>
       <div className="flex items-start justify-between gap-3">
@@ -307,14 +331,22 @@ export function StatCard({
           </div>
           {sub && <div className="mt-1.5 text-xs text-slate-400">{sub}</div>}
         </div>
-        <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border', t.chip)}>
+        <div
+          className={cn(
+            'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border',
+            t.chip
+          )}
+        >
           <Icon className="h-5 w-5" />
         </div>
       </div>
       {pct !== null && (
         <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-ink-700">
           <div
-            className={cn('h-full rounded-full bg-gradient-to-r transition-all duration-700', t.bar)}
+            className={cn(
+              'h-full rounded-full bg-gradient-to-r transition-all duration-700',
+              t.bar
+            )}
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -352,9 +384,19 @@ export function Ring({
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   return (
-    <div className={cn('relative inline-flex items-center justify-center', className)} style={{ width: size, height: size }}>
+    <div
+      className={cn('relative inline-flex items-center justify-center', className)}
+      style={{ width: size, height: size }}
+    >
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--cp-surface-3)" strokeWidth={stroke} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--cp-surface-3)"
+          strokeWidth={stroke}
+        />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -368,7 +410,9 @@ export function Ring({
           style={{ transition: 'stroke-dashoffset 0.8s cubic-bezier(0.16,1,0.3,1)' }}
         />
       </svg>
-      {children && <div className="absolute inset-0 flex items-center justify-center">{children}</div>}
+      {children && (
+        <div className="absolute inset-0 flex items-center justify-center">{children}</div>
+      )}
     </div>
   );
 }
@@ -444,7 +488,12 @@ export function Toggle({
   );
   if (!label && !hint) return control;
   return (
-    <label className={cn('flex cursor-pointer items-center justify-between gap-4', disabled && 'opacity-50')}>
+    <label
+      className={cn(
+        'flex cursor-pointer items-center justify-between gap-4',
+        disabled && 'opacity-50'
+      )}
+    >
       <span className="min-w-0">
         {label && <span className="block text-sm text-slate-200">{label}</span>}
         {hint && <span className="mt-0.5 block text-xs text-slate-500">{hint}</span>}
@@ -486,10 +535,20 @@ export function Segmented<T extends string>({
   );
 }
 
-export function Field({ label, hint, children }: { label: ReactNode; hint?: string; children: ReactNode }) {
+export function Field({
+  label,
+  hint,
+  children
+}: {
+  label: ReactNode;
+  hint?: string;
+  children: ReactNode;
+}) {
   return (
     <div className="space-y-1.5">
-      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</div>
+      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+        {label}
+      </div>
       {children}
       {hint && <div className="text-xs text-slate-500">{hint}</div>}
     </div>
@@ -517,6 +576,17 @@ export function Modal({
   children: ReactNode;
   footer?: ReactNode;
 }) {
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      triggerRef.current = document.activeElement as HTMLElement | null;
+    } else if (triggerRef.current) {
+      triggerRef.current.focus();
+      triggerRef.current = null;
+    }
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -527,7 +597,13 @@ export function Modal({
   }, [open, onClose]);
 
   const maxW =
-    width === 'md' ? 'max-w-md' : width === 'lg' ? 'max-w-2xl' : width === 'xl' ? 'max-w-5xl' : 'max-w-[92rem]';
+    width === 'md'
+      ? 'max-w-md'
+      : width === 'lg'
+        ? 'max-w-2xl'
+        : width === 'xl'
+          ? 'max-w-5xl'
+          : 'max-w-[92rem]';
 
   return (
     <AnimatePresence>
@@ -539,7 +615,13 @@ export function Modal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.18 }}
         >
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+          <button
+            type="button"
+            aria-label="Close dialog"
+            tabIndex={-1}
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={onClose}
+          />
           <motion.div
             className={cn(
               'glass relative flex max-h-[88vh] w-full flex-col border-line-bright bg-ink-900/95 shadow-2xl',
@@ -551,6 +633,7 @@ export function Modal({
             transition={{ type: 'spring', stiffness: 380, damping: 32 }}
             role="dialog"
             aria-modal="true"
+            aria-label={typeof title === 'string' ? title : 'Dialog'}
           >
             {(title || Icon) && (
               <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-4">
@@ -561,7 +644,7 @@ export function Modal({
                     </div>
                   )}
                   <div className="min-w-0">
-                    <div className="font-display text-lg font-bold text-white">{title}</div>
+                    <div role="heading" aria-level={2} className="font-display text-lg font-bold text-white">{title}</div>
                     {subtitle && <div className="mt-0.5 text-xs text-slate-400">{subtitle}</div>}
                   </div>
                 </div>
@@ -586,27 +669,258 @@ export function Modal({
 
 /* ── EmptyState ──────────────────────────────────────────────────────── */
 
+export interface EmptyStateProps {
+  icon: LucideIcon;
+  title: string;
+  description?: ReactNode;
+  hint?: ReactNode; // backwards compatibility alias for description
+  headingLevel?: 'h2' | 'h3' | 'h4';
+  primaryAction?:
+    | ReactNode
+    | {
+        label: string;
+        onClick?: () => void;
+        icon?: LucideIcon;
+        variant?: ButtonVariant;
+        className?: string;
+      };
+  action?: ReactNode; // backwards compatibility alias for primaryAction
+  secondaryLink?:
+    | ReactNode
+    | {
+        label: string;
+        onClick?: () => void;
+        href?: string;
+        icon?: LucideIcon;
+      };
+  children?: ReactNode;
+  className?: string;
+}
+
 export function EmptyState({
   icon: Icon,
   title,
+  description,
   hint,
+  headingLevel = 'h2',
+  primaryAction,
   action,
+  secondaryLink,
+  children,
   className
-}: {
-  icon: LucideIcon;
-  title: string;
-  hint?: string;
-  action?: ReactNode;
-  className?: string;
-}) {
+}: EmptyStateProps) {
+  const body = description ?? hint;
+  const primary = primaryAction ?? action;
+  const HeadingTag = headingLevel;
+
   return (
-    <div className={cn('flex flex-col items-center justify-center px-6 py-14 text-center', className)}>
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-dashed border-line-bright bg-ink-850 text-slate-500">
-        <Icon className="h-6 w-6" />
+    <div
+      role="region"
+      aria-label={title}
+      className={cn('flex flex-col items-center justify-center px-6 py-12 text-center', className)}
+    >
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-dashed border-line-bright bg-ink-850 text-slate-400 shadow-inner">
+        <Icon className="h-6 w-6" aria-hidden="true" />
       </div>
-      <div className="mt-4 font-display text-base font-semibold text-slate-200">{title}</div>
-      {hint && <div className="mt-1 max-w-sm text-sm text-slate-500">{hint}</div>}
-      {action && <div className="mt-5">{action}</div>}
+      <HeadingTag className="mt-4 font-display text-base font-semibold text-white">{title}</HeadingTag>
+      {body && <div className="mt-2 max-w-md text-sm leading-relaxed text-slate-400">{body}</div>}
+      {children && <div className="mt-4 w-full max-w-lg">{children}</div>}
+      {(primary || secondaryLink) && (
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          {primary &&
+            (typeof primary === 'object' && 'label' in primary ? (
+              <Button
+                variant={primary.variant ?? 'primary'}
+                onClick={primary.onClick}
+                icon={primary.icon}
+                className={primary.className}
+              >
+                {primary.label}
+              </Button>
+            ) : (
+              primary
+            ))}
+          {secondaryLink &&
+            (typeof secondaryLink === 'object' && 'label' in secondaryLink ? (
+              secondaryLink.href ? (
+                <a
+                  href={secondaryLink.href}
+                  className="inline-flex items-center gap-1.5 rounded text-xs font-semibold text-slate-400 underline underline-offset-4 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-proof-500"
+                >
+                  {secondaryLink.icon && <secondaryLink.icon className="h-3.5 w-3.5" />}
+                  {secondaryLink.label}
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={secondaryLink.onClick}
+                  className="inline-flex items-center gap-1.5 rounded text-xs font-semibold text-slate-400 underline underline-offset-4 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-proof-500"
+                >
+                  {secondaryLink.icon && <secondaryLink.icon className="h-3.5 w-3.5" />}
+                  {secondaryLink.label}
+                </button>
+              )
+            ) : (
+              secondaryLink
+            ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── LoadingSkeleton ─────────────────────────────────────────────────── */
+
+export interface LoadingSkeletonProps {
+  className?: string;
+  lines?: number;
+  variant?: 'rect' | 'text' | 'card' | 'table' | 'circle';
+  ariaLabel?: string;
+}
+
+export function LoadingSkeleton({
+  className,
+  lines = 1,
+  variant = 'rect',
+  ariaLabel = 'Loading content...'
+}: LoadingSkeletonProps) {
+  if (variant === 'circle') {
+    return (
+      <div
+        role="status"
+        aria-label={ariaLabel}
+        className={cn('h-10 w-10 shrink-0 animate-pulse rounded-full bg-ink-700/60', className)}
+      >
+        <span className="sr-only">{ariaLabel}</span>
+      </div>
+    );
+  }
+
+  if (variant === 'card') {
+    return (
+      <div
+        role="status"
+        aria-label={ariaLabel}
+        className={cn('glass space-y-4 p-5 animate-pulse border-line', className)}
+      >
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-1/3 rounded bg-ink-700/70" />
+          <div className="h-7 w-7 rounded-lg bg-ink-700/60" />
+        </div>
+        <div className="h-8 w-1/2 rounded bg-ink-700/80" />
+        <div className="h-3 w-3/4 rounded bg-ink-700/50" />
+        <span className="sr-only">{ariaLabel}</span>
+      </div>
+    );
+  }
+
+  if (variant === 'table') {
+    return (
+      <div role="status" aria-label={ariaLabel} className={cn('w-full space-y-3 p-4', className)}>
+        <div className="h-8 w-full rounded bg-ink-700/60" />
+        {Array.from({ length: Math.max(2, lines) }).map((_, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <div className="h-5 flex-1 rounded bg-ink-700/40" />
+            <div className="h-5 w-20 rounded bg-ink-700/30" />
+            <div className="h-5 w-16 rounded bg-ink-700/30" />
+          </div>
+        ))}
+        <span className="sr-only">{ariaLabel}</span>
+      </div>
+    );
+  }
+
+  if (lines > 1) {
+    return (
+      <div role="status" aria-label={ariaLabel} className={cn('space-y-2', className)}>
+        {Array.from({ length: lines }).map((_, i) => (
+          <div
+            key={i}
+            className={cn(
+              'animate-pulse rounded bg-ink-700/60',
+              i === lines - 1 ? 'h-3.5 w-4/5' : 'h-3.5 w-full'
+            )}
+          />
+        ))}
+        <span className="sr-only">{ariaLabel}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      role="status"
+      aria-label={ariaLabel}
+      className={cn('animate-pulse rounded-lg bg-ink-700/60', className || 'h-6 w-full')}
+    >
+      <span className="sr-only">{ariaLabel}</span>
+    </div>
+  );
+}
+
+/* ── ErrorState ──────────────────────────────────────────────────────── */
+
+export interface ErrorStateProps {
+  title?: string;
+  message: ReactNode;
+  icon?: LucideIcon;
+  onRetry?: () => void;
+  retryLabel?: string;
+  retryButton?: ReactNode;
+  secondaryAction?: ReactNode | { label: string; onClick: () => void };
+  children?: ReactNode;
+  className?: string;
+}
+
+export function ErrorState({
+  title = 'Something went wrong',
+  message,
+  icon: Icon = AlertTriangle,
+  onRetry,
+  retryLabel = 'Try again',
+  retryButton,
+  secondaryAction,
+  children,
+  className
+}: ErrorStateProps) {
+  return (
+    <div
+      role="alert"
+      className={cn(
+        'glass flex flex-col items-center justify-center border-danger-500/30 bg-danger-500/5 px-6 py-10 text-center',
+        className
+      )}
+    >
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-danger-500/30 bg-danger-500/15 text-danger-400">
+        <Icon className="h-6 w-6" aria-hidden="true" />
+      </div>
+      <h3 className="mt-4 font-display text-base font-bold text-white">{title}</h3>
+      <div className="mt-2 max-w-md text-sm leading-relaxed text-slate-300">{message}</div>
+      {children && <div className="mt-4 w-full max-w-md text-left">{children}</div>}
+      {(onRetry || retryButton || secondaryAction) && (
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          {retryButton ? (
+            retryButton
+          ) : onRetry ? (
+            <Button
+              variant="secondary"
+              onClick={onRetry}
+              icon={RefreshCw}
+              className="border-danger-400/30 hover:bg-danger-500/10"
+            >
+              {retryLabel}
+            </Button>
+          ) : null}
+          {secondaryAction &&
+            (typeof secondaryAction === 'object' && 'label' in secondaryAction ? (
+              <Button variant="ghost" onClick={secondaryAction.onClick}>
+                {secondaryAction.label}
+              </Button>
+            ) : (
+              secondaryAction
+            ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -669,7 +983,16 @@ export function LogoMark({ size = 34, className }: { size?: number; className?: 
         <path d="M50 41 v6 a3 3 0 0 1 -3 3 h-6" />
         <path d="M23 50 h-6 a3 3 0 0 1 -3 -3 v-6" />
       </g>
-      <rect x="23" y="25" width="18" height="14" rx="2.5" fill="none" stroke="#93C5FD" strokeWidth="3" />
+      <rect
+        x="23"
+        y="25"
+        width="18"
+        height="14"
+        rx="2.5"
+        fill="none"
+        stroke="#93C5FD"
+        strokeWidth="3"
+      />
       <path d="M35.5 27.5 l-5 4.5 h3.4 l-2.4 4.5 5.6 -5.2 h-3.4 z" fill="#FBBF24" />
     </svg>
   );
@@ -713,6 +1036,18 @@ interface ToastApi {
 
 const ToastCtx = createContext<ToastApi | null>(null);
 
+const pendingToasts: ToastPayload[] = [];
+let hasMountedToastProvider = false;
+
+export function notifyToast(payload: ToastPayload): void {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent<ToastPayload>('cp-toast', { detail: payload }));
+    if (!hasMountedToastProvider) {
+      pendingToasts.push(payload);
+    }
+  }
+}
+
 const TOAST_ICONS: Record<ToastItem['tone'], LucideIcon> = {
   success: CheckCircle2,
   error: XCircle,
@@ -735,6 +1070,25 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts((prev) => [...prev.slice(-4), { ...t, id }]);
     setTimeout(() => setToasts((prev) => prev.filter((x) => x.id !== id)), 4200);
   }, []);
+
+  useEffect(() => {
+    hasMountedToastProvider = true;
+    while (pendingToasts.length > 0) {
+      const p = pendingToasts.shift();
+      if (p) toast(p);
+    }
+    const onToastEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<ToastPayload>;
+      if (customEvent.detail) {
+        toast(customEvent.detail);
+      }
+    };
+    window.addEventListener('cp-toast', onToastEvent);
+    return () => {
+      hasMountedToastProvider = false;
+      window.removeEventListener('cp-toast', onToastEvent);
+    };
+  }, [toast]);
 
   const api = useMemo<ToastApi>(
     () => ({
@@ -764,10 +1118,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="glass pointer-events-auto flex items-start gap-3 border-line-bright bg-ink-900/95 p-3.5 shadow-xl"
               >
-                <Icon className={cn('mt-0.5 h-4.5 w-4.5 shrink-0', TOAST_STYLES[t.tone].split(' ')[1])} />
+                <Icon
+                  className={cn('mt-0.5 h-4.5 w-4.5 shrink-0', TOAST_STYLES[t.tone].split(' ')[1])}
+                />
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold text-white">{t.title}</div>
-                  {t.message && <div className="mt-0.5 text-xs leading-relaxed text-slate-400">{t.message}</div>}
+                  {t.message && (
+                    <div className="mt-0.5 text-xs leading-relaxed text-slate-400">{t.message}</div>
+                  )}
                 </div>
               </motion.div>
             );
@@ -789,3 +1147,5 @@ export function useToast(): ToastApi {
 export function Spinner({ className }: { className?: string }) {
   return <Loader2 className={cn('h-4 w-4 animate-spin text-proof-400', className)} />;
 }
+
+export { ErrorBoundary, type ErrorBoundaryProps } from './ErrorBoundary';

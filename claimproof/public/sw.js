@@ -1,10 +1,11 @@
-/* ClaimProof Suite — offline-first service worker (PWA shell cache). */
-const CACHE = 'claimproof-v1';
-const CORE = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg'];
+/* ClaimProof Suite — offline-first service worker (PWA shell cache).
+ * Note: CACHE version and CORE assets are automatically populated at build time by Vite. */
+const CACHE = 'claimproof-__SW_VERSION__';
+const CORE = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg' /* __CORE_ASSETS__ */];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting())
+    caches.open(CACHE).then((cache) => cache.addAll(CORE))
   );
 });
 
@@ -17,15 +18,25 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
-  const response = await fetch(request);
-  if (response && response.status === 200 && response.type === 'basic') {
-    const cache = await caches.open(CACHE);
-    cache.put(request, response.clone());
+  try {
+    const response = await fetch(request);
+    if (response && response.status === 200 && (response.type === 'basic' || response.type === 'cors')) {
+      const cache = await caches.open(CACHE);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    return caches.match(request);
   }
-  return response;
 }
 
 async function networkFirst(request) {
@@ -50,8 +61,14 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(networkFirst(event.request));
     return;
   }
-  /* Hashed build assets are immutable — cache them aggressively. */
-  if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/icons/')) {
+  /* Hashed build assets and static resources are immutable — cache them. */
+  if (
+    url.pathname.startsWith('/assets/') ||
+    url.pathname.startsWith('/icons/') ||
+    url.pathname.endsWith('.svg') ||
+    url.pathname.endsWith('.png') ||
+    url.pathname.endsWith('.webmanifest')
+  ) {
     event.respondWith(cacheFirst(event.request));
   }
 });

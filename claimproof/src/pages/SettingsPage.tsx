@@ -1,26 +1,36 @@
-import { useState, type ReactNode } from 'react';
-import { Cable,
+import { useEffect, useState, type ReactNode } from 'react';
+import {
+  Activity,
+  Cable,
   Database,
   Download,
+  FileText,
   FolderCheck,
   FolderOpen,
   HardDrive,
   Info,
+  LifeBuoy,
   QrCode,
+  RotateCcw,
+  ShieldCheck,
   Smartphone,
+  Sparkles,
   Trash2,
   Usb,
+  Video,
   Volume2
 } from 'lucide-react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db/schema';
+import { db, getSetting, setSetting } from '../db/schema';
 import { connectVault, getVaultStatus } from '../services/vaultWriter';
 import { isPhonePairingConfigured, pairingQrPayload } from '../services/phonePairing';
-import { renderUpiQr } from '../lib/upi';
 import { formatISTShort } from '../lib/dateUtils';
 import { downloadBlob } from '../lib/utils';
 import { Badge, Button, Card, PageHeader, StatusDot, Toggle, useToast } from '../components/ui';
 import { isBeepsMuted, setBeepsMuted } from '../lib/audioBeeps';
+import { isTelemetryEnabled, setTelemetryEnabled } from '../services/telemetry';
+import { navigateTo } from '../lib/router';
+import { RECORDER_CONFIG } from '../config/recorderConfig';
 
 function Section({
   icon: Icon,
@@ -54,6 +64,26 @@ export default function SettingsPage() {
   const [connecting, setConnecting] = useState(false);
   const [sampleQr, setSampleQr] = useState<string | null>(null);
   const [beepsMuted, setBeepsMutedState] = useState(() => isBeepsMuted());
+  const [telemetryEnabled, setTelemetryEnabledState] = useState(() => isTelemetryEnabled());
+  const [targetSizeMB, setTargetSizeMB] = useState<number>(RECORDER_CONFIG.defaultTargetSizeMB);
+  const [maxDurationSec, setMaxDurationSec] = useState<number>(
+    RECORDER_CONFIG.defaultMaxDurationSec
+  );
+
+  useEffect(() => {
+    const onTelemetryChanged = () => setTelemetryEnabledState(isTelemetryEnabled());
+    window.addEventListener('cp-telemetry-changed', onTelemetryChanged);
+    return () => window.removeEventListener('cp-telemetry-changed', onTelemetryChanged);
+  }, []);
+
+  useEffect(() => {
+    void getSetting('target_video_size_mb', RECORDER_CONFIG.defaultTargetSizeMB).then(
+      setTargetSizeMB
+    );
+    void getSetting('max_recording_duration_sec', RECORDER_CONFIG.defaultMaxDurationSec).then(
+      setMaxDurationSec
+    );
+  }, []);
 
   const vaultStatus = useLiveQuery(() => getVaultStatus(), []);
   const paired = isPhonePairingConfigured();
@@ -91,6 +121,7 @@ export default function SettingsPage() {
   }
 
   async function previewPairingQr() {
+    const { renderUpiQr } = await import('../lib/upi');
     const qr = await renderUpiQr(pairingQrPayload('482913'), 160);
     setSampleQr(qr);
   }
@@ -138,8 +169,8 @@ export default function SettingsPage() {
               {'{AWB}_Video.mp4 · {AWB}_Photo_Collage.jpg'}
             </div>
             <div className="text-[11px] text-slate-500">
-              Pick your <span className="font-mono text-slate-400">ClaimProof_Vault</span> folder once —
-              files then write directly to disk with zero uploads.
+              Pick your <span className="font-mono text-slate-400">ClaimProof_Vault</span> folder
+              once — files then write directly to disk with zero uploads.
             </div>
           </div>
         </Section>
@@ -156,12 +187,21 @@ export default function SettingsPage() {
                   <StatusDot tone="proof" pulse />
                   Supabase Realtime configured — open the Recorder to start a pairing room.
                 </div>
-                <Button variant="secondary" size="sm" icon={QrCode} onClick={() => void previewPairingQr()}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={QrCode}
+                  onClick={() => void previewPairingQr()}
+                >
                   Preview pairing QR format
                 </Button>
                 {sampleQr && (
                   <div className="flex items-center gap-3">
-                    <img src={sampleQr} alt="Sample pairing QR" className="qr-plate h-24 w-24 rounded-lg p-1" />
+                    <img
+                      src={sampleQr}
+                      alt="Sample pairing QR"
+                      className="qr-plate h-24 w-24 rounded-lg p-1"
+                    />
                     <div className="text-[11px] text-slate-500">
                       Sample — the Recorder generates a live 6-digit room code per session.
                     </div>
@@ -189,11 +229,7 @@ export default function SettingsPage() {
           </div>
         </Section>
 
-        <Section
-          icon={Volume2}
-          title="Scanner sounds"
-          sub="Beeps for scan · start · saved · flag"
-        >
+        <Section icon={Volume2} title="Scanner sounds" sub="Beeps for scan · start · saved · flag">
           <Toggle
             checked={!beepsMuted}
             onChange={(next) => {
@@ -205,7 +241,78 @@ export default function SettingsPage() {
           />
         </Section>
 
-        <Section icon={Database} title="Data & backups" sub="IndexedDB metadata — media stays on disk">
+        <Section
+          icon={Video}
+          title="Recorder limits & preferences"
+          sub="Target size and duration safeguard (user-configured packaging limits)"
+        >
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="setting-target-size"
+                className="block text-xs font-semibold text-slate-300"
+              >
+                Target video size (MB)
+              </label>
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  id="setting-target-size"
+                  type="number"
+                  min="5"
+                  max="200"
+                  value={targetSizeMB}
+                  onChange={(e) => {
+                    const val = Math.max(1, Number(e.target.value) || 25);
+                    setTargetSizeMB(val);
+                    void setSetting('target_video_size_mb', val);
+                  }}
+                  className="glass-soft h-9 w-28 px-3 font-mono text-sm text-white focus:outline-none"
+                />
+                <span className="text-xs text-slate-400">MB preferred target</span>
+              </div>
+              <div className="mt-1 text-[11px] text-slate-500">
+                Packaging target size preference. No marketplace size limits are claimed.
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="setting-max-duration"
+                className="block text-xs font-semibold text-slate-300"
+              >
+                Max recording duration safeguard
+              </label>
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  id="setting-max-duration"
+                  type="number"
+                  min="1"
+                  max="30"
+                  value={Math.round(maxDurationSec / 60)}
+                  onChange={(e) => {
+                    const mins = Math.max(1, Number(e.target.value) || 5);
+                    const secs = mins * 60;
+                    setMaxDurationSec(secs);
+                    void setSetting('max_recording_duration_sec', secs);
+                  }}
+                  className="glass-soft h-9 w-28 px-3 font-mono text-sm text-white focus:outline-none"
+                />
+                <span className="text-xs text-slate-400">
+                  minutes (auto-stops unattended recordings)
+                </span>
+              </div>
+              <div className="mt-1 text-[11px] text-slate-500">
+                Automatically stops and preserves recording if a parcel station is left open.
+              </div>
+            </div>
+          </div>
+        </Section>
+
+        <Section
+          icon={Database}
+          title="Data & backups"
+          sub="IndexedDB metadata — media stays on disk"
+        >
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" size="sm" icon={Download} onClick={() => void exportData()}>
               Export JSON backup
@@ -232,6 +339,137 @@ export default function SettingsPage() {
           </div>
         </Section>
 
+        <Section
+          icon={Sparkles}
+          title="Onboarding walkthrough"
+          sub="First-run setup: marketplaces, vault, and barcode scanner test"
+        >
+          <div className="glass-soft flex flex-col gap-3 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-xs text-slate-300">
+                Configure your marketplaces, connect your vault folder, and verify your scanner gun
+                or camera.
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                icon={Sparkles}
+                onClick={() => {
+                  window.dispatchEvent(new Event('cp-open-onboarding'));
+                }}
+                data-testid="reopen-onboarding-button"
+              >
+                Restart onboarding
+              </Button>
+            </div>
+          </div>
+        </Section>
+
+        <Section
+          icon={Activity}
+          title="Anonymous product analytics & error reporting"
+          sub="Strictly opt-in. Zero personal data, zero AWBs, zero order IDs, zero SKUs"
+        >
+          <div className="space-y-4">
+            <Toggle
+              checked={telemetryEnabled}
+              onChange={(enabled) => {
+                setTelemetryEnabledState(enabled);
+                void setTelemetryEnabled(enabled);
+                toast.info(
+                  enabled
+                    ? 'Analytics & error reporting enabled'
+                    : 'Analytics & error reporting disabled',
+                  enabled
+                    ? 'Only 5 milestone events and scrubbed error messages will be shared.'
+                    : '100% private mode active. Zero telemetry is transmitted.'
+                );
+              }}
+              label="Share anonymous milestone statistics & scrubbed error reports"
+              hint="Helps improve ClaimProof reliability. Disabled by default."
+            />
+
+            <div className="rounded-lg border border-line bg-ink-950/70 p-3.5 text-xs space-y-2.5">
+              <div className="font-semibold text-slate-300">
+                What is collected (only when enabled):
+              </div>
+              <ul className="list-disc list-inside space-y-1 text-slate-400 text-[11px] leading-relaxed">
+                <li>
+                  <strong className="text-slate-300">Only 5 milestone events:</strong> Onboarding
+                  completed, first label export, first recording saved, paywall viewed, purchase
+                  started.
+                </li>
+                <li>
+                  <strong className="text-slate-300">Scrubbed error reports:</strong> Stack traces
+                  with all tracking numbers (AWBs), order IDs, SKUs, and file paths completely
+                  redacted.
+                </li>
+              </ul>
+
+              <div className="font-semibold text-slate-300 pt-1">
+                What is NEVER collected or uploaded:
+              </div>
+              <ul className="list-disc list-inside space-y-1 text-slate-400 text-[11px] leading-relaxed">
+                <li>No shipping labels, PDFs, or customer addresses.</li>
+                <li>
+                  No packing or unboxing videos or photos (files write strictly to your hard drive).
+                </li>
+                <li>No personal names, phone numbers, or email addresses.</li>
+              </ul>
+            </div>
+          </div>
+        </Section>
+
+        <Section
+          icon={ShieldCheck}
+          title="Legal & Support"
+          sub="Privacy, terms, refunds & technical help — 100% transparent"
+        >
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={ShieldCheck}
+                onClick={() => navigateTo('privacy')}
+                className="justify-start"
+              >
+                Privacy Policy (Zero-Cloud)
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={FileText}
+                onClick={() => navigateTo('terms')}
+                className="justify-start"
+              >
+                Terms of Service
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={RotateCcw}
+                onClick={() => navigateTo('refund')}
+                className="justify-start"
+              >
+                Refund &amp; Cancellation
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={LifeBuoy}
+                onClick={() => navigateTo('support')}
+                className="justify-start"
+              >
+                Support &amp; Diagnostics
+              </Button>
+            </div>
+            <div className="text-[11px] text-slate-500">
+              Need urgent setup help or troubleshooting? Open Support for direct WhatsApp and zero-PII diagnostic reports.
+            </div>
+          </div>
+        </Section>
+
         <Section icon={Info} title="About" sub="ClaimProof Suite v1.0.0">
           <div className="space-y-2 text-[11px] leading-relaxed text-slate-500">
             <div>
@@ -240,11 +478,13 @@ export default function SettingsPage() {
               ZXing fallback, recording via canvas compositing + MediaRecorder at 1.2 Mbps.
             </div>
             <div>
-              Install as an app: <span className="text-slate-400">Chrome → ⋮ → Install ClaimProof…</span>{' '}
-              Works fully offline after the first load.
+              Install as an app:{' '}
+              <span className="text-slate-400">Chrome → ⋮ → Install ClaimProof…</span> Works fully
+              offline after the first load.
             </div>
             <div className="flex items-center gap-1.5">
-              <StatusDot tone="proof" /> Storage: IndexedDB + File System Access · {formatISTShort(Date.now())}
+              <StatusDot tone="proof" /> Storage: IndexedDB + File System Access ·{' '}
+              {formatISTShort(Date.now())}
             </div>
             <Badge tone="proof">₹0 server cost</Badge>
           </div>

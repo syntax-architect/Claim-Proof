@@ -24,7 +24,15 @@ interface NavEntry {
   badgeTone?: 'proof' | 'danger' | 'warn' | 'neutral';
 }
 
-function NavItem({ entry, active, onClick }: { entry: NavEntry; active: boolean; onClick: () => void }) {
+function NavItem({
+  entry,
+  active,
+  onClick
+}: {
+  entry: NavEntry;
+  active: boolean;
+  onClick: () => void;
+}) {
   const Icon = entry.icon;
   return (
     <button
@@ -56,7 +64,13 @@ function NavItem({ entry, active, onClick }: { entry: NavEntry; active: boolean;
   );
 }
 
-export default function Sidebar({ route, navigate }: { route: Route; navigate: (r: Route) => void }) {
+export default function Sidebar({
+  route,
+  navigate
+}: {
+  route: Route;
+  navigate: (r: Route) => void;
+}) {
   const pendingClaims = useLiveQuery(
     () => db.claims.filter((c) => c.status === 'pending' || c.status === 'prepared').count(),
     []
@@ -65,7 +79,13 @@ export default function Sidebar({ route, navigate }: { route: Route; navigate: (
 
   const operate: NavEntry[] = [
     { route: 'overview', label: ROUTE_LABELS.overview, icon: LayoutDashboard },
-    { route: 'labels', label: ROUTE_LABELS.labels, icon: ScanBarcode, badge: ordersInMemory ?? 0, badgeTone: 'neutral' },
+    {
+      route: 'labels',
+      label: ROUTE_LABELS.labels,
+      icon: ScanBarcode,
+      badge: ordersInMemory ?? 0,
+      badgeTone: 'neutral'
+    },
     { route: 'recorder', label: ROUTE_LABELS.recorder, icon: Video },
     {
       route: 'claims',
@@ -129,9 +149,7 @@ export default function Sidebar({ route, navigate }: { route: Route; navigate: (
             <div className="text-[10px] text-slate-500">₹0 server · files stay on this PC</div>
           </div>
         </div>
-        <div className="px-3 font-mono text-[10px] text-slate-600">
-          ClaimProof Suite v1.0.0
-        </div>
+        <div className="px-3 font-mono text-[10px] text-slate-600">ClaimProof Suite v1.0.0</div>
       </div>
     </aside>
   );

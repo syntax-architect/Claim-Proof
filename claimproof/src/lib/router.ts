@@ -9,10 +9,15 @@ export const ROUTES = [
   'claims',
   'vault',
   'pricing',
-  'settings'
+  'settings',
+  'privacy',
+  'terms',
+  'refund',
+  'support'
 ] as const;
 
-export type Route = (typeof ROUTES)[number];
+export type KnownRoute = (typeof ROUTES)[number];
+export type Route = KnownRoute | 'not-found' | '404';
 
 export const ROUTE_LABELS: Record<Route, string> = {
   overview: 'Overview',
@@ -21,20 +26,51 @@ export const ROUTE_LABELS: Record<Route, string> = {
   claims: 'ClaimRadar',
   vault: 'Vault',
   pricing: 'Pricing & License',
-  settings: 'Settings'
+  settings: 'Settings',
+  privacy: 'Privacy Policy',
+  terms: 'Terms of Service',
+  refund: 'Refund Policy',
+  support: 'Support & Help',
+  'not-found': 'Page Not Found',
+  '404': 'Page Not Found'
 };
 
-function parseHash(): Route {
-  const raw = window.location.hash.replace(/^#\/?/, '').split(/[?#]/)[0];
-  return (ROUTES as readonly string[]).includes(raw) ? (raw as Route) : 'overview';
+/**
+ * Parses the current hash string into a Route state.
+ * Empty or root hash maps to 'overview'.
+ * Known hashes map to their respective route.
+ * Unknown hashes map to 'not-found' rather than silently defaulting to 'overview'.
+ */
+export function parseHash(hash?: string): Route {
+  const current =
+    hash !== undefined ? hash : typeof window !== 'undefined' ? window.location.hash : '';
+  const raw = current.replace(/^#\/?/, '').split(/[?#]/)[0];
+  if (!raw || raw === 'overview') {
+    return 'overview';
+  }
+  return (ROUTES as readonly string[]).includes(raw) ? (raw as KnownRoute) : 'not-found';
+}
+
+/**
+ * Returns the raw hash or pathname for display in error/404 views.
+ */
+export function getRawPath(): string {
+  if (typeof window === 'undefined') return '';
+  const hash = window.location.hash;
+  if (hash && hash !== '#' && hash !== '#/') {
+    return hash;
+  }
+  return window.location.pathname || '';
 }
 
 export function navigateTo(route: Route): void {
-  window.location.hash = `#/${route}`;
+  if (typeof window !== 'undefined') {
+    window.location.hash = `#/${route}`;
+  }
 }
 
 export function useHashRoute(): [Route, (route: Route) => void] {
-  const [route, setRoute] = useState<Route>(parseHash);
+  const [route, setRoute] = useState<Route>(() => parseHash());
 
   useEffect(() => {
     const onHashChange = () => setRoute(parseHash());

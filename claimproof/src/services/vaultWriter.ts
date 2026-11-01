@@ -2,9 +2,10 @@
  * Layout: <vault>/<YYYY-MM-DD>/<Dispatch|Return>/<AWB>/{AWB}_Video.mp4|webm
  *                                                   /{AWB}_Photo_Collage.jpg */
 
-import { db, getSetting, setSetting } from '../db/schema';
+import { getSetting, setSetting } from '../db/schema';
 import { downloadBlob } from '../lib/utils';
 import { photoCollageFileName, vaultSubPath, videoFileName } from '../lib/vaultPaths';
+import { trackFirstRecordingSaved } from './telemetry';
 import type { RecordingType } from '../types';
 
 export type VaultStatus = 'unset' | 'connected' | 'permission' | 'downloads';
@@ -62,9 +63,17 @@ async function vaultRoot(): Promise<FileSystemDirectoryHandle | null> {
   return root;
 }
 
-export async function saveRecordingFiles(
-  input: SaveRecordingInput
-): Promise<{ vaultPath: string; mode: 'fs-api' | 'downloads' }> {
+export type SaveFailureReason =
+  'permission_revoked' | 'disk_full' | 'vault_unavailable' | 'write_error';
+
+export interface SaveRecordingResult {
+  vaultPath: string;
+  mode: 'fs-api' | 'downloads';
+  errorReason?: SaveFailureReason;
+  errorMessage?: string;
+}
+
+export async function saveRecordingFiles(input: SaveRecordingInput): Promise<SaveRecordingResult> {
   const vaultPath = vaultSubPath(input.type, input.startedAt, input.awb);
   const videoName = videoFileName(input.awb, input.videoMime);
   const photoName = photoCollageFileName(input.awb);
@@ -85,12 +94,40 @@ export async function saveRecordingFiles(
       await photoWriter.write(input.photo);
       await photoWriter.close();
     }
+    void trackFirstRecordingSaved();
     return { vaultPath, mode: 'fs-api' };
-  } catch {
+  } catch (err: unknown) {
+    let errorReason: SaveFailureReason = 'write_error';
+    const errName = err instanceof Error ? err.name : '';
+    const errMessage = err instanceof Error ? err.message : String(err);
+
+    if (
+      errName === 'NotAllowedError' ||
+      errName === 'SecurityError' ||
+      errMessage.toLowerCase().includes('permission')
+    ) {
+      errorReason = 'permission_revoked';
+    } else if (
+      errName === 'QuotaExceededError' ||
+      errMessage.toLowerCase().includes('quota') ||
+      errMessage.toLowerCase().includes('disk') ||
+      errMessage.toLowerCase().includes('space')
+    ) {
+      errorReason = 'disk_full';
+    } else if (errMessage.toLowerCase().includes('vault unavailable')) {
+      errorReason = 'vault_unavailable';
+    }
+
     downloadBlob(input.video, videoName);
     if (input.photo) downloadBlob(input.photo, photoName);
+    void trackFirstRecordingSaved();
     await setSetting('vault_mode', 'downloads');
-    return { vaultPath, mode: 'downloads' };
+    return {
+      vaultPath,
+      mode: 'downloads',
+      errorReason,
+      errorMessage: errMessage
+    };
   }
 }
 

@@ -23,6 +23,7 @@ export interface ProcessResult {
   pdfBytes: Uint8Array;
   fileName: string;
   labels: ExtractedLabel[];
+  manifestData?: unknown;
 }
 
 export type ProgressFn = (done: number, total: number, stage: string) => void;
@@ -35,8 +36,22 @@ async function getPdfjs(): Promise<typeof import('pdfjs-dist')> {
   if (!pdfjsPromise) {
     pdfjsPromise = (async () => {
       const pdfjs = await import('pdfjs-dist');
-      const workerUrl = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
-      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+      if (typeof process !== 'undefined' && process.versions?.node) {
+        try {
+          const nodePath = 'node:path';
+          const nodeUrl = 'node:url';
+          const path = (await import(/* @vite-ignore */ nodePath)) as typeof import('node:path');
+          const url = (await import(/* @vite-ignore */ nodeUrl)) as typeof import('node:url');
+          pdfjs.GlobalWorkerOptions.workerSrc = url.pathToFileURL(
+            path.resolve(process.cwd(), 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs')
+          ).href;
+        } catch {
+          /* fake worker fallback */
+        }
+      } else {
+        const workerUrl = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
+        pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+      }
       return pdfjs;
     })();
   }
@@ -51,6 +66,10 @@ interface TextChunk {
   y: number;
   w: number;
   h: number;
+  vx?: number;
+  vy?: number;
+  vw?: number;
+  vh?: number;
 }
 
 interface PageInfo {
@@ -59,33 +78,79 @@ interface PageInfo {
   pageIndex: number;
   pageW: number;
   pageH: number;
+  rotation?: number;
   chunks: TextChunk[];
 }
 
-function collectChunks(items: unknown[]): TextChunk[] {
+function collectChunks(
+  items: unknown[],
+  viewport?: { convertToViewportPoint(x: number, y: number): number[] }
+): TextChunk[] {
   const chunks: TextChunk[] = [];
   for (const raw of items) {
     const item = raw as { str?: string; transform?: number[]; width?: number; height?: number };
     if (typeof item.str !== 'string' || !item.transform) continue;
     if (!item.str.trim()) continue;
     const t = item.transform;
+    const x = t[4];
+    const y = t[5];
+    const w = item.width ?? item.str.length * 4;
+    const h = item.height ?? (Math.abs(t[3]) || 8);
+    let vx = x;
+    let vy = y;
+    let vw = w;
+    let vh = h;
+    if (viewport && typeof viewport.convertToViewportPoint === 'function') {
+      const [vx1, vy1] = viewport.convertToViewportPoint(x, y);
+      const [vx2, vy2] = viewport.convertToViewportPoint(x + w, y + h);
+      vx = Math.min(vx1, vx2);
+      vy = Math.min(vy1, vy2);
+      vw = Math.abs(vx2 - vx1);
+      vh = Math.abs(vy2 - vy1);
+    }
     chunks.push({
       str: item.str,
-      x: t[4],
-      y: t[5],
-      w: item.width ?? item.str.length * 4,
-      h: item.height ?? (Math.abs(t[3]) || 8)
+      x,
+      y,
+      w,
+      h,
+      vx,
+      vy,
+      vw,
+      vh
     });
   }
   return chunks;
 }
 
-function chunksToText(chunks: TextChunk[]): string {
-  const sorted = [...chunks].sort((a, b) => b.y - a.y || a.x - b.x);
+export function cleanText(input: string): string {
+  if (typeof input !== 'string') return '';
+  return input
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function chunksToText(chunks: TextChunk[]): string {
+  if (chunks.length === 0) return '';
+  const sorted = [...chunks].sort((a, b) => {
+    const ay = a.vy !== undefined ? a.vy : -a.y;
+    const by = b.vy !== undefined ? b.vy : -b.y;
+    if (Math.abs(ay - by) > 3) return ay - by;
+    const ax = a.vx !== undefined ? a.vx : a.x;
+    const bx = b.vx !== undefined ? b.vx : b.x;
+    return ax - bx;
+  });
   const lines: TextChunk[][] = [];
   for (const chunk of sorted) {
     const line = lines[lines.length - 1];
-    if (line && Math.abs(line[0].y - chunk.y) <= Math.max(3, (line[0].h || 8) * 0.5)) {
+    const cy = chunk.vy !== undefined ? chunk.vy : -chunk.y;
+    const ly = line ? (line[0].vy !== undefined ? line[0].vy : -line[0].y) : 0;
+    const ch = chunk.vh !== undefined ? chunk.vh : chunk.h;
+    if (line && Math.abs(ly - cy) <= Math.max(4, (ch || 8) * 0.5)) {
       line.push(chunk);
     } else {
       lines.push([chunk]);
@@ -94,7 +159,11 @@ function chunksToText(chunks: TextChunk[]): string {
   return lines
     .map((line) =>
       line
-        .sort((a, b) => a.x - b.x)
+        .sort((a, b) => {
+          const ax = a.vx !== undefined ? a.vx : a.x;
+          const bx = b.vx !== undefined ? b.vx : b.x;
+          return ax - bx;
+        })
         .map((c) => c.str)
         .join(' ')
         .replace(/\s+/g, ' ')
@@ -121,7 +190,7 @@ function contentBox(chunks: TextChunk[]): ExtractedLabel['contentBox'] {
 
 /* ── field extraction ────────────────────────────────────────────────── */
 
-const COURIER_KEYS: [string, CourierPartner][] = [
+export const COURIER_KEYS: [string, CourierPartner][] = [
   ['valmoplus', 'ValmoPlus'],
   ['valmo plus', 'ValmoPlus'],
   ['delhivery', 'Delhivery'],
@@ -134,7 +203,7 @@ const COURIER_KEYS: [string, CourierPartner][] = [
   ['valmo', 'Valmo']
 ];
 
-const MARKETPLACE_KEYS: [string, Marketplace][] = [
+export const MARKETPLACE_KEYS: [string, Marketplace][] = [
   ['meesho', 'Meesho'],
   ['flipkart', 'Flipkart'],
   ['amazon', 'Amazon'],
@@ -144,106 +213,276 @@ const MARKETPLACE_KEYS: [string, Marketplace][] = [
   ['glowroad', 'GlowRoad']
 ];
 
-function firstMatch(text: string, patterns: RegExp[]): string | null {
+export function firstMatch(text: string, patterns: RegExp[]): string | null {
+  const cleaned = cleanText(text);
   for (const re of patterns) {
-    const m = text.match(re);
+    const m = cleaned.match(re);
     if (m && m[1]) return m[1].trim();
   }
   return null;
 }
 
-function extractAwb(text: string): string | null {
-  const labeled = firstMatch(text, [
-    /\bA\.?W\.?B\.?\s*(?:No\.?|Number|#)?\s*[:#\-]?\s*([A-Z0-9][A-Z0-9\-]{7,19})/i,
-    /\bTracking\s*(?:ID|No\.?|Number|#)?\s*[:#\-]?\s*([A-Z0-9][A-Z0-9\-]{7,19})/i,
-    /\bConsignment\s*(?:No\.?|Number|#)?\s*[:#\-]?\s*([A-Z0-9][A-Z0-9\-]{7,19})/i,
-    /\bLRN\s*[:#\-]?\s*([A-Z0-9][A-Z0-9\-]{7,19})/i
-  ]);
-  if (labeled) return labeled.toUpperCase().replace(/\s+/g, '');
-  /* Fallback: the longest standalone digit run on the page. */
+export function extractAwb(text: string): { awb: string; confidence: number } {
+  const cleaned = cleanText(text);
+
+  const labeledPatterns = [
+    /(?:^|[^\w])(?:AWB\b|A\.W\.B\.)\s*(?:No\b\.?|Number\b|#)?\s*[:#-]?\s*([A-Z0-9][A-Z0-9-]{6,23})(?=[^\w-]|$)/i,
+    /(?:^|[^\w])Tracking\s*(?:ID\b|No\b\.?|Number\b|#)\s*[:#-]?\s*([A-Z0-9][A-Z0-9-]{6,23})(?=[^\w-]|$)/i,
+    /(?:^|[^\w])Tracking\s*[:#]\s*([A-Z0-9][A-Z0-9-]{6,23})(?=[^\w-]|$)/i,
+    /(?:^|[^\w])Consignment\s*(?:No\b\.?|Number\b|#)?\s*[:#-]?\s*([A-Z0-9][A-Z0-9-]{6,23})(?=[^\w-]|$)/i,
+    /(?:^|[^\w])Waybill\s*(?:No\b\.?|Number\b|#)?\s*[:#-]?\s*([A-Z0-9][A-Z0-9-]{6,23})(?=[^\w-]|$)/i,
+    /(?:^|[^\w])LRN\b\s*[:#-]?\s*([A-Z0-9][A-Z0-9-]{6,23})(?=[^\w-]|$)/i
+  ];
+
+  for (const re of labeledPatterns) {
+    const m = cleaned.match(re);
+    if (m && m[1]) {
+      const val = m[1].trim().toUpperCase().replace(/\s+/g, '');
+      // An AWB must be 7-24 chars and contain at least one digit (rejecting words like "NUMBERS" or "DETAILS")
+      if (val.length >= 7 && val.length <= 24 && /\d/.test(val)) {
+        return { awb: val, confidence: 1.0 };
+      }
+    }
+  }
+
+  // Fallback: longest standalone digit run between 8 and 18 digits
   let best = '';
-  for (const m of text.matchAll(/\b(\d{8,16})\b/g)) {
+  for (const m of cleaned.matchAll(/\b(\d{8,18})\b/g)) {
     if (m[1].length > best.length) best = m[1];
   }
-  return best || null;
+  if (best) {
+    return { awb: best, confidence: 0.7 };
+  }
+
+  return { awb: '', confidence: 0 };
 }
 
-function detectCourier(text: string): CourierPartner {
-  const lower = text.toLowerCase();
+export function extractSku(text: string): { sku: string; confidence: number } {
+  const cleaned = cleanText(text);
+
+  const skuPatterns = [
+    /(?:^|[^\w])Product\s*(?:Code|SKU|ID)\b\s*[:#\s]\s*([A-Z0-9][A-Z0-9/_.\-+%]{1,35})(?=[^\w/_.\-+%]|$)/i,
+    /(?:^|[^\w])Item\s*(?:Code|SKU)\b\s*[:#\s]\s*([A-Z0-9][A-Z0-9/_.\-+%]{1,35})(?=[^\w/_.\-+%]|$)/i,
+    /(?:^|[^\w])SKU\s*(?:ID|Code|#)?\b\s*[:#\s]\s*([A-Z0-9][A-Z0-9/_.\-+%]{1,35})(?=[^\w/_.\-+%]|$)/i,
+    /(?:^|[^\w])SKU\s*-\s*([A-Z0-9][A-Z0-9/_.\-+%]{1,35})(?=[^\w/_.\-+%]|$)/i
+  ];
+
+  for (const re of skuPatterns) {
+    const m = cleaned.match(re);
+    if (m && m[1]) {
+      const val = m[1].trim().toUpperCase();
+      if (val.length >= 2 && val.length <= 36) {
+        return { sku: val, confidence: 1.0 };
+      }
+    }
+  }
+
+  return { sku: '', confidence: 0 };
+}
+
+export function extractOrderId(text: string): { orderId: string; confidence: number } {
+  const cleaned = cleanText(text);
+
+  const patterns = [
+    /(?:^|[^\w])Order\s*(?:ID|No\.?|Number|#)\b\s*[:#-]?\s*([A-Z0-9][A-Z0-9_-]{4,29})(?=[^\w-]|$)/i,
+    /(?:^|[^\w])(OD\d{10,20})\b/i,
+    /(?:^|[^\w])(\d{3}-\d{7}-\d{7})\b/
+  ];
+
+  for (const re of patterns) {
+    const m = cleaned.match(re);
+    if (m && m[1]) {
+      const val = m[1].trim().toUpperCase();
+      if (val.length >= 5 && val.length <= 30) {
+        return { orderId: val, confidence: 1.0 };
+      }
+    }
+  }
+
+  return { orderId: 'UNKNOWN', confidence: 0 };
+}
+
+export function extractCourier(text: string): { courier: CourierPartner; confidence: number } {
+  const lower = cleanText(text).toLowerCase();
   for (const [key, courier] of COURIER_KEYS) {
-    if (lower.includes(key)) return courier;
+    if (lower.includes(key)) return { courier, confidence: 1.0 };
   }
-  return 'Unknown';
+  return { courier: 'Unknown', confidence: 0 };
 }
 
-function detectMarketplace(text: string): Marketplace {
-  const lower = text.toLowerCase();
+export function extractMarketplace(text: string): { marketplace: Marketplace; confidence: number } {
+  const lower = cleanText(text).toLowerCase();
   for (const [key, marketplace] of MARKETPLACE_KEYS) {
-    if (lower.includes(key)) return marketplace;
+    if (lower.includes(key)) return { marketplace, confidence: 1.0 };
   }
-  return 'Unknown';
+  return { marketplace: 'Unknown', confidence: 0 };
 }
 
-function labelFromChunks(
+export function extractQty(text: string): { qty: number; confidence: number } {
+  const cleaned = cleanText(text);
+  const patterns = [
+    /(?:^|[^\w])(?:Qty|QTY|Quantity)\s*[:#-]?\s*(\d{1,3})\b/i,
+    /(?:^|[^\w])(\d{1,2})\s*(?:pcs|PCS|Pcs|pieces?)\b/i
+  ];
+  for (const re of patterns) {
+    const m = cleaned.match(re);
+    if (m && m[1]) {
+      const n = parseInt(m[1], 10);
+      if (n > 0 && Number.isFinite(n)) {
+        return { qty: Math.min(99, n), confidence: 1.0 };
+      }
+    }
+  }
+  return { qty: 1, confidence: 0.5 };
+}
+
+export function extractSize(text: string): { size: string; confidence: number } {
+  const cleaned = cleanText(text);
+  const patterns = [
+    /(?:^|[^\w])Size\s*[:#-]?\s*(FREE\s*SIZE|ONE\s*SIZE|FS)\b/i,
+    /(?:^|[^\w])Size\s*[:#-]?\s*([A-Z0-9]{1,10})\b/i
+  ];
+  for (const re of patterns) {
+    const m = cleaned.match(re);
+    if (m && m[1]) {
+      return { size: m[1].trim().toUpperCase(), confidence: 0.9 };
+    }
+  }
+  return { size: '', confidence: 0 };
+}
+
+export function extractColor(text: string): { color: string; confidence: number } {
+  const cleaned = cleanText(text);
+  const m = cleaned.match(
+    /(?:^|[^\w])Colou?r\s*[:#-]?\s*([A-Za-z]+(?:\s+(?!(?:Size|SKU|Qty|Quantity|Order|Item|Price|Fit|Brand)\b)[A-Za-z]+)?)(?=[^\w]|$)/i
+  );
+  if (m && m[1]) {
+    return { color: m[1].trim(), confidence: 0.9 };
+  }
+  return { color: '', confidence: 0 };
+}
+
+export function extractInvoiceTotal(text: string): { total: number | null; confidence: number } {
+  const cleaned = cleanText(text);
+  const re =
+    /(?:Invoice\s*Total|Order\s*Total|Total\s*Amount|Grand\s*Total|Amount\s*Payable|Net\s*Payable|Net\s*Amount|Total\s*Price)\s*[:#-]?\s*(?:₹|Rs\.?|INR)?\s*([\d,]+(?:\.\d{1,2})?)/i;
+  const m = cleaned.match(re);
+  if (m && m[1]) {
+    const n = Number(m[1].replace(/,/g, ''));
+    if (Number.isFinite(n)) {
+      return { total: n, confidence: 1.0 };
+    }
+  }
+  return { total: null, confidence: 0 };
+}
+
+export function labelFromChunks(
   info: PageInfo,
   chunks: TextChunk[]
-): Omit<ExtractedLabel, 'sourceFile' | 'page'> | null {
-  if (chunks.length === 0) return null;
+): Omit<ExtractedLabel, 'sourceFile' | 'page'> {
+  if (chunks.length === 0) {
+    return {
+      marketplace: 'Unknown',
+      awb: '',
+      orderId: 'UNKNOWN',
+      courier: 'Unknown',
+      sku: '',
+      size: '',
+      color: '',
+      qty: 1,
+      invoiceTotal: null,
+      contentBox: {
+        x: 0,
+        y: 0,
+        w: Math.min(288, info.pageW || 288),
+        h: Math.min(432, info.pageH || 432)
+      },
+      confidence: {
+        awb: 0,
+        orderId: 0,
+        courier: 0,
+        marketplace: 0,
+        sku: 0,
+        qty: 0,
+        size: 0,
+        color: 0,
+        invoiceTotal: 0
+      },
+      needsManualEdit: true,
+      missingFields: ['awb', 'sku'],
+      warning:
+        'Scanned / image-only PDF detected (no digital text layer). Manual entry or original vector PDF required.',
+      isImageOnly: true
+    };
+  }
+
   const text = chunksToText(chunks);
-  const awb = extractAwb(text);
-  if (!awb) return null;
+  const { awb, confidence: awbConf } = extractAwb(text);
+  const { sku, confidence: skuConf } = extractSku(text);
+  const { orderId, confidence: orderConf } = extractOrderId(text);
+  const { courier, confidence: courierConf } = extractCourier(text);
+  const { marketplace, confidence: mktConf } = extractMarketplace(text);
+  const { qty, confidence: qtyConf } = extractQty(text);
+  const { size, confidence: sizeConf } = extractSize(text);
+  const { color, confidence: colorConf } = extractColor(text);
+  const { total: invoiceTotal, confidence: totalConf } = extractInvoiceTotal(text);
 
-  const orderId =
-    firstMatch(text, [
-      /\bOrder\s*(?:ID|No\.?|Number|#)\s*[:#\-]?\s*([A-Z0-9][A-Z0-9\-_]{5,24})/i
-    ]) ?? 'UNKNOWN';
+  const missingFields: ('awb' | 'sku')[] = [];
+  if (!awb) missingFields.push('awb');
+  if (!sku) missingFields.push('sku');
 
-  const sku =
-    firstMatch(text, [
-      /\bSKU\s*(?:ID|Code|#)?\s*[:#\-]?\s*([A-Z0-9][A-Z0-9\/_\-\.]{2,31})/i
-    ]) ?? '';
-
-  const size = firstMatch(text, [/\bSize\s*[:#\-]?\s*([A-Z0-9]{1,6})\b/i]) ?? '';
-  const color = firstMatch(text, [/\bColou?r\s*[:#\-]?\s*([A-Za-z]+(?: [A-Za-z]+)?)/i]) ?? '';
-
-  const qtyRaw = firstMatch(text, [
-    /\b(?:Qty|QTY|Quantity)\s*[:#\-]?\s*(\d{1,3})\b/,
-    /\b(\d{1,2})\s*(?:pcs|PCS|Pcs|pieces?)\b/
-  ]);
-  const qty = qtyRaw ? Math.max(1, Math.min(99, parseInt(qtyRaw, 10) || 1)) : 1;
-
-  const totalRaw = firstMatch(text, [
-    /(?:Invoice\s*Total|Order\s*Total|Total\s*Amount|Grand\s*Total|Amount\s*Payable|Net\s*Payable|Net\s*Amount|Total\s*Price)\s*[:#\-]?\s*(?:₹|Rs\.?|INR)?\s*([\d,]+(?:\.\d{1,2})?)/i
-  ]);
-  const invoiceTotal = totalRaw ? Number(totalRaw.replace(/,/g, '')) : null;
+  const needsManualEdit = missingFields.length > 0;
+  const warning = needsManualEdit
+    ? `Missing ${missingFields.map((f) => f.toUpperCase()).join(' and ')} — flagged for manual edit.`
+    : undefined;
 
   return {
-    marketplace: detectMarketplace(text),
-    awb: awb.toUpperCase(),
-    orderId: orderId.toUpperCase(),
-    courier: detectCourier(text),
-    sku: sku.toUpperCase(),
+    marketplace,
+    awb,
+    orderId,
+    courier,
+    sku,
     size,
     color,
     qty,
-    invoiceTotal: invoiceTotal !== null && Number.isFinite(invoiceTotal) ? invoiceTotal : null,
-    contentBox: contentBox(chunks)
+    invoiceTotal,
+    contentBox: contentBox(chunks),
+    confidence: {
+      awb: awbConf,
+      orderId: orderConf,
+      courier: courierConf,
+      marketplace: mktConf,
+      sku: skuConf,
+      qty: qtyConf,
+      size: sizeConf,
+      color: colorConf,
+      invoiceTotal: totalConf
+    },
+    needsManualEdit,
+    missingFields: needsManualEdit ? missingFields : undefined,
+    warning,
+    isImageOnly: false
   };
 }
 
 /* ── parse pass ──────────────────────────────────────────────────────── */
 
-function chunksInQuadrant(chunks: TextChunk[], q: number, pageW: number, pageH: number): TextChunk[] {
+function chunksInQuadrant(
+  chunks: TextChunk[],
+  q: number,
+  pageW: number,
+  pageH: number
+): TextChunk[] {
   const col = q % 2;
   const row = Math.floor(q / 2); // 0 = top half
   const x0 = col * (pageW / 2);
   const x1 = x0 + pageW / 2;
-  const yBottom = pageH - (row + 1) * (pageH / 2);
-  const yTop = yBottom + pageH / 2;
+  const y0 = row * (pageH / 2);
+  const y1 = y0 + pageH / 2;
   return chunks.filter((c) => {
-    const cx = c.x + c.w / 2;
-    const cy = c.y + c.h / 2;
-    return cx >= x0 && cx < x1 && cy >= yBottom && cy < yTop;
+    const cx = c.vx !== undefined ? c.vx + (c.vw ?? c.w) / 2 : c.x + c.w / 2;
+    const cy = c.vy !== undefined ? c.vy + (c.vh ?? c.h) / 2 : pageH - (c.y + c.h / 2);
+    return cx >= x0 && cx < x1 && cy >= y0 && cy < y1;
   });
 }
 
@@ -257,8 +496,10 @@ interface ParsedLabel {
   quadrant?: number;
 }
 
+export type PdfFileInput = File | { name: string; arrayBuffer(): Promise<ArrayBuffer> };
+
 async function parseFiles(
-  files: File[],
+  files: PdfFileInput[],
   preset: CropPreset,
   onProgress?: ProgressFn
 ): Promise<{ pages: PageInfo[]; parsed: ParsedLabel[] }> {
@@ -267,22 +508,28 @@ async function parseFiles(
 
   for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
     const file = files[fileIndex];
-    onProgress?.(fileIndex, files.length, `Parsing labels (${fileIndex + 1}/${files.length}) — ${file.name}`);
+    onProgress?.(
+      fileIndex,
+      files.length,
+      `Parsing labels (${fileIndex + 1}/${files.length}) — ${file.name}`
+    );
     try {
       const data = new Uint8Array(await file.arrayBuffer());
       const loadingTask = pdfjs.getDocument({ data });
       const doc = await loadingTask.promise;
       for (let pageIndex = 0; pageIndex < doc.numPages; pageIndex++) {
         const page = await doc.getPage(pageIndex + 1);
-        const viewport = page.getViewport({ scale: 1 });
+        const rotation = (page.rotate || 0) % 360;
+        const viewport = page.getViewport({ scale: 1, rotation });
         const content = await page.getTextContent();
-        const chunks = collectChunks(content.items);
+        const chunks = collectChunks(content.items, viewport);
         pages.push({
           fileIndex,
           fileName: file.name,
           pageIndex,
           pageW: viewport.width,
           pageH: viewport.height,
+          rotation,
           chunks
         });
         page.cleanup();
@@ -297,10 +544,11 @@ async function parseFiles(
   const parsed: ParsedLabel[] = [];
   for (const info of pages) {
     if (preset === 'grid4') {
+      let anyFound = false;
       for (let q = 0; q < 4; q++) {
         const quadChunks = chunksInQuadrant(info.chunks, q, info.pageW, info.pageH);
-        const extracted = labelFromChunks(info, quadChunks);
-        if (extracted) {
+        if (quadChunks.length > 0) {
+          const extracted = labelFromChunks(info, quadChunks);
           parsed.push({
             label: { ...extracted, sourceFile: info.fileName, page: info.pageIndex + 1 },
             fileIndex: info.fileIndex,
@@ -309,11 +557,11 @@ async function parseFiles(
             pageH: info.pageH,
             quadrant: q
           });
+          anyFound = true;
         }
       }
-    } else {
-      const extracted = labelFromChunks(info, info.chunks);
-      if (extracted) {
+      if (!anyFound) {
+        const extracted = labelFromChunks(info, []);
         parsed.push({
           label: { ...extracted, sourceFile: info.fileName, page: info.pageIndex + 1 },
           fileIndex: info.fileIndex,
@@ -322,6 +570,15 @@ async function parseFiles(
           pageH: info.pageH
         });
       }
+    } else {
+      const extracted = labelFromChunks(info, info.chunks);
+      parsed.push({
+        label: { ...extracted, sourceFile: info.fileName, page: info.pageIndex + 1 },
+        fileIndex: info.fileIndex,
+        pageIndex: info.pageIndex,
+        pageW: info.pageW,
+        pageH: info.pageH
+      });
     }
   }
 
@@ -335,8 +592,7 @@ function courierSortKey(c: string): string {
 }
 
 function sortParsed(parsed: ParsedLabel[], valmoPlusAsValmo: boolean): ParsedLabel[] {
-  const mapped = (c: CourierPartner) =>
-    valmoPlusAsValmo && c === 'ValmoPlus' ? 'Valmo' : c;
+  const mapped = (c: CourierPartner) => (valmoPlusAsValmo && c === 'ValmoPlus' ? 'Valmo' : c);
   return [...parsed].sort((a, b) => {
     const ca = courierSortKey(mapped(a.label.courier));
     const cb = courierSortKey(mapped(b.label.courier));
@@ -359,12 +615,12 @@ function clamp(v: number, lo: number, hi: number): number {
 }
 
 async function buildOutput(
-  files: File[],
+  files: PdfFileInput[],
   parsed: ParsedLabel[],
   opts: CropOptions,
   onProgress?: ProgressFn
 ): Promise<Uint8Array> {
-  const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
+  const { PDFDocument, StandardFonts, rgb, degrees } = await import('pdf-lib');
   const outDoc = await PDFDocument.create();
   const helv = await outDoc.embedFont(StandardFonts.Helvetica);
   const helvBold = await outDoc.embedFont(StandardFonts.HelveticaBold);
@@ -390,10 +646,19 @@ async function buildOutput(
 
   for (let i = 0; i < parsed.length; i++) {
     const p = parsed[i];
-    onProgress?.(i, parsed.length, `Cropping & stamping (${i + 1}/${parsed.length}) — ${p.label.awb}`);
+    onProgress?.(
+      i,
+      parsed.length,
+      `Cropping & stamping (${i + 1}/${parsed.length}) — ${p.label.awb || 'Label ' + (i + 1)}`
+    );
     const srcDoc = sourceDocs.get(p.fileIndex);
     if (!srcDoc) continue;
-    const embedded = await outDoc.embedPage(srcDoc.getPage(p.pageIndex));
+    const srcPage = srcDoc.getPage(p.pageIndex);
+    const rotation = srcPage.getRotation().angle;
+    if (rotation !== 0) {
+      srcPage.setRotation(degrees(0));
+    }
+    const embedded = await outDoc.embedPage(srcPage);
 
     let outW: number;
     let outH: number;
@@ -508,13 +773,21 @@ function drawManifest(
   for (const p of parsed) {
     const courier = mappedCourier(p.label.courier);
     const key = `${courier}||${p.label.sku}`;
-    const row = grouped.get(key) ?? { courier, sku: p.label.sku || '(no SKU)', size: p.label.size || '—', units: 0, parcels: 0 };
+    const row = grouped.get(key) ?? {
+      courier,
+      sku: p.label.sku || '(no SKU)',
+      size: p.label.size || '—',
+      units: 0,
+      parcels: 0
+    };
     row.units += p.label.qty;
     row.parcels += 1;
     grouped.set(key, row);
   }
   const rows = [...grouped.values()].sort(
-    (a, b) => courierSortKey(a.courier).localeCompare(courierSortKey(b.courier)) || a.sku.localeCompare(b.sku)
+    (a, b) =>
+      courierSortKey(a.courier).localeCompare(courierSortKey(b.courier)) ||
+      a.sku.localeCompare(b.sku)
   );
 
   const pageW = 595.28;
@@ -538,7 +811,13 @@ function drawManifest(
   };
 
   /* Header block. */
-  page.drawRectangle({ x: 0, y: pageH - 96, width: pageW, height: 96, color: rgb(0.97, 0.98, 0.985) });
+  page.drawRectangle({
+    x: 0,
+    y: pageH - 96,
+    width: pageW,
+    height: 96,
+    color: rgb(0.97, 0.98, 0.985)
+  });
   page.drawText('WAREHOUSE PICKLIST & COURIER HANDOVER SUMMARY', {
     x: margin,
     y: pageH - 52,
@@ -572,7 +851,12 @@ function drawManifest(
     page.drawText('SIZE', { x: colX[2], y, size: 8.5, font: helvBold, color: muted });
     page.drawText('UNITS', { x: colX[3], y, size: 8.5, font: helvBold, color: muted });
     page.drawText('PARCELS', { x: colX[4], y, size: 8.5, font: helvBold, color: muted });
-    page.drawLine({ start: { x: margin, y: y - 5 }, end: { x: pageW - margin, y: y - 5 }, thickness: 0.8, color: line });
+    page.drawLine({
+      start: { x: margin, y: y - 5 },
+      end: { x: pageW - margin, y: y - 5 },
+      thickness: 0.8,
+      color: line
+    });
     y -= 20;
   };
   drawTableHeader();
@@ -582,9 +866,19 @@ function drawManifest(
     if (row.courier !== currentCourier) {
       currentCourier = row.courier;
       ensure(46);
-      const courierParcels = rows.filter((r) => r.courier === currentCourier).reduce((s, r) => s + r.parcels, 0);
-      const courierUnits = rows.filter((r) => r.courier === currentCourier).reduce((s, r) => s + r.units, 0);
-      page.drawRectangle({ x: margin - 4, y: y - 4, width: pageW - 2 * margin + 8, height: 20, color: zebra });
+      const courierParcels = rows
+        .filter((r) => r.courier === currentCourier)
+        .reduce((s, r) => s + r.parcels, 0);
+      const courierUnits = rows
+        .filter((r) => r.courier === currentCourier)
+        .reduce((s, r) => s + r.units, 0);
+      page.drawRectangle({
+        x: margin - 4,
+        y: y - 4,
+        width: pageW - 2 * margin + 8,
+        height: 20,
+        color: zebra
+      });
       page.drawText(`${currentCourier.toUpperCase()}`, {
         x: colX[0],
         y,
@@ -610,7 +904,12 @@ function drawManifest(
   }
 
   ensure(isFree ? 85 : 40);
-  page.drawLine({ start: { x: margin, y: y - 2 }, end: { x: pageW - margin, y: y - 2 }, thickness: 1, color: line });
+  page.drawLine({
+    start: { x: margin, y: y - 2 },
+    end: { x: pageW - margin, y: y - 2 },
+    thickness: 1,
+    color: line
+  });
   y -= 18;
   page.drawText(`GRAND TOTAL: ${grandParcels} parcels · ${grandUnits} units`, {
     x: colX[0],
@@ -620,13 +919,16 @@ function drawManifest(
     color: ink
   });
   y -= 18;
-  page.drawText('Scan every AWB in ClaimProof before sealing — claim windows start at return scan.', {
-    x: colX[0],
-    y,
-    size: 8,
-    font: helv,
-    color: muted
-  });
+  page.drawText(
+    'Scan every AWB in ClaimProof before sealing — claim windows start at return scan.',
+    {
+      x: colX[0],
+      y,
+      size: 8,
+      font: helv,
+      color: muted
+    }
+  );
 
   if (isFree) {
     y -= 14;
@@ -646,13 +948,16 @@ function drawManifest(
       font: helvBold,
       color: accent
     });
-    page.drawText('Uncut HD packing videos & burnt-in forensic IST timestamp recorded for every AWB in this manifest.', {
-      x: margin + 12,
-      y: y - 28,
-      size: 7.5,
-      font: helv,
-      color: ink
-    });
+    page.drawText(
+      'Uncut HD packing videos & burnt-in forensic IST timestamp recorded for every AWB in this manifest.',
+      {
+        x: margin + 12,
+        y: y - 28,
+        size: 7.5,
+        font: helv,
+        color: ink
+      }
+    );
     y -= 44;
   }
 
@@ -703,7 +1008,7 @@ function drawManifest(
 /* ── public entry point ──────────────────────────────────────────────── */
 
 export async function processLabelFiles(
-  files: File[],
+  files: PdfFileInput[],
   opts: CropOptions,
   onProgress?: ProgressFn
 ): Promise<ProcessResult> {
@@ -734,4 +1039,20 @@ export async function processLabelFiles(
           : p.label.courier
     }))
   };
+}
+
+/** Parses raw PDF bytes into extracted shipping labels with field confidence scores. */
+export async function parsePdfBuffer(
+  buffer: Uint8Array | ArrayBuffer,
+  fileName = 'input.pdf',
+  preset: CropPreset = '4x6'
+): Promise<ExtractedLabel[]> {
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+  const fakeFile: PdfFileInput = {
+    name: fileName,
+    arrayBuffer: async () =>
+      bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+  };
+  const { parsed } = await parseFiles([fakeFile], preset);
+  return parsed.map((p) => p.label);
 }

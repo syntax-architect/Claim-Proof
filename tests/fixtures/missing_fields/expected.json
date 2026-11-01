@@ -1,0 +1,31 @@
+[
+  {
+    "page": 1,
+    "marketplace": "Meesho",
+    "awb": "9988776655",
+    "orderId": "9988776655",
+    "courier": "Delhivery",
+    "sku": "",
+    "size": "",
+    "color": "",
+    "qty": 2,
+    "invoiceTotal": 499,
+    "confidence": {
+      "awb": 0.7,
+      "orderId": 1,
+      "courier": 1,
+      "marketplace": 1,
+      "sku": 0,
+      "qty": 1,
+      "size": 0,
+      "color": 0,
+      "invoiceTotal": 1
+    },
+    "needsManualEdit": true,
+    "missingFields": [
+      "sku"
+    ],
+    "isImageOnly": false,
+    "warning": "Missing SKU — flagged for manual edit."
+  }
+]

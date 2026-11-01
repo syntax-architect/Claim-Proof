@@ -1,0 +1,28 @@
+[
+  {
+    "page": 1,
+    "marketplace": "Flipkart",
+    "awb": "FMP9928374610",
+    "orderId": "OD99283746101",
+    "courier": "Ekart",
+    "sku": "FKT-ROT-TEST-M",
+    "size": "",
+    "color": "",
+    "qty": 1,
+    "invoiceTotal": null,
+    "confidence": {
+      "awb": 1,
+      "orderId": 1,
+      "courier": 1,
+      "marketplace": 1,
+      "sku": 1,
+      "qty": 1,
+      "size": 0,
+      "color": 0,
+      "invoiceTotal": 0
+    },
+    "needsManualEdit": false,
+    "missingFields": [],
+    "isImageOnly": false
+  }
+]

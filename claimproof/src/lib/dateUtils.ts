@@ -29,8 +29,9 @@ export function istDateKey(d: Date = new Date()): string {
 /** `31-Oct-2026 16:35:12 IST` — the forensic-bar timestamp format. */
 export function formatIST(ms: number): string {
   const p = istParts(new Date(ms));
-  const month = new Intl.DateTimeFormat('en-GB', { timeZone: IST, month: 'short' })
-    .format(new Date(ms));
+  const month = new Intl.DateTimeFormat('en-GB', { timeZone: IST, month: 'short' }).format(
+    new Date(ms)
+  );
   const h12 = String(Number(p.hour) % 12 === 0 ? 12 : Number(p.hour) % 12).padStart(2, '0');
   const ampm = Number(p.hour) < 12 ? 'AM' : 'PM';
   return `${p.day}-${month}-${p.year} ${h12}:${p.minute}:${p.second} ${ampm} IST`;

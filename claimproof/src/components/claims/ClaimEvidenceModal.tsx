@@ -28,7 +28,15 @@ interface Side {
   media: RecordingMedia | null;
 }
 
-function EvidenceColumn({ title, badge, side }: { title: string; badge: 'proof' | 'warn'; side: Side | null }) {
+function EvidenceColumn({
+  title,
+  badge,
+  side
+}: {
+  title: string;
+  badge: 'proof' | 'warn';
+  side: Side | null;
+}) {
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
@@ -45,7 +53,13 @@ function EvidenceColumn({ title, badge, side }: { title: string; badge: 'proof' 
             <Spinner className="h-5 w-5" />
           </div>
         ) : side.rec && side.media?.videoUrl ? (
-          <video key={side.media.videoUrl} src={side.media.videoUrl} controls playsInline className="aspect-video w-full bg-black" />
+          <video
+            key={side.media.videoUrl}
+            src={side.media.videoUrl}
+            controls
+            playsInline
+            className="aspect-video w-full bg-black"
+          />
         ) : (
           <div className="flex h-56 flex-col items-center justify-center gap-2 border border-dashed border-line-bright px-6 text-center text-xs text-slate-500">
             <Video className="h-6 w-6" />
@@ -71,7 +85,13 @@ function EvidenceColumn({ title, badge, side }: { title: string; badge: 'proof' 
   );
 }
 
-export function ClaimEvidenceModal({ claim, onClose }: { claim: ClaimItem | null; onClose: () => void }) {
+export function ClaimEvidenceModal({
+  claim,
+  onClose
+}: {
+  claim: ClaimItem | null;
+  onClose: () => void;
+}) {
   const toast = useToast();
   const [dispatch, setDispatch] = useState<Side | null>(null);
   const [returnRec, setReturnRec] = useState<Side | null>(null);
@@ -127,7 +147,9 @@ export function ClaimEvidenceModal({ claim, onClose }: { claim: ClaimItem | null
             icon={FolderOpen}
             onClick={() =>
               void (async () => {
-                const targets = [dispatch?.rec, returnRec?.rec].filter(Boolean) as NonNullable<typeof dispatch>['rec'][];
+                const targets = [dispatch?.rec, returnRec?.rec].filter(Boolean) as NonNullable<
+                  typeof dispatch
+                >['rec'][];
                 let any = false;
                 for (const rec of targets) {
                   if (rec && revealAwbFolder) {
@@ -135,7 +157,8 @@ export function ClaimEvidenceModal({ claim, onClose }: { claim: ClaimItem | null
                     if (ok) any = true;
                   }
                 }
-                if (!any) toast.warn('Vault folder not reachable', 'Connect the vault in Settings first.');
+                if (!any)
+                  toast.warn('Vault folder not reachable', 'Connect the vault in Settings first.');
               })()
             }
           >
@@ -181,7 +204,15 @@ export function ClaimEvidenceModal({ claim, onClose }: { claim: ClaimItem | null
               variant="ghost"
               size="xs"
               icon={RefreshCw}
-              onClick={() => setDisputeText(generateDisputeText(claim, dispatch?.rec ?? undefined, returnRec?.rec ?? undefined))}
+              onClick={() =>
+                setDisputeText(
+                  generateDisputeText(
+                    claim,
+                    dispatch?.rec ?? undefined,
+                    returnRec?.rec ?? undefined
+                  )
+                )
+              }
             >
               Regenerate
             </Button>
@@ -193,7 +224,9 @@ export function ClaimEvidenceModal({ claim, onClose }: { claim: ClaimItem | null
                 void navigator.clipboard
                   .writeText(disputeText)
                   .then(() => toast.success('Dispute text copied'))
-                  .catch(() => toast.error('Clipboard blocked', 'Select the text and copy manually.'))
+                  .catch(() =>
+                    toast.error('Clipboard blocked', 'Select the text and copy manually.')
+                  )
               }
             >
               Copy

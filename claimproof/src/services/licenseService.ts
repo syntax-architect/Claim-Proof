@@ -1,21 +1,35 @@
 /* ClaimProof licensing engine — offline-verifiable ES256 license JWTs.
  *
- * Verification is 100% on-device: the payment webhook (Supabase Edge Function)
+ * Verification is 100% on-device: the payment webhook or admin script
  * signs a compact JWT with the issuer's P-256 private key; the app only ships
  * the PUBLIC JWK (src/lib/licenseKeys.ts) and validates locally. No account,
  * no server round-trip at activation time.
  *
  * Stable export contract (consumed by quota engine, paywall, settings):
  *   getLicenseState / useLicense / planHasFeature / getDeviceFingerprint /
- *   verifyAndActivateToken / activateDemoPlan / deactivateLicense
+ *   verifyAndActivateToken / deactivateLicense
  */
 
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/schema';
 import { LICENSE_ISSUER, LICENSE_JWT_KID, LICENSE_JWT_PUBLIC_JWK } from '../lib/licenseKeys';
-import type { LicensePlan, LicenseState, PlanId, ProFeature } from '../types';
+import type {
+  ActivationResult,
+  LicensePlan,
+  LicenseState,
+  PlanId,
+  ProFeature,
+  SubscriptionStatus
+} from '../types';
 
-const FALLBACK: LicenseState = { plan: 'free', seats: 1, deviceFingerprint: '' };
+export type { ActivationResult };
+
+const FALLBACK: LicenseState = {
+  plan: 'free',
+  seats: 1,
+  deviceFingerprint: '',
+  boundDevices: []
+};
 
 /* Boot cache — avoids a 'Free' flash on remounts and after reloads. */
 const PLAN_CACHE_KEY = 'claimproof_last_plan';
@@ -119,13 +133,21 @@ interface LicenseJwtHeader {
 interface LicenseJwtPayload {
   iss?: unknown;
   sub?: unknown;
+  cid?: unknown;
   plan?: unknown;
   seats?: unknown;
   fp?: unknown;
+  devices?: unknown;
+  maxDevices?: unknown;
   name?: unknown;
   iat?: unknown;
   exp?: unknown;
   jti?: unknown;
+  subscriptionId?: unknown;
+  sub_id?: unknown;
+  subscriptionStatus?: unknown;
+  renewsAt?: unknown;
+  current_end?: unknown;
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -155,52 +177,83 @@ function parseJsonSegment(s: string, what: string): Record<string, unknown> {
 
 /* ── Token verification + activation ─────────────────────────────────── */
 
-const PLANS: PlanId[] = ['starter', 'claimradar', 'warehouse'];
+const VALID_PLANS: PlanId[] = ['starter', 'claimradar', 'warehouse'];
+
+export interface ActivationOptions {
+  /** If true, soft device binding allows moving an active license to this device. */
+  moveDevice?: boolean;
+}
 
 /**
  * Verifies a compact ES256 license JWT entirely on-device and, when valid,
- * persists it as the active license. Friendly errors:
- * 'Expired license token' / 'This token is bound to a different workstation' /
- * 'Invalid signature' (plus 'Invalid license token' for malformed input).
+ * persists it as the active license in IndexedDB.
+ *
+ * Requirements:
+ * - Offline ES256 verification using public JWK
+ * - Token must contain valid plan, expiry, and customer ID
+ * - Soft device binding allowing up to 2 devices per license with move option
  */
-export async function verifyAndActivateToken(token: string): Promise<{ ok: boolean; error?: string }> {
+export async function verifyAndActivateToken(
+  token: string,
+  options?: ActivationOptions
+): Promise<ActivationResult> {
   try {
     const parts = token.trim().split('.');
     if (parts.length !== 3 || parts.some((p) => p.length === 0)) {
-      return { ok: false, error: 'Invalid license token' };
+      return { ok: false, error: 'Invalid license token', code: 'INVALID_TOKEN' };
     }
     const [h, p, s] = parts;
 
-    const header = parseJsonSegment(h, 'header') as LicenseJwtHeader;
-    const payload = parseJsonSegment(p, 'payload') as LicenseJwtPayload;
+    let header: LicenseJwtHeader;
+    let payload: LicenseJwtPayload;
+    try {
+      header = parseJsonSegment(h, 'header') as LicenseJwtHeader;
+      payload = parseJsonSegment(p, 'payload') as LicenseJwtPayload;
+    } catch {
+      return { ok: false, error: 'Invalid license token', code: 'INVALID_TOKEN' };
+    }
 
-    // Header must come from our issuer key material.
+    // Header must come from our issuer key material
     if (header.alg !== 'ES256' || header.kid !== LICENSE_JWT_KID) {
-      return { ok: false, error: 'Invalid license token' };
+      return { ok: false, error: 'Invalid license token', code: 'INVALID_TOKEN' };
     }
     if (payload.iss !== LICENSE_ISSUER) {
-      return { ok: false, error: 'Invalid license token' };
+      return {
+        ok: false,
+        error: 'Invalid license token: wrong issuer',
+        code: 'WRONG_ISSUER'
+      };
     }
-    if (typeof payload.plan !== 'string' || !PLANS.includes(payload.plan as PlanId)) {
-      return { ok: false, error: 'Invalid license token' };
+    if (typeof payload.plan !== 'string' || !VALID_PLANS.includes(payload.plan as PlanId)) {
+      return {
+        ok: false,
+        error: 'Invalid license token: unknown plan',
+        code: 'WRONG_PLAN'
+      };
     }
     const plan = payload.plan as PlanId;
 
-    // Expiry (seconds → must still be in the future).
+    // Customer ID requirement (cid or sub)
+    const customerId =
+      (typeof payload.cid === 'string' && payload.cid.trim()) ||
+      (typeof payload.sub === 'string' && payload.sub.trim());
+    if (!customerId) {
+      return {
+        ok: false,
+        error: 'Invalid license token: missing customer id',
+        code: 'MISSING_CUSTOMER_ID'
+      };
+    }
+
+    // Expiry (seconds → must still be in the future)
     if (typeof payload.exp !== 'number' || !Number.isFinite(payload.exp)) {
-      return { ok: false, error: 'Invalid license token' };
+      return { ok: false, error: 'Invalid license token', code: 'INVALID_TOKEN' };
     }
     if (payload.exp <= Date.now() / 1000) {
-      return { ok: false, error: 'Expired license token' };
+      return { ok: false, error: 'Expired license token', code: 'EXPIRED' };
     }
 
-    // Device binding: a token minted for another workstation must not activate here.
-    const deviceFingerprint = await getDeviceFingerprint();
-    if (typeof payload.fp === 'string' && payload.fp.length > 0 && payload.fp !== deviceFingerprint) {
-      return { ok: false, error: 'This token is bound to a different workstation' };
-    }
-
-    // Cryptographic proof — raw r||s WebCrypto signature over `header.payload`.
+    // Cryptographic proof — raw r||s WebCrypto signature over `header.payload`
     const key = await crypto.subtle.importKey(
       'jwk',
       LICENSE_JWT_PUBLIC_JWK,
@@ -214,28 +267,118 @@ export async function verifyAndActivateToken(token: string): Promise<{ ok: boole
       base64UrlToBytes(s),
       textEncoder.encode(`${h}.${p}`)
     );
-    if (!valid) return { ok: false, error: 'Invalid signature' };
+    if (!valid) {
+      return { ok: false, error: 'Invalid signature', code: 'INVALID_SIGNATURE' };
+    }
+
+    const deviceFingerprint = await getDeviceFingerprint();
+
+    // Check token-embedded device binding (if present)
+    let tokenDevices: string[] = [];
+    if (Array.isArray(payload.devices)) {
+      tokenDevices = payload.devices.filter(
+        (d): d is string => typeof d === 'string' && d.length > 0
+      );
+    } else if (typeof payload.fp === 'string' && payload.fp.length > 0) {
+      tokenDevices = [payload.fp];
+    }
+
+    if (tokenDevices.length > 0 && !tokenDevices.includes(deviceFingerprint)) {
+      if (!options?.moveDevice) {
+        return {
+          ok: false,
+          error: 'This token is bound to a different workstation',
+          code: 'DEVICE_MISMATCH',
+          canMove: true
+        };
+      }
+    }
+
+    // Soft device binding: allow up to maxDevices (default 2)
+    const maxDevices =
+      typeof payload.maxDevices === 'number' && payload.maxDevices >= 1
+        ? Math.floor(payload.maxDevices)
+        : 2;
+
+    const existing = await getLicenseState();
+    let boundDevices: string[] = [];
+    if (existing.token === token || existing.customerId === customerId) {
+      boundDevices = Array.isArray(existing.boundDevices)
+        ? [...existing.boundDevices]
+        : existing.deviceFingerprint
+          ? [existing.deviceFingerprint]
+          : [];
+    }
+
+    if (!boundDevices.includes(deviceFingerprint)) {
+      if (boundDevices.length >= maxDevices) {
+        if (!options?.moveDevice) {
+          return {
+            ok: false,
+            error: `License device limit reached (max ${maxDevices} devices)`,
+            code: 'DEVICE_MISMATCH',
+            canMove: true
+          };
+        }
+        // Move license: replace the oldest device entry with the current device
+        boundDevices = [
+          ...boundDevices.slice(boundDevices.length - (maxDevices - 1)),
+          deviceFingerprint
+        ];
+      } else {
+        boundDevices.push(deviceFingerprint);
+      }
+    }
 
     const seats =
       typeof payload.seats === 'number' && Number.isFinite(payload.seats) && payload.seats >= 1
         ? Math.floor(payload.seats)
-        : 1;
+        : plan === 'warehouse'
+          ? 3
+          : 1;
     const licenseeName = typeof payload.name === 'string' ? payload.name : undefined;
+
+    const subscriptionId =
+      typeof payload.subscriptionId === 'string'
+        ? payload.subscriptionId
+        : typeof payload.sub_id === 'string'
+          ? payload.sub_id
+          : undefined;
+
+    const renewsAt =
+      typeof payload.renewsAt === 'number'
+        ? payload.renewsAt * 1000
+        : typeof payload.current_end === 'number'
+          ? payload.current_end * 1000
+          : null;
+
+    let subscriptionStatus =
+      typeof payload.subscriptionStatus === 'string'
+        ? (payload.subscriptionStatus as SubscriptionStatus)
+        : undefined;
+    if (!subscriptionStatus) {
+      subscriptionStatus = payload.exp * 1000 > Date.now() ? 'active' : 'expired';
+    }
 
     const state: LicenseState = {
       plan,
       seats,
       deviceFingerprint,
+      boundDevices,
+      customerId,
+      subscriptionId,
+      subscriptionStatus,
+      renewsAt,
       activatedAt: Date.now(),
       expiresAt: payload.exp * 1000,
       token,
       licenseeName
     };
     await db.license_state.put({ key: 'active', value: state });
+    remember(state);
     return { ok: true };
   } catch {
-    // Any unexpected failure (bad base64, missing WebCrypto, …) → generic friendly error.
-    return { ok: false, error: 'Invalid license token' };
+    return { ok: false, error: 'Invalid license token', code: 'INVALID_TOKEN' };
   }
 }
 
@@ -244,6 +387,11 @@ export async function verifyAndActivateToken(token: string): Promise<{ ok: boole
 export async function getLicenseState(): Promise<LicenseState> {
   const row = await db.license_state.get('active');
   const state = row?.value ?? FALLBACK;
+  if (state.expiresAt && Date.now() > state.expiresAt) {
+    if (state.subscriptionStatus !== 'expired' && state.subscriptionStatus !== 'revoked') {
+      state.subscriptionStatus = 'expired';
+    }
+  }
   remember(state);
   return state;
 }
@@ -253,6 +401,12 @@ export function useLicense(): LicenseState {
 }
 
 export function planHasFeature(plan: LicensePlan, feature: ProFeature): boolean {
+  if (lastKnown?.expiresAt && Date.now() > lastKnown.expiresAt) {
+    return false; // Expired, features limited!
+  }
+  if (lastKnown?.subscriptionStatus === 'revoked' || lastKnown?.subscriptionStatus === 'expired') {
+    return false; // Expired, features limited!
+  }
   const pro = plan === 'claimradar' || plan === 'warehouse';
   switch (feature) {
     case 'unlimitedLabels':
@@ -267,20 +421,25 @@ export function planHasFeature(plan: LicensePlan, feature: ProFeature): boolean 
   }
 }
 
-/** Testing path — activates a plan locally with no payment and no signature. */
-export async function activateDemoPlan(plan: PlanId): Promise<void> {
-  const fp = await getDeviceFingerprint();
-  await db.license_state.put({
-    key: 'active',
-    value: {
-      plan,
-      seats: 1,
-      deviceFingerprint: fp,
-      activatedAt: Date.now(),
-      demo: true
+/** Testing path — activates a plan locally with no payment and no signature. DEV ONLY. */
+export const activateDemoPlan = import.meta.env.DEV
+  ? async (plan: PlanId): Promise<void> => {
+      const fp = await getDeviceFingerprint();
+      const state: LicenseState = {
+        plan,
+        seats: plan === 'warehouse' ? 3 : 1,
+        deviceFingerprint: fp,
+        boundDevices: [fp],
+        activatedAt: Date.now(),
+        demo: true
+      };
+      await db.license_state.put({
+        key: 'active',
+        value: state
+      });
+      remember(state);
     }
-  });
-}
+  : undefined;
 
 export async function deactivateLicense(): Promise<void> {
   await db.license_state.delete('active');

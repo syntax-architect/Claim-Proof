@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ═══════════════════════════════════════════════════════════════════════
    ClaimProof Suite V2 — professional light/dark design system.
@@ -54,9 +54,9 @@
   /* Fixed tokens that never flip */
   --color-on-accent: #ffffff;
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --animate-rec-pulse: rec-pulse 1.6s ease-in-out infinite;
   --animate-scan-y: scan-y 3.4s ease-in-out infinite;
@@ -77,11 +77,11 @@
   --cp-line-strong: rgba(148, 163, 184, 0.24);
   --cp-text: #edeff5;
   --cp-text-2: #9aa3b2;
-  --cp-text-3: #6b7482;
+  --cp-text-3: #8a95a5;
   --cp-accent: #60a5fa;
   --cp-accent-text: #93c5fd;
-  --cp-accent-solid: #3b82f6;
-  --cp-accent-strong: #2563eb;
+  --cp-accent-solid: #2563eb;
+  --cp-accent-strong: #1d4ed8;
   --cp-accent-soft: rgba(59, 130, 246, 0.12);
   --cp-warn-text: #fbbf24;
   --cp-danger-text: #f87171;
@@ -103,19 +103,18 @@
   --cp-line-strong: rgba(13, 14, 18, 0.16);
   --cp-text: #0d0e12;
   --cp-text-2: #4b5563;
-  --cp-text-3: #6b7280;
+  --cp-text-3: #4b5565;
   --cp-accent: #2563eb;
   --cp-accent-text: #1d4ed8;
   --cp-accent-solid: #2563eb;
   --cp-accent-strong: #1d4ed8;
   --cp-accent-soft: rgba(37, 99, 235, 0.08);
-  --cp-warn-text: #b45309;
-  --cp-danger-text: #dc2626;
+  --cp-warn-text: #9a3412;
+  --cp-danger-text: #b91c1c;
   --cp-info-text: #0e7490;
   --cp-glass: rgba(255, 255, 255, 0.9);
   --cp-shadow:
-    0 0 0 1px rgba(17, 17, 26, 0.03),
-    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 0 0 1px rgba(17, 17, 26, 0.03), 0 1px 2px rgba(16, 24, 40, 0.04),
     0 8px 24px -10px rgba(16, 24, 40, 0.1);
   --cp-hero-1: rgba(37, 99, 235, 0.07);
   --cp-hero-2: rgba(14, 116, 144, 0.05);
@@ -123,33 +122,71 @@
 }
 
 @keyframes rec-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 @keyframes scan-y {
-  0% { top: 4%; }
-  50% { top: 92%; }
-  100% { top: 4%; }
+  0% {
+    top: 4%;
+  }
+  50% {
+    top: 92%;
+  }
+  100% {
+    top: 4%;
+  }
 }
 @keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes ping-slow {
-  0% { transform: scale(1); opacity: 0.7; }
-  80%, 100% { transform: scale(2.1); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  80%,
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
 }
 @keyframes float-slow {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(24px, -18px, 0) scale(1.06); }
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(24px, -18px, 0) scale(1.06);
+  }
 }
 @keyframes float-slower {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(-30px, 22px, 0) scale(0.95); }
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-30px, 22px, 0) scale(0.95);
+  }
 }
 
 html,
@@ -168,12 +205,14 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
-  transition: background-color 0.35s ease, color 0.35s ease;
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease;
 }
 
 /* Soft ambient hero glow — calm in both themes */
 body::before {
-  content: "";
+  content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -218,13 +257,19 @@ body::before {
   background: var(--cp-glass);
   backdrop-filter: blur(12px);
   box-shadow: var(--cp-shadow);
-  transition: background-color 0.35s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+  transition:
+    background-color 0.35s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
 }
 .glass-soft {
   border-radius: 0.75rem;
   border: 1px solid var(--cp-line);
   background: color-mix(in srgb, var(--cp-surface-2) 78%, transparent);
-  transition: background-color 0.35s ease, border-color 0.25s ease;
+  transition:
+    background-color 0.35s ease,
+    border-color 0.25s ease;
 }
 .grid-bg {
   background-image:

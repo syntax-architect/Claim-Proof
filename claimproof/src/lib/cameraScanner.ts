@@ -52,7 +52,9 @@ export async function startCameraScanner(
     try {
       const supported = await window.BarcodeDetector.getSupportedFormats();
       const formats = PREFERRED_FORMATS.filter((f) => supported.includes(f));
-      detector = new window.BarcodeDetector({ formats: formats.length > 0 ? formats : PREFERRED_FORMATS });
+      detector = new window.BarcodeDetector({
+        formats: formats.length > 0 ? formats : PREFERRED_FORMATS
+      });
     } catch {
       detector = null;
     }
@@ -67,7 +69,11 @@ export async function startCameraScanner(
       zxingReader = new zxing.BrowserMultiFormatReader() as unknown as ZxingReader;
     } catch (e) {
       opts?.onStatus?.('error', e instanceof Error ? e.message : 'No barcode engine available');
-      return { stop: () => { stopped = true; } };
+      return {
+        stop: () => {
+          stopped = true;
+        }
+      };
     }
   }
 

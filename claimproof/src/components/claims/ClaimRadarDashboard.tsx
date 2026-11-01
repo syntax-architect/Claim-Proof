@@ -8,13 +8,10 @@ import {
   Radar,
   Send,
   Trash2,
-  Trophy
+  Trophy,
+  Video
 } from 'lucide-react';
-import {
-  deleteClaim,
-  updateClaimStatus,
-  useClaims
-} from '../../services/claimEngine';
+import { deleteClaim, updateClaimStatus, useClaims } from '../../services/claimEngine';
 import { claimWindowLabel } from '../../lib/claimRules';
 import { deadlineTone, formatCountdown, formatISTShort } from '../../lib/dateUtils';
 import { planHasFeature, useLicense } from '../../services/licenseService';
@@ -57,7 +54,8 @@ function ClaimRow({
   const windowMs = Math.max(1, claim.deadlineAt - claim.returnScanAt);
   const progress = Math.max(0, Math.min(1, msLeft / windowMs));
   const tone = deadlineTone(msLeft);
-  const ringTone = tone === 'expired' || tone === 'urgent' ? 'danger' : tone === 'warn' ? 'warn' : 'proof';
+  const ringTone =
+    tone === 'expired' || tone === 'urgent' ? 'danger' : tone === 'warn' ? 'warn' : 'proof';
 
   return (
     <Card hover className="p-5">
@@ -67,7 +65,11 @@ function ClaimRow({
             <span
               className={cn(
                 'font-mono text-[10px] font-bold',
-                ringTone === 'danger' ? 'text-danger-300' : ringTone === 'warn' ? 'text-warn-300' : 'text-proof-300'
+                ringTone === 'danger'
+                  ? 'text-danger-300'
+                  : ringTone === 'warn'
+                    ? 'text-warn-300'
+                    : 'text-proof-300'
               )}
             >
               {msLeft <= 0 ? 'END' : `${Math.floor(msLeft / 3_600_000)}h`}
@@ -79,21 +81,36 @@ function ClaimRow({
               <Badge tone="info">{claimWindowLabel(claim.marketplace)}</Badge>
               <Badge tone="warn">{claim.flagReason}</Badge>
               {claim.status !== 'pending' && (
-                <Badge tone={claim.status === 'won' ? 'proof' : claim.status === 'lost' ? 'danger' : 'neutral'}>
+                <Badge
+                  tone={
+                    claim.status === 'won'
+                      ? 'proof'
+                      : claim.status === 'lost'
+                        ? 'danger'
+                        : 'neutral'
+                  }
+                >
                   {claim.status}
                 </Badge>
               )}
             </div>
             <div className="mt-1 truncate font-mono text-[11px] text-slate-500">
-              {claim.sku} · Qty {claim.qty} · {claim.courier} · return scanned {formatISTShort(claim.returnScanAt)}
+              {claim.sku} · Qty {claim.qty} · {claim.courier} · return scanned{' '}
+              {formatISTShort(claim.returnScanAt)}
             </div>
             <div
               className={cn(
                 'mt-2 font-mono text-sm font-bold mono-tabular',
-                ringTone === 'danger' ? 'text-danger-300' : ringTone === 'warn' ? 'text-warn-300' : 'text-proof-300'
+                ringTone === 'danger'
+                  ? 'text-danger-300'
+                  : ringTone === 'warn'
+                    ? 'text-warn-300'
+                    : 'text-proof-300'
               )}
             >
-              {msLeft <= 0 ? 'WINDOW EXPIRED — file manually with proof of delay' : `${formatCountdown(msLeft)} left to file`}
+              {msLeft <= 0
+                ? 'WINDOW EXPIRED — file manually with proof of delay'
+                : `${formatCountdown(msLeft)} left to file`}
             </div>
           </div>
         </div>
@@ -111,7 +128,13 @@ function ClaimRow({
               { value: 'lost', label: 'Lost' }
             ]}
           />
-          <Button variant="ghost" size="sm" icon={Trash2} onClick={onDelete} aria-label="Delete claim" />
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={Trash2}
+            onClick={onDelete}
+            aria-label="Delete claim"
+          />
         </div>
       </div>
       {claim.notes && (
@@ -180,7 +203,7 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
               onClick={() => openPaywall({ scope: 'claimRadar', plan: 'claimradar' })}
             >
               Unlock ClaimRadar Pro — ₹4,499/yr{' '}
-              <span className="ml-1 font-mono text-sm text-on-accent/70 line-through">₹7,188</span>
+              <span className="ml-1 font-mono text-sm text-[#ffffff] font-bold line-through">₹7,188</span>
             </Button>
           </div>
         </Card>
@@ -204,44 +227,91 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
             {nearest.awb} — {formatCountdown(nearest.deadlineAt - Date.now())} left to file{' '}
             <span className="text-slate-500">({claimWindowLabel(nearest.marketplace)})</span>
           </div>
-          <Button variant="outline" size="sm" iconRight={ChevronRight} onClick={() => setSelected(nearest)}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconRight={ChevronRight}
+            onClick={() => setSelected(nearest)}
+          >
             Prepare now
           </Button>
         </Card>
       )}
 
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <StatCard icon={Clock} label="Pending claims" value={pending.length} tone={pending.length > 0 ? 'danger' : 'proof'} />
-        <StatCard icon={AlarmClock} label="Expiring within 24h" value={expiring24h.length} tone="warn" />
+        <StatCard
+          icon={Clock}
+          label="Pending claims"
+          value={pending.length}
+          tone={pending.length > 0 ? 'danger' : 'proof'}
+        />
+        <StatCard
+          icon={AlarmClock}
+          label="Expiring within 24h"
+          value={expiring24h.length}
+          tone="warn"
+        />
         <StatCard icon={Send} label="Submitted" value={submitted.length} tone="info" />
         <StatCard icon={Trophy} label="Won" value={won.length} tone="proof" />
       </div>
 
       {claims.length === 0 ? (
-        <Card>
+        <Card className="p-6">
           <EmptyState
             icon={Radar}
-            title="No flagged returns yet"
-            hint="Enable Return Unboxing Mode in the AWB Recorder and press F2 on a bad return to flag it here."
-          />
+            title="No return claims in your radar"
+            description="You haven't flagged any bad or damaged returns yet. When customer returns arrive, record their unboxing with Return Unboxing Mode turned on in the AWB Recorder. Press F2 (or click Flag Bad Return) on any damaged, swapped, or missing item to start tracking its deadline here."
+            primaryAction={{
+              label: 'Open AWB Recorder',
+              onClick: () => {
+                window.location.hash = '#recorder';
+              },
+              icon: Video
+            }}
+          >
+            <div className="mt-4 rounded-xl border border-line bg-ink-900/60 p-4 text-left text-xs text-slate-300">
+              <div className="font-semibold text-white">Marketplace dispute deadlines tracked:</div>
+              <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 text-slate-400">
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-amber-400">72 hours:</span>
+                  <span>Meesho SAFE &amp; AJIO / Snapdeal claim window</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-blue-400">14 days:</span>
+                  <span>Flipkart Seller Protection Fund (SPF) window</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-emerald-400">30 days:</span>
+                  <span>Amazon SAFE-T claim reimbursement window</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-purple-400">Ready dossier:</span>
+                  <span>1-click evidence packaging with side-by-side videos</span>
+                </li>
+              </ul>
+            </div>
+          </EmptyState>
         </Card>
       ) : (
         <Stagger className="space-y-4">
           {claims.map((claim) => (
             <StaggerItem key={claim.id}>
-            <ClaimRow
-              claim={claim}
-              onPrepare={() => setSelected(claim)}
-              onStatus={(status) => {
-                if (claim.id !== undefined) void updateClaimStatus(claim.id, status);
-                toast.success(`Claim marked ${status}`);
-              }}
-              onDelete={() => {
-                if (claim.id !== undefined && window.confirm(`Delete the claim for ${claim.awb}?`)) {
-                  void deleteClaim(claim.id);
-                }
-              }}
-            />
+              <ClaimRow
+                claim={claim}
+                onPrepare={() => setSelected(claim)}
+                onStatus={(status) => {
+                  if (claim.id !== undefined) void updateClaimStatus(claim.id, status);
+                  toast.success(`Claim marked ${status}`);
+                }}
+                onDelete={() => {
+                  if (
+                    claim.id !== undefined &&
+                    window.confirm(`Delete the claim for ${claim.awb}?`)
+                  ) {
+                    void deleteClaim(claim.id);
+                  }
+                }}
+              />
             </StaggerItem>
           ))}
         </Stagger>

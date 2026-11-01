@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  AlertTriangle,
   BadgeCheck,
   Check,
+  ExternalLink,
   Fingerprint,
   IndianRupee,
   KeyRound,
@@ -11,7 +13,6 @@ import {
   ScanBarcode,
   ShieldCheck,
   Sparkles,
-  Video,
   X
 } from 'lucide-react';
 import {
@@ -21,112 +22,139 @@ import {
   useLicense,
   verifyAndActivateToken
 } from '../services/licenseService';
+import { getPaymentUrl, PLANS } from '../config/plans';
+import { trackEvent } from '../services/telemetry';
 import { formatISTShort } from '../lib/dateUtils';
 import { cn, formatRupees, truncate } from '../lib/utils';
-import { usePaywall } from '../providers/PaywallProvider';
-import { Badge, Button, Card, Field, PageHeader, useToast } from '../components/ui';
+import { Badge, Button, Card, EmptyState, PageHeader, useToast } from '../components/ui';
 import type { BillingInterval, PlanId } from '../types';
 
-interface PlanConfig {
-  id: PlanId;
-  name: string;
-  monthlyPrice: number;
-  annualPrice: number;
-  annualStrike?: number;
-  dailyAnnualCost: number;
-  annualSavingsPercent: number;
-  tag?: string;
-  best?: boolean;
-  features: string[];
-}
-
-const PLANS: PlanConfig[] = [
+const COMPARISON: {
+  feature: string;
+  free: string;
+  starter: string;
+  pro: string;
+  warehouse: string;
+}[] = [
   {
-    id: 'starter',
-    name: 'Starter Station',
-    monthlyPrice: 349,
-    annualPrice: 2499,
-    annualStrike: 4188,
-    dailyAnnualCost: 7,
-    annualSavingsPercent: 40,
-    features: [
-      'Unlimited 4×6 / 4×4 label cropping & sorting',
-      'Unlimited uncut AWB packing & unboxing videos',
-      'Burnt-in IST forensic timestamp watermark',
-      'Warehouse picklist manifests',
-      '1 PC workstation offline license'
-    ]
+    feature: 'Label cropping & sorting',
+    free: '40 / day',
+    starter: 'Unlimited',
+    pro: 'Unlimited',
+    warehouse: 'Unlimited'
   },
   {
-    id: 'claimradar',
-    name: 'ClaimRadar Pro',
-    monthlyPrice: 599,
-    annualPrice: 4499,
-    annualStrike: 7188,
-    dailyAnnualCost: 12,
-    annualSavingsPercent: 37,
-    tag: 'MOST POPULAR',
-    best: true,
-    features: [
-      'Everything in Starter Station',
-      'Auto 4-photo forensic collage (T+0.5, 3, 6, 9s)',
-      '72-hr / 14-day / 30-day claim deadline radar',
-      'Dispatch-to-return side-by-side evidence matcher',
-      '1-click auto dispute text for Meesho, Flipkart & Amazon'
-    ]
+    feature: 'AWB proof videos',
+    free: '10 / day (watermarked)',
+    starter: 'Unlimited HD',
+    pro: 'Unlimited HD',
+    warehouse: 'Unlimited HD'
   },
   {
-    id: 'warehouse',
-    name: 'Warehouse 3-Table Pack',
-    monthlyPrice: 1199,
-    annualPrice: 8999,
-    annualStrike: 14388,
-    dailyAnnualCost: 25,
-    annualSavingsPercent: 37,
-    features: [
-      'Everything in ClaimRadar Pro',
-      '3 simultaneous PC licenses for packing tables',
-      'Phone-as-scanner companion seats',
-      'Shared central vault folder support',
-      'Priority 1-on-1 WhatsApp dispute support'
-    ]
+    feature: 'Forensic IST timestamp overlay',
+    free: '✓ Standard',
+    starter: '✓ Burnt-in HD',
+    pro: '✓ Burnt-in HD',
+    warehouse: '✓ Burnt-in HD'
+  },
+  {
+    feature: 'Picklist & Courier handover manifests',
+    free: '✓ (ClaimProof seal)',
+    starter: '✓ White-label (Clean)',
+    pro: '✓ White-label (Clean)',
+    warehouse: '✓ White-label (Clean)'
+  },
+  {
+    feature: 'Auto 4-photo evidence collage',
+    free: '—',
+    starter: '—',
+    pro: '✓ (T+0.5, 3, 6, 9s)',
+    warehouse: '✓ (T+0.5, 3, 6, 9s)'
+  },
+  {
+    feature: 'Marketplace claim deadline radar',
+    free: '—',
+    starter: '—',
+    pro: '✓ (72h / 14d / 30d)',
+    warehouse: '✓ (72h / 14d / 30d)'
+  },
+  {
+    feature: 'Return matcher + dispute dossier generator',
+    free: '—',
+    starter: '—',
+    pro: '✓',
+    warehouse: '✓'
+  },
+  {
+    feature: 'Workstation licenses',
+    free: '1 PC',
+    starter: '1 PC',
+    pro: '1 PC',
+    warehouse: '3 PCs simultaneous'
+  },
+  {
+    feature: 'Phone companion wireless scanner',
+    free: '—',
+    starter: '—',
+    pro: '—',
+    warehouse: '✓'
+  },
+  {
+    feature: 'Dispute support channel',
+    free: 'Community',
+    starter: 'Email',
+    pro: 'Priority Email',
+    warehouse: 'Dedicated WhatsApp'
   }
-];
-
-const COMPARISON: { feature: string; free: string; starter: string; pro: string; warehouse: string }[] = [
-  { feature: 'Label cropping & sorting', free: '40 / day', starter: 'Unlimited', pro: 'Unlimited', warehouse: 'Unlimited' },
-  { feature: 'AWB proof videos', free: '10 / day (watermarked)', starter: 'Unlimited HD', pro: 'Unlimited HD', warehouse: 'Unlimited HD' },
-  { feature: 'Forensic IST timestamp overlay', free: '✓ Standard', starter: '✓ Burnt-in HD', pro: '✓ Burnt-in HD', warehouse: '✓ Burnt-in HD' },
-  { feature: 'Picklist & Courier handover manifests', free: '✓ (ClaimProof seal)', starter: '✓ White-label (Clean)', pro: '✓ White-label (Clean)', warehouse: '✓ White-label (Clean)' },
-  { feature: 'Auto 4-photo evidence collage', free: '—', starter: '—', pro: '✓ (T+0.5, 3, 6, 9s)', warehouse: '✓ (T+0.5, 3, 6, 9s)' },
-  { feature: 'Marketplace claim deadline radar', free: '—', starter: '—', pro: '✓ (72h / 14d / 30d)', warehouse: '✓ (72h / 14d / 30d)' },
-  { feature: 'Return matcher + dispute dossier generator', free: '—', starter: '—', pro: '✓', warehouse: '✓' },
-  { feature: 'Workstation licenses', free: '1 PC', starter: '1 PC', pro: '1 PC', warehouse: '3 PCs simultaneous' },
-  { feature: 'Phone companion wireless scanner', free: '—', starter: '—', pro: '—', warehouse: '✓' },
-  { feature: 'Dispute support channel', free: 'Community', starter: 'Email', pro: 'Priority Email', warehouse: 'Dedicated WhatsApp' }
 ];
 
 export default function PricingPage() {
   const license = useLicense();
-  const { openPaywall } = usePaywall();
   const toast = useToast();
   const [interval, setInterval] = useState<BillingInterval>('annual');
   const [token, setToken] = useState('');
   const [activating, setActivating] = useState(false);
+  const [movePrompt, setMovePrompt] = useState<string | null>(null);
   const [fingerprint, setFingerprint] = useState<string | null>(null);
+
+  useEffect(() => {
+    void trackEvent('paywall_viewed', { plan: 'pricing_page', interval });
+  }, [interval]);
 
   const currentPlan = PLANS.find((p) => p.id === license.plan);
 
-  async function activate() {
+  const isExpired =
+    Boolean(license.expiresAt && Date.now() > license.expiresAt) ||
+    license.subscriptionStatus === 'expired' ||
+    license.subscriptionStatus === 'revoked';
+
+  const isPaymentFailed =
+    license.subscriptionStatus === 'payment_failed' || license.subscriptionStatus === 'halted';
+
+  const isRenewing =
+    !isExpired &&
+    !isPaymentFailed &&
+    (license.subscriptionStatus === 'active' || Boolean(license.renewsAt));
+
+  async function activate(opts?: { moveDevice?: boolean }) {
     const t = token.trim();
     if (!t) return;
     setActivating(true);
     try {
-      const result = await verifyAndActivateToken(t);
+      const result = await verifyAndActivateToken(t, opts);
       if (result.ok) {
-        toast.success('License activated', 'All plan features unlocked on this workstation.');
+        toast.success(
+          opts?.moveDevice ? 'License moved' : 'License activated',
+          'All plan features unlocked on this workstation.'
+        );
         setToken('');
+        setMovePrompt(null);
       } else {
+        if (result.canMove) {
+          setMovePrompt(result.error ?? 'Device mismatch');
+        } else {
+          setMovePrompt(null);
+        }
         toast.error('Activation failed', result.error ?? 'Invalid token.');
       }
     } finally {
@@ -134,8 +162,18 @@ export default function PricingPage() {
     }
   }
 
+  const handleBuy = (planId: PlanId) => {
+    void trackEvent('purchase_started', { planId, interval });
+    const url = getPaymentUrl(planId, interval);
+    window.open(url, '_blank', 'noopener,noreferrer');
+    toast.info(
+      'Opening Razorpay checkout',
+      'Complete payment in the new tab. Your license key will be issued for offline activation.'
+    );
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-28">
       <PageHeader
         icon={IndianRupee}
         kicker="MODULE D · MONETIZATION &amp; ROI"
@@ -144,50 +182,98 @@ export default function PricingPage() {
       />
 
       {/* Current license status card */}
-      <Card className="p-5">
-        <div className="flex flex-wrap items-center gap-4">
-          <div
-            className={cn(
-              'flex h-12 w-12 items-center justify-center rounded-xl border',
-              license.plan === 'free'
-                ? 'border-line-bright bg-ink-800 text-slate-400'
-                : 'border-proof-500/30 bg-proof-500/12 text-proof-300'
-            )}
-          >
-            {license.plan === 'free' ? <ShieldCheck className="h-6 w-6" /> : <BadgeCheck className="h-6 w-6" />}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-display text-lg font-bold text-white">
-                {currentPlan ? currentPlan.name : 'Free Tier'}
-              </span>
-              {license.demo && <Badge tone="warn">DEMO LICENSE</Badge>}
-              {license.expiresAt && (
-                <Badge tone="outline">expires {formatISTShort(license.expiresAt)}</Badge>
-              )}
-            </div>
-            <div className="mt-0.5 text-xs text-slate-400">
-              {license.plan === 'free'
-                ? '40 labels & 10 watermarked videos per day. Upgrade below for unlimited recording & forensic claim tools.'
-                : `${license.seats} workstation seat${license.seats > 1 ? 's' : ''} · activated ${license.activatedAt ? formatISTShort(license.activatedAt) : '—'}`}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={Fingerprint}
-              onClick={() =>
-                void getDeviceFingerprint().then((fp) => {
-                  setFingerprint(fp);
-                  void navigator.clipboard?.writeText(fp).catch(() => undefined);
-                  toast.info('Device fingerprint copied', truncate(fp, 24));
-                })
+      {license.plan === 'free' ? (
+        <Card className="p-6">
+          <EmptyState
+            icon={ShieldCheck}
+            title="No paid license active"
+            description="You are currently running on the Free Tier (40 labels & 10 watermarked proof videos per day). Choose a plan below to unlock unlimited recordings, white-label picklists, and automated claim deadline radar — or enter a license key if you have already purchased one."
+            primaryAction={{
+              label: 'Enter license key',
+              onClick: () => {
+                const el = document.querySelector<HTMLInputElement>('input[placeholder^="eyJ"]');
+                el?.focus();
+              },
+              icon: KeyRound
+            }}
+            secondaryLink={{
+              label: 'Compare paid plans below',
+              onClick: () => {
+                document.getElementById('plans-grid')?.scrollIntoView({ behavior: 'smooth' });
               }
-            >
-              Fingerprint
-            </Button>
-            {license.plan !== 'free' && (
+            }}
+          />
+        </Card>
+      ) : (
+        <Card className="p-5">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-proof-500/30 bg-proof-500/12 text-proof-300">
+              <BadgeCheck className="h-6 w-6" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-display text-lg font-bold text-white">
+                  {currentPlan ? currentPlan.name : 'Paid License'}
+                </span>
+                {license.demo && <Badge tone="warn">DEMO LICENSE</Badge>}
+
+                {isPaymentFailed && (
+                  <Badge tone="danger">payment failed, update your payment method</Badge>
+                )}
+
+                {isExpired && (
+                  <Badge tone="danger">expired, features limited</Badge>
+                )}
+
+                {!isExpired && !isPaymentFailed && isRenewing && (license.renewsAt || license.expiresAt) && (
+                  <Badge tone="proof">
+                    renews on {formatISTShort(license.renewsAt ?? license.expiresAt!)}
+                  </Badge>
+                )}
+
+                {!isExpired && !isPaymentFailed && !isRenewing && license.expiresAt && (
+                  <Badge tone="outline">expires {formatISTShort(license.expiresAt)}</Badge>
+                )}
+              </div>
+
+              {isPaymentFailed && (
+                <div className="mt-2 flex items-center gap-2 rounded-lg border border-danger-500/40 bg-danger-500/10 px-3 py-2 text-xs text-danger-300">
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-danger-400" />
+                  <span>
+                    <strong>payment failed, update your payment method:</strong> Your recurring subscription charge could not be processed. Please update your UPI Autopay / Card details to avoid cancellation.
+                  </span>
+                </div>
+              )}
+
+              {isExpired && (
+                <div className="mt-2 flex items-center gap-2 rounded-lg border border-warn-500/40 bg-warn-500/10 px-3 py-2 text-xs text-warn-300">
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-warn-400" />
+                  <span>
+                    <strong>expired, features limited:</strong> Your paid license and 3-day grace period have expired. Daily quotas have reverted to the Free tier (40 labels & 10 watermarked videos/day). Pro tools remain locked until renewed.
+                  </span>
+                </div>
+              )}
+
+              <div className="mt-0.5 text-xs text-slate-400">
+                {license.seats} workstation seat{license.seats > 1 ? 's' : ''} · activated{' '}
+                {license.activatedAt ? formatISTShort(license.activatedAt) : '—'}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={Fingerprint}
+                onClick={() =>
+                  void getDeviceFingerprint().then((fp) => {
+                    setFingerprint(fp);
+                    void navigator.clipboard?.writeText(fp).catch(() => undefined);
+                    toast.info('Device fingerprint copied', truncate(fp, 24));
+                  })
+                }
+              >
+                Fingerprint
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -197,15 +283,15 @@ export default function PricingPage() {
               >
                 Deactivate
               </Button>
-            )}
+            </div>
           </div>
-        </div>
-        {fingerprint && (
-          <div className="mt-3 break-all rounded-lg border border-line bg-ink-950/70 p-3 font-mono text-[10px] text-slate-500">
-            {fingerprint}
-          </div>
-        )}
-      </Card>
+          {fingerprint && (
+            <div className="mt-3 break-all rounded-lg border border-line bg-ink-950/70 p-3 font-mono text-[10px] text-slate-500">
+              {fingerprint}
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* ROI & Trust Callout Banner */}
       <Card className="border-proof-500/30 bg-proof-500/10 p-5">
@@ -218,8 +304,10 @@ export default function PricingPage() {
               The Math: How ClaimProof Pays for Itself on Day 1
             </div>
             <div className="mt-1 text-xs text-slate-300 leading-relaxed">
-              In Indian e-commerce, a single rejected return on Meesho SAFE, Flipkart SPF, or Amazon SAFE-T costs you ₹400 to ₹1,500. 
-              ClaimRadar Pro costs just <strong className="text-proof-300">₹12/day</strong>. If it overturns even ONE wrongful dispute rejection, your software is 100% free for the month.
+              In Indian e-commerce, a single rejected return on Meesho SAFE, Flipkart SPF, or Amazon
+              SAFE-T costs you ₹400 to ₹1,500. ClaimRadar Pro costs just{' '}
+              <strong className="text-proof-300">₹12/day</strong>. If it overturns even ONE wrongful
+              dispute rejection, your software is 100% free for the month.
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -257,14 +345,16 @@ export default function PricingPage() {
           >
             <Sparkles className="h-3.5 w-3.5 text-proof-400" />
             <span>Annual Pass</span>
-            <span className="rounded bg-proof-500/30 px-1.5 py-0.5 text-[10px] font-bold text-proof-300">
+            <span className="rounded bg-proof-600 text-on-accent px-1.5 py-0.5 text-[10px] font-bold shadow-xs">
               SAVE UP TO 40% (4 MONTHS FREE)
             </span>
           </button>
         </div>
         <div className="text-xs text-slate-400">
           {interval === 'annual' ? (
-            <span className="text-proof-300">Annual payment collects full 1-year access with no monthly card deductions</span>
+            <span className="text-proof-300">
+              Annual payment collects full 1-year access with no monthly card deductions
+            </span>
           ) : (
             <span>Recurring monthly payment via UPI Autopay · Cancel anytime with 1 click</span>
           )}
@@ -272,11 +362,12 @@ export default function PricingPage() {
       </div>
 
       {/* Plans Grid */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+      <div id="plans-grid" className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {PLANS.map((plan) => {
           const owned = license.plan === plan.id && !license.demo;
           const displayPrice = interval === 'annual' ? plan.annualPrice : plan.monthlyPrice;
-          const monthlyEquiv = interval === 'annual' ? Math.round(plan.annualPrice / 12) : plan.monthlyPrice;
+          const monthlyEquiv =
+            interval === 'annual' ? Math.round(plan.annualPrice / 12) : plan.monthlyPrice;
 
           return (
             <Card
@@ -290,7 +381,10 @@ export default function PricingPage() {
             >
               {plan.tag && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge tone="proof" className="border-proof-400/60 bg-proof-500/30 px-3 py-1 text-[11px] font-bold">
+                  <Badge
+                    tone="proof"
+                    className="border-proof-400/60 bg-proof-500/30 px-3 py-1 text-[11px] font-bold"
+                  >
                     {plan.tag}
                   </Badge>
                 </div>
@@ -323,25 +417,30 @@ export default function PricingPage() {
 
                 {interval === 'annual' ? (
                   <div className="mt-1 flex items-center justify-between text-xs text-proof-300 font-medium">
-                    <span>Just ₹{monthlyEquiv}/mo · ₹{plan.dailyAnnualCost}/day</span>
-                    <span className="rounded bg-proof-500/20 px-1.5 py-0.5 text-[10px] text-proof-300">
+                    <span>
+                      Just ₹{monthlyEquiv}/mo · ₹{plan.dailyAnnualCost}/day
+                    </span>
+                    <span className="rounded bg-proof-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-proof-300">
                       Save {plan.annualSavingsPercent}%
                     </span>
                   </div>
                 ) : (
-                  <div className="mt-1 text-xs text-slate-400">
-                    Billed monthly via UPI Autopay
-                  </div>
+                  <div className="mt-1 text-xs text-slate-400">Billed monthly via UPI Autopay</div>
                 )}
               </div>
 
               <div className="mt-3 text-[11px] uppercase tracking-wider text-slate-500 border-t border-line/60 pt-3">
-                {plan.id === 'warehouse' ? '3 workstation seats included' : '1 workstation seat · offline verified'}
+                {plan.id === 'warehouse'
+                  ? '3 workstation seats included'
+                  : '1 workstation seat · offline verified'}
               </div>
 
               <ul className="mt-4 flex-1 space-y-2.5">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-xs leading-relaxed text-slate-300">
+                  <li
+                    key={f}
+                    className="flex items-start gap-2 text-xs leading-relaxed text-slate-300"
+                  >
                     <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-proof-400" />
                     <span>{f}</span>
                   </li>
@@ -353,10 +452,10 @@ export default function PricingPage() {
                 size="lg"
                 className="mt-6 w-full"
                 disabled={owned}
-                icon={owned ? BadgeCheck : Video}
-                onClick={() => openPaywall({ plan: plan.id, scope: 'general' })}
+                icon={owned ? BadgeCheck : ExternalLink}
+                onClick={() => handleBuy(plan.id)}
               >
-                {owned ? 'Current plan active' : `Get ${plan.name}`}
+                {owned ? 'Current plan active' : `Buy ${plan.name}`}
               </Button>
             </Card>
           );
@@ -368,7 +467,13 @@ export default function PricingPage() {
         <div className="border-b border-line p-4 font-display text-base font-bold text-white">
           Complete Feature Comparison
         </div>
-        <div className="overflow-x-auto">
+        <div
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
+          className="overflow-x-auto focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-proof-500"
+          role="region"
+          aria-label="Complete Feature Comparison"
+        >
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead>
               <tr className="border-b border-line text-xs uppercase tracking-wider text-slate-500">
@@ -388,10 +493,20 @@ export default function PricingPage() {
                       key={i}
                       className={cn(
                         'px-4 py-3 text-xs',
-                        cell.includes('✓') ? 'text-proof-400' : cell === '—' ? 'text-slate-600' : 'text-slate-300'
+                        cell.includes('✓')
+                          ? 'text-proof-400'
+                          : cell === '—'
+                            ? 'text-slate-600'
+                            : 'text-slate-300'
                       )}
                     >
-                      {cell === '✓' ? <Check className="h-3.5 w-3.5" /> : cell === '—' ? <X className="h-3.5 w-3.5" /> : cell}
+                      {cell === '✓' ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : cell === '—' ? (
+                        <X className="h-3.5 w-3.5" />
+                      ) : (
+                        cell
+                      )}
                     </td>
                   ))}
                 </tr>
@@ -408,33 +523,63 @@ export default function PricingPage() {
             <KeyRound className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-display text-base font-bold text-white">Activate with Token</div>
+            <div className="font-display text-base font-bold text-white">Enter License Key</div>
             <div className="mt-0.5 text-xs text-slate-400">
-              Completed payment via UPI? Paste your cryptographic activation token below. It is verified 100% on-device
-              via ES256 and bound to this workstation without needing internet access.
+              Completed payment via Razorpay? Paste your signed license key below. It is verified
+              100% on-device via ES256 and bound to this workstation without needing internet
+              access.
             </div>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <input
                 value={token}
-                onChange={(e) => setToken(e.target.value)}
+                onChange={(e) => {
+                  setToken(e.target.value);
+                  if (movePrompt) setMovePrompt(null);
+                }}
                 placeholder="eyJhbGciOiJFUzI1NiIs…"
                 className="glass-soft min-w-0 flex-1 px-3 py-2.5 font-mono text-xs text-slate-200 placeholder:text-slate-600 focus:border-proof-500/50 focus:outline-none"
               />
-              <Button variant="primary" loading={activating} onClick={() => void activate()} disabled={!token.trim()}>
+              <Button
+                variant="primary"
+                loading={activating}
+                onClick={() => void activate()}
+                disabled={!token.trim()}
+              >
                 Activate License
               </Button>
             </div>
-            <button
-              type="button"
-              onClick={() =>
-                void activateDemoPlan('claimradar').then(() =>
-                  toast.info('Demo license activated', 'All Pro features unlocked for testing.')
-                )
-              }
-              className="mt-3 text-xs text-slate-500 underline-offset-2 transition-colors hover:text-slate-300 hover:underline"
-            >
-              Or activate a demo license for testing
-            </button>
+
+            {movePrompt && (
+              <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-warn-500/40 bg-warn-500/10 p-3.5 text-xs text-warn-200">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-warn-400" />
+                  <span>{movePrompt}</span>
+                </div>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  loading={activating}
+                  onClick={() => void activate({ moveDevice: true })}
+                >
+                  Move license to this device
+                </Button>
+              </div>
+            )}
+            {import.meta.env.DEV && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (activateDemoPlan) {
+                    void activateDemoPlan('claimradar').then(() =>
+                      toast.info('Demo license activated', 'All Pro features unlocked for testing.')
+                    );
+                  }
+                }}
+                className="mt-3 text-xs text-slate-500 underline-offset-2 transition-colors hover:text-slate-300 hover:underline"
+              >
+                Or activate a demo license for testing
+              </button>
+            )}
           </div>
         </div>
       </Card>

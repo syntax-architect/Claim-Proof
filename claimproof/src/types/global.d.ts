@@ -34,9 +34,11 @@ interface Window {
   BarcodeDetector?: typeof BarcodeDetector;
   __cpInstall?: () => void;
   __cpInstallAvailable?: boolean;
+  __cpWaitingWorker?: ServiceWorker;
   showDirectoryPicker?(options?: {
     id?: string;
     mode?: 'read' | 'readwrite';
-    startIn?: 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | FileSystemHandle;
+    startIn?:
+      'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | FileSystemHandle;
   }): Promise<FileSystemDirectoryHandle>;
 }

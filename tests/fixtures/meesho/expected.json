@@ -1,0 +1,77 @@
+[
+  {
+    "page": 1,
+    "marketplace": "Meesho",
+    "awb": "5894372819",
+    "orderId": "6283749213",
+    "courier": "Valmo",
+    "sku": "MSH-KRT-BLU-XL",
+    "size": "XL",
+    "color": "",
+    "qty": 1,
+    "invoiceTotal": 899,
+    "confidence": {
+      "awb": 1,
+      "orderId": 1,
+      "courier": 1,
+      "marketplace": 1,
+      "sku": 1,
+      "qty": 1,
+      "size": 0.9,
+      "color": 0,
+      "invoiceTotal": 1
+    },
+    "needsManualEdit": false,
+    "missingFields": []
+  },
+  {
+    "page": 2,
+    "marketplace": "Meesho",
+    "awb": "5894372820",
+    "orderId": "6283749214",
+    "courier": "Delhivery",
+    "sku": "MSH-SAR-RED-FS",
+    "size": "FS",
+    "color": "",
+    "qty": 2,
+    "invoiceTotal": 1249,
+    "confidence": {
+      "awb": 1,
+      "orderId": 1,
+      "courier": 1,
+      "marketplace": 1,
+      "sku": 1,
+      "qty": 1,
+      "size": 0.9,
+      "color": 0,
+      "invoiceTotal": 1
+    },
+    "needsManualEdit": false,
+    "missingFields": []
+  },
+  {
+    "page": 3,
+    "marketplace": "Meesho",
+    "awb": "5894372821",
+    "orderId": "6283749215",
+    "courier": "ValmoPlus",
+    "sku": "MSH-TSH-GRN-M",
+    "size": "M",
+    "color": "",
+    "qty": 3,
+    "invoiceTotal": 599,
+    "confidence": {
+      "awb": 1,
+      "orderId": 1,
+      "courier": 1,
+      "marketplace": 1,
+      "sku": 1,
+      "qty": 1,
+      "size": 0.9,
+      "color": 0,
+      "invoiceTotal": 1
+    },
+    "needsManualEdit": false,
+    "missingFields": []
+  }
+]

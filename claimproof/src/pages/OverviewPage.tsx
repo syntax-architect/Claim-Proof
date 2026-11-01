@@ -28,7 +28,18 @@ import { ddMmm, formatCountdown, formatISTShort, greeting, istDateKey } from '..
 import { istDayStartEpoch, type Route } from '../lib/router';
 import { cn } from '../lib/utils';
 import { getVaultStatus } from '../services/vaultWriter';
-import { Badge, Button, Card, EmptyState, PageHeader, Ring, StatCard, Stagger, StaggerItem } from '../components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  LoadingSkeleton,
+  PageHeader,
+  Ring,
+  StatCard,
+  Stagger,
+  StaggerItem
+} from '../components/ui';
 import { useLicense } from '../services/licenseService';
 import { usePaywall } from '../providers/PaywallProvider';
 
@@ -70,7 +81,13 @@ function PipelineCard({
       <div className="mt-4 font-display text-lg font-bold text-white">{title}</div>
       <div className="mt-1.5 flex-1 text-sm leading-relaxed text-slate-400">{body}</div>
       <div className="mt-4 font-mono text-sm font-semibold text-proof-300 mono-tabular">{stat}</div>
-      <Button variant="secondary" size="sm" iconRight={ArrowRight} onClick={onClick} className="mt-3 w-full">
+      <Button
+        variant="secondary"
+        size="sm"
+        iconRight={ArrowRight}
+        onClick={onClick}
+        className="mt-3 w-full"
+      >
         {cta}
       </Button>
     </Card>
@@ -99,7 +116,9 @@ function WeekChart({ data }: { data: { key: string; labels: number; recordings: 
               title={`${d.recordings} proof clips`}
             />
           </div>
-          <div className="font-mono text-[9px] text-slate-500">{ddMmm(new Date(`${d.key}T12:00:00+05:30`).getTime())}</div>
+          <div className="font-mono text-[9px] text-slate-500">
+            {ddMmm(new Date(`${d.key}T12:00:00+05:30`).getTime())}
+          </div>
         </div>
       ))}
     </div>
@@ -122,11 +141,36 @@ function SetupChecklist({
   plan: string;
 }) {
   const steps = [
-    { label: 'Crop a label batch', done: (batches ?? 0) > 0, route: 'labels' as Route, icon: ScanBarcode },
-    { label: 'Record a parcel proof video', done: (recordings ?? 0) > 0, route: 'recorder' as Route, icon: Video },
-    { label: 'Connect the evidence vault', done: vaultStatus === 'connected', route: 'settings' as Route, icon: FolderOpen },
-    { label: 'Prepare a claim pack', done: (claimsTotal ?? 0) > 0, route: 'claims' as Route, icon: Radar },
-    { label: 'Go premium with a plan', done: plan !== 'free', route: 'pricing' as Route, icon: IndianRupee }
+    {
+      label: 'Crop a label batch',
+      done: (batches ?? 0) > 0,
+      route: 'labels' as Route,
+      icon: ScanBarcode
+    },
+    {
+      label: 'Record a parcel proof video',
+      done: (recordings ?? 0) > 0,
+      route: 'recorder' as Route,
+      icon: Video
+    },
+    {
+      label: 'Connect the evidence vault',
+      done: vaultStatus === 'connected',
+      route: 'settings' as Route,
+      icon: FolderOpen
+    },
+    {
+      label: 'Prepare a claim pack',
+      done: (claimsTotal ?? 0) > 0,
+      route: 'claims' as Route,
+      icon: Radar
+    },
+    {
+      label: 'Go premium with a plan',
+      done: plan !== 'free',
+      route: 'pricing' as Route,
+      icon: IndianRupee
+    }
   ];
   const done = steps.filter((s) => s.done).length;
   const all = done === steps.length;
@@ -143,7 +187,9 @@ function SetupChecklist({
             {all ? 'Station fully armed' : 'Set up your station'}
           </div>
           <div className="text-xs text-slate-500">
-            {all ? 'Every module is live — happy packing.' : 'Five quick steps to a fully armed packing station.'}
+            {all
+              ? 'Every module is live — happy packing.'
+              : 'Five quick steps to a fully armed packing station.'}
           </div>
         </div>
       </div>
@@ -193,7 +239,10 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
       const start = istDayStartEpoch(Date.now() - i * 86_400_000);
       const key = istDateKey(new Date(start + 12 * 3_600_000));
       const usage = await db.usage_counters.get(key);
-      const recordings = await db.recordings.where('startedAt').between(start, start + 86_400_000).count();
+      const recordings = await db.recordings
+        .where('startedAt')
+        .between(start, start + 86_400_000)
+        .count();
       out.push({ key, labels: usage?.labelsCropped ?? 0, recordings });
     }
     return out;
@@ -216,54 +265,47 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
     () => db.recordings.where('startedAt').aboveOrEqual(istDayStartEpoch()).count(),
     [istDateKey()]
   );
-  const recentRecordings = useLiveQuery(
-    () => db.recordings.orderBy('startedAt').reverse().limit(6).toArray(),
-    []
-  );
   const pendingClaims = useLiveQuery(
-    () => db.claims.filter((c) => c.status === 'pending' || c.status === 'prepared').sortBy('deadlineAt'),
+    () =>
+      db.claims
+        .filter((c) => c.status === 'pending' || c.status === 'prepared')
+        .sortBy('deadlineAt'),
     []
   );
-  const claimStats = useLiveQuery(
-    async () => {
-      const all = await db.claims.toArray();
-      const won = all.filter((c) => c.status === 'won').length;
-      const lost = all.filter((c) => c.status === 'lost').length;
-      return { won, lost, rate: won + lost > 0 ? Math.round((won / (won + lost)) * 100) : null };
-    },
-    []
-  );
+  const claimStats = useLiveQuery(async () => {
+    const all = await db.claims.toArray();
+    const won = all.filter((c) => c.status === 'won').length;
+    const lost = all.filter((c) => c.status === 'lost').length;
+    return { won, lost, rate: won + lost > 0 ? Math.round((won / (won + lost)) * 100) : null };
+  }, []);
 
   const nearestClaim = pendingClaims && pendingClaims.length > 0 ? pendingClaims[0] : undefined;
   const showConsumables =
     consumables && consumablesAlertDue(consumables.cumulative, consumables.lastShown);
 
-  const activity = useLiveQuery(
-    async () => {
-      const recs = await db.recordings.orderBy('startedAt').reverse().limit(8).toArray();
-      const claims = await db.claims.orderBy('returnScanAt').reverse().limit(8).toArray();
-      const merged = [
-        ...recs.map((r) => ({
-          kind: 'recording' as const,
-          at: r.startedAt,
-          awb: r.awb,
-          title: `${recordingTypeLabel(r.type)} recorded`,
-          detail: `${r.durationSec}s · ${r.courier}${r.demo ? ' · demo cam' : ''}`,
-          flagged: r.flagged
-        })),
-        ...claims.map((c) => ({
-          kind: 'claim' as const,
-          at: c.returnScanAt,
-          awb: c.awb,
-          title: `Bad return flagged — ${c.flagReason}`,
-          detail: `${claimWindowLabel(c.marketplace)} · ${c.sku}`,
-          flagged: false
-        }))
-      ];
-      return merged.sort((a, b) => b.at - a.at).slice(0, 8);
-    },
-    []
-  );
+  const activity = useLiveQuery(async () => {
+    const recs = await db.recordings.orderBy('startedAt').reverse().limit(8).toArray();
+    const claims = await db.claims.orderBy('returnScanAt').reverse().limit(8).toArray();
+    const merged = [
+      ...recs.map((r) => ({
+        kind: 'recording' as const,
+        at: r.startedAt,
+        awb: r.awb,
+        title: `${recordingTypeLabel(r.type)} recorded`,
+        detail: `${r.durationSec}s · ${r.courier}${r.demo ? ' · demo cam' : ''}`,
+        flagged: r.flagged
+      })),
+      ...claims.map((c) => ({
+        kind: 'claim' as const,
+        at: c.returnScanAt,
+        awb: c.awb,
+        title: `Bad return flagged — ${c.flagReason}`,
+        detail: `${claimWindowLabel(c.marketplace)} · ${c.sku}`,
+        flagged: false
+      }))
+    ];
+    return merged.sort((a, b) => b.at - a.at).slice(0, 8);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -272,7 +314,9 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
         <div className="grid-bg absolute inset-0 opacity-70" />
         <div
           className="absolute -right-24 -top-32 h-80 w-80 animate-float-slow rounded-full opacity-25 blur-3xl"
-          style={{ background: 'radial-gradient(closest-side, var(--cp-accent-solid), transparent)' }}
+          style={{
+            background: 'radial-gradient(closest-side, var(--cp-accent-solid), transparent)'
+          }}
         />
         <div
           className="absolute -left-20 bottom-0 h-64 w-64 animate-float-slower rounded-full opacity-15 blur-3xl"
@@ -284,15 +328,19 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
             <Badge tone="outline">Meesho · Flipkart · Amazon · AJIO</Badge>
           </div>
           <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-white sm:text-[2.6rem] sm:leading-[1.1]">
-            {greeting()}, seller.{' '}
-            <span className="text-proof-300">Every parcel, proven.</span>
+            {greeting()}, seller. <span className="text-proof-300">Every parcel, proven.</span>
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-slate-400">
             Crop shipping labels to thermal size, record uncut barcode-verified packing videos, and
             beat every 72-hour / 14-day claim window — all on this PC, all free to start.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button variant="primary" size="lg" icon={ScanBarcode} onClick={() => navigate('labels')}>
+            <Button
+              variant="primary"
+              size="lg"
+              icon={ScanBarcode}
+              onClick={() => navigate('labels')}
+            >
               Crop labels — free
             </Button>
             <Button variant="outline" size="lg" icon={Video} onClick={() => navigate('recorder')}>
@@ -302,54 +350,113 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
         </div>
       </Card>
 
+      {/* ── Zero Data Onboarding State ─────────────────────────────── */}
+      {(ordersInMemory ?? 0) === 0 &&
+        (totalRecordings ?? 0) === 0 &&
+        (claimsTotal ?? 0) === 0 &&
+        (batchesCount ?? 0) === 0 && (
+          <Card className="border-proof-500/40 bg-ink-900/90 p-6 shadow-xl">
+            <EmptyState
+              icon={ScanBarcode}
+              title="Start Here: The 3-Step Daily Loop"
+              description="Welcome to ClaimProof. You haven't cropped any labels or recorded any parcels yet. Protect your business from marketplace return disputes in three simple steps:"
+              primaryAction={{
+                label: 'Crop your first labels',
+                onClick: () => navigate('labels'),
+                icon: ScanBarcode
+              }}
+              secondaryLink={{
+                label: 'Open AWB Recorder (demo camera ready)',
+                onClick: () => navigate('recorder'),
+                icon: Video
+              }}
+            >
+              <div className="mt-4 grid grid-cols-1 gap-3 text-left sm:grid-cols-3">
+                <div className="glass-soft rounded-xl border border-line p-3">
+                  <div className="font-mono text-[10px] font-bold text-proof-300">STEP 1</div>
+                  <div className="mt-1 text-xs font-semibold text-white">Crop Labels</div>
+                  <div className="mt-1 text-[11px] leading-snug text-slate-400">
+                    Drop PDFs to vector-crop to 4×6, stamp SKU &amp; size, and generate picklist
+                    manifests.
+                  </div>
+                </div>
+                <div className="glass-soft rounded-xl border border-line p-3">
+                  <div className="font-mono text-[10px] font-bold text-info-300">STEP 2</div>
+                  <div className="mt-1 text-xs font-semibold text-white">Record Proof</div>
+                  <div className="mt-1 text-[11px] leading-snug text-slate-400">
+                    Scan barcodes to record uncut packing video with burned-in live IST forensic
+                    timestamp.
+                  </div>
+                </div>
+                <div className="glass-soft rounded-xl border border-line p-3">
+                  <div className="font-mono text-[10px] font-bold text-danger-400">STEP 3</div>
+                  <div className="mt-1 text-xs font-semibold text-white">Win Claims</div>
+                  <div className="mt-1 text-[11px] leading-snug text-slate-400">
+                    Press F2 on bad returns to track 72h / 14d / 30d windows with ready dispute
+                    evidence.
+                  </div>
+                </div>
+              </div>
+            </EmptyState>
+          </Card>
+        )}
+
       {/* ── Stats ────────────────────────────────────────────────── */}
       <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StaggerItem>
-        <StatCard
-          icon={ScanBarcode}
-          label="Labels cropped today"
-          value={usage?.labelsCropped ?? 0}
-          sub={license.plan === 'free' ? `Free limit ${FREE_LABELS_PER_DAY}/day` : 'Unlimited plan'}
-          tone="proof"
-          progress={
-            license.plan === 'free'
-              ? { value: usage?.labelsCropped ?? 0, max: FREE_LABELS_PER_DAY }
-              : undefined
-          }
-        />
+          <StatCard
+            icon={ScanBarcode}
+            label="Labels cropped today"
+            value={usage?.labelsCropped ?? 0}
+            sub={
+              license.plan === 'free' ? `Free limit ${FREE_LABELS_PER_DAY}/day` : 'Unlimited plan'
+            }
+            tone="proof"
+            progress={
+              license.plan === 'free'
+                ? { value: usage?.labelsCropped ?? 0, max: FREE_LABELS_PER_DAY }
+                : undefined
+            }
+          />
         </StaggerItem>
         <StaggerItem>
-        <StatCard
-          icon={Video}
-          label="Parcels recorded today"
-          value={recordingsToday ?? 0}
-          sub={license.plan === 'free' ? `Free limit ${FREE_AWBS_PER_DAY}/day` : 'Unlimited plan'}
-          tone="info"
-          progress={
-            license.plan === 'free'
-              ? { value: recordingsToday ?? 0, max: FREE_AWBS_PER_DAY }
-              : undefined
-          }
-        />
+          <StatCard
+            icon={Video}
+            label="Parcels recorded today"
+            value={recordingsToday ?? 0}
+            sub={license.plan === 'free' ? `Free limit ${FREE_AWBS_PER_DAY}/day` : 'Unlimited plan'}
+            tone="info"
+            progress={
+              license.plan === 'free'
+                ? { value: recordingsToday ?? 0, max: FREE_AWBS_PER_DAY }
+                : undefined
+            }
+          />
         </StaggerItem>
         <StaggerItem>
-        <StatCard
-          icon={Radar}
-          label="Pending claims"
-          value={pendingClaims?.length ?? 0}
-          sub={nearestClaim ? `${formatCountdown(nearestClaim.deadlineAt - Date.now())} to next deadline` : 'Nothing waiting'}
-          tone={(pendingClaims?.length ?? 0) > 0 ? 'danger' : 'proof'}
-        />
+          <StatCard
+            icon={Radar}
+            label="Pending claims"
+            value={pendingClaims?.length ?? 0}
+            sub={
+              nearestClaim
+                ? `${formatCountdown(nearestClaim.deadlineAt - Date.now())} to next deadline`
+                : 'Nothing waiting'
+            }
+            tone={(pendingClaims?.length ?? 0) > 0 ? 'danger' : 'proof'}
+          />
         </StaggerItem>
         <StaggerItem>
-        <StatCard
-          icon={TrendingUp}
-          label="Claim win rate"
-          value={claimStats?.rate === null || claimStats?.rate === undefined ? '—' : claimStats.rate}
-          suffix={claimStats?.rate !== null && claimStats?.rate !== undefined ? '%' : undefined}
-          sub={`${claimStats?.won ?? 0} won · ${claimStats?.lost ?? 0} lost`}
-          tone="warn"
-        />
+          <StatCard
+            icon={TrendingUp}
+            label="Claim win rate"
+            value={
+              claimStats?.rate === null || claimStats?.rate === undefined ? '—' : claimStats.rate
+            }
+            suffix={claimStats?.rate !== null && claimStats?.rate !== undefined ? '%' : undefined}
+            sub={`${claimStats?.won ?? 0} won · ${claimStats?.lost ?? 0} lost`}
+            tone="warn"
+          />
         </StaggerItem>
       </Stagger>
 
@@ -363,44 +470,44 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
         />
         <Stagger className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-3">
           <StaggerItem className="h-full">
-          <PipelineCard
-            icon={ScanBarcode}
-            step="STEP 1"
-            title="SmartLabel SKU+"
-            body="Drop up to 15 label PDFs. Vector-crop to 4×6, stamp SKU · Size · Qty, auto-sort by courier and print the picklist manifest."
-            stat={`${ordersInMemory ?? 0} AWBs loaded in memory`}
-            cta="Open SmartLabel Studio"
-            onClick={() => navigate('labels')}
-            accent="proof"
-          />
+            <PipelineCard
+              icon={ScanBarcode}
+              step="STEP 1"
+              title="SmartLabel SKU+"
+              body="Drop up to 15 label PDFs. Vector-crop to 4×6, stamp SKU · Size · Qty, auto-sort by courier and print the picklist manifest."
+              stat={`${ordersInMemory ?? 0} AWBs loaded in memory`}
+              cta="Open SmartLabel Studio"
+              onClick={() => navigate('labels')}
+              accent="proof"
+            />
           </StaggerItem>
           <StaggerItem className="h-full">
-          <PipelineCard
-            icon={Video}
-            step="STEP 2"
-            title="ClaimProof AWB"
-            body="Scan a barcode — the uncut video starts itself with a burnt-in forensic bar. Scan the next parcel and it chains in under 100 ms."
-            stat={`${totalRecordings ?? 0} proof clips in the vault`}
-            cta="Open the Recorder"
-            onClick={() => navigate('recorder')}
-            accent="info"
-          />
+            <PipelineCard
+              icon={Video}
+              step="STEP 2"
+              title="ClaimProof AWB"
+              body="Scan a barcode — the uncut video starts itself with a burnt-in forensic bar. Scan the next parcel and it chains in under 100 ms."
+              stat={`${totalRecordings ?? 0} proof clips in the vault`}
+              cta="Open the Recorder"
+              onClick={() => navigate('recorder')}
+              accent="info"
+            />
           </StaggerItem>
           <StaggerItem className="h-full">
-          <PipelineCard
-            icon={Radar}
-            step="STEP 3"
-            title="ClaimRadar Pro"
-            body="Flag bad returns with F2. Deadlines tick per marketplace — 72 h Meesho, 14 days Flipkart SPF, 30 days Amazon SAFE-T — with 1-click evidence."
-            stat={
-              nearestClaim
-                ? `${formatCountdown(nearestClaim.deadlineAt - Date.now())} — ${nearestClaim.awb}`
-                : 'No live deadlines'
-            }
-            cta="Open ClaimRadar"
-            onClick={() => navigate('claims')}
-            accent="danger"
-          />
+            <PipelineCard
+              icon={Radar}
+              step="STEP 3"
+              title="ClaimRadar Pro"
+              body="Flag bad returns with F2. Deadlines tick per marketplace — 72 h Meesho, 14 days Flipkart SPF, 30 days Amazon SAFE-T — with 1-click evidence."
+              stat={
+                nearestClaim
+                  ? `${formatCountdown(nearestClaim.deadlineAt - Date.now())} — ${nearestClaim.awb}`
+                  : 'No live deadlines'
+              }
+              cta="Open ClaimRadar"
+              onClick={() => navigate('claims')}
+              accent="danger"
+            />
           </StaggerItem>
         </Stagger>
       </div>
@@ -440,10 +547,12 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-sm font-semibold text-white">
-              📦 Packing Supply Alert: ~{(consumables?.cumulative ?? 0).toLocaleString('en-IN')} labels printed.
+              📦 Packing Supply Alert: ~{(consumables?.cumulative ?? 0).toLocaleString('en-IN')}{' '}
+              labels printed.
             </div>
             <div className="mt-0.5 text-xs text-slate-400">
-              Reorder 4×6 thermal rolls &amp; tamper-proof courier bags at direct Surat factory rates before you run out mid-dispatch.
+              Reorder 4×6 thermal rolls &amp; tamper-proof courier bags at direct Surat factory
+              rates before you run out mid-dispatch.
             </div>
           </div>
           <Button
@@ -467,14 +576,17 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
                 You&apos;re on Free — 40 labels &amp; 10 videos every day
               </div>
               <div className="mt-1 text-sm text-slate-400">
-                Starter Station (from ₹208/mo) removes all limits on this PC. ClaimRadar Pro (from ₹375/mo) adds the
-                photo collage engine, return matcher, and marketplace deadline radar.
+                Starter Station (from ₹208/mo) removes all limits on this PC. ClaimRadar Pro (from
+                ₹375/mo) adds the photo collage engine, return matcher, and marketplace deadline
+                radar.
               </div>
             </div>
             <Button
               variant="primary"
               size="lg"
-              onClick={() => openPaywall({ scope: 'general', reason: 'Unlock unlimited recording & ClaimRadar' })}
+              onClick={() =>
+                openPaywall({ scope: 'general', reason: 'Unlock unlimited recording & ClaimRadar' })
+              }
             >
               See plans
             </Button>
@@ -487,20 +599,32 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
         <Card className="p-5 lg:col-span-3">
           <div className="flex items-center justify-between">
             <div className="font-display text-base font-bold text-white">Recent activity</div>
-            <Button variant="ghost" size="xs" iconRight={ArrowRight} onClick={() => navigate('vault')}>
+            <Button
+              variant="ghost"
+              size="xs"
+              iconRight={ArrowRight}
+              onClick={() => navigate('vault')}
+            >
               Vault
             </Button>
           </div>
           <div className="mt-3 divide-y divide-line">
-            {(activity?.length ?? 0) === 0 ? (
+            {activity === undefined ? (
+              <LoadingSkeleton variant="table" lines={3} ariaLabel="Loading recent activity..." />
+            ) : activity.length === 0 ? (
               <EmptyState
                 icon={Video}
                 title="No recordings yet"
-                hint="Crop a label batch, then scan its first AWB in the Recorder."
-                className="py-10"
+                description="Crop a label batch, then scan its first barcode in the AWB Recorder to record proof."
+                primaryAction={{
+                  label: 'Crop labels',
+                  onClick: () => navigate('labels'),
+                  icon: ScanBarcode
+                }}
+                className="py-8"
               />
             ) : (
-              activity?.map((item, i) => (
+              activity.map((item, i) => (
                 <div key={`${item.awb}-${item.at}-${i}`} className="flex items-center gap-3 py-2.5">
                   {item.kind === 'recording' ? (
                     <Video className="h-4 w-4 shrink-0 text-info-400" />
@@ -528,22 +652,40 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
         <Card className="p-5 lg:col-span-2">
           <div className="flex items-center justify-between">
             <div className="font-display text-base font-bold text-white">Deadline radar</div>
-            <Button variant="ghost" size="xs" iconRight={ArrowRight} onClick={() => navigate('claims')}>
+            <Button
+              variant="ghost"
+              size="xs"
+              iconRight={ArrowRight}
+              onClick={() => navigate('claims')}
+            >
               ClaimRadar
             </Button>
           </div>
           <div className="mt-3 space-y-3">
-            {(pendingClaims?.length ?? 0) === 0 ? (
+            {pendingClaims === undefined ? (
+              <LoadingSkeleton variant="table" lines={2} ariaLabel="Loading pending claims..." />
+            ) : pendingClaims.length === 0 ? (
               <EmptyState
                 icon={Timer}
                 title="No live deadlines"
-                hint="Flag a bad return with F2 in Return Unboxing Mode and it lands here."
-                className="py-10"
+                description="When you unbox a damaged, missing, or swapped return, press F2 in the Recorder to flag it here."
+                secondaryLink={{
+                  label: 'Open Recorder',
+                  onClick: () => navigate('recorder')
+                }}
+                className="py-8"
               />
             ) : (
-              pendingClaims?.slice(0, 4).map((claim) => {
+              pendingClaims.slice(0, 4).map((claim) => {
                 const left = claim.deadlineAt - Date.now();
-                const tone = left <= 0 ? 'danger' : left < 8 * 3_600_000 ? 'danger' : left < 24 * 3_600_000 ? 'warn' : 'proof';
+                const tone =
+                  left <= 0
+                    ? 'danger'
+                    : left < 8 * 3_600_000
+                      ? 'danger'
+                      : left < 24 * 3_600_000
+                        ? 'warn'
+                        : 'proof';
                 return (
                   <button
                     key={claim.id}
@@ -551,14 +693,24 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
                     onClick={() => navigate('claims')}
                     className="glass-soft flex w-full items-center gap-3 p-3 text-left transition-colors hover:border-line-bright"
                   >
-                    <Timer className={`h-4 w-4 shrink-0 ${tone === 'danger' ? 'text-danger-400' : tone === 'warn' ? 'text-warn-400' : 'text-proof-400'}`} />
+                    <Timer
+                      className={`h-4 w-4 shrink-0 ${tone === 'danger' ? 'text-danger-400' : tone === 'warn' ? 'text-warn-400' : 'text-proof-400'}`}
+                    />
                     <div className="min-w-0 flex-1">
-                      <div className="truncate font-mono text-sm font-semibold text-white">{claim.awb}</div>
-                      <div className="truncate text-[11px] text-slate-500">{claimWindowLabel(claim.marketplace)}</div>
+                      <div className="truncate font-mono text-sm font-semibold text-white">
+                        {claim.awb}
+                      </div>
+                      <div className="truncate text-[11px] text-slate-500">
+                        {claimWindowLabel(claim.marketplace)}
+                      </div>
                     </div>
                     <div
                       className={`shrink-0 font-mono text-xs font-bold mono-tabular ${
-                        tone === 'danger' ? 'text-danger-300' : tone === 'warn' ? 'text-warn-300' : 'text-proof-300'
+                        tone === 'danger'
+                          ? 'text-danger-300'
+                          : tone === 'warn'
+                            ? 'text-warn-300'
+                            : 'text-proof-300'
                       }`}
                     >
                       {formatCountdown(left)}

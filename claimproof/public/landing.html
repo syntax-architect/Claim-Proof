@@ -1,0 +1,1385 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>ClaimProof — Local-First Shipping Label Studio & AWB Video Proof for Indian Marketplace Sellers</title>
+    <meta name="description" content="ClaimProof pairs daily thermal shipping label printing with uncut barcode-verified packing and unboxing video evidence—saving Indian marketplace sellers from return fraud without cloud fees or data uploads." />
+    <meta name="keywords" content="meesho label crop, flipkart return dispute, amazon safe-t claim, awb packing video recorder, shipping label 4x6, ecommerce fraud protection india, thermal printer label cropper, local first pwa" />
+    <meta name="author" content="ClaimProof Suite" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://claimproof.in/landing.html" />
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://claimproof.in/landing.html" />
+    <meta property="og:title" content="ClaimProof — Stop Marketplace Return Fraud With Uncut Barcode Video Proof" />
+    <meta property="og:description" content="Local-first label cropper, barcode-verified packing video recorder, and claim-deadline radar for Meesho, Flipkart &amp; Amazon India sellers. ₹0 server cost." />
+    <meta property="og:image" content="https://claimproof.in/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="ClaimProof Suite — Local-First Shipping Label & AWB Proof Recorder" />
+    <meta property="og:site_name" content="ClaimProof" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://claimproof.in/landing.html" />
+    <meta name="twitter:title" content="ClaimProof — Stop Marketplace Return Fraud With Uncut Barcode Video Proof" />
+    <meta
+      name="twitter:description"
+      content="Local-first shipping label cropper and hands-free AWB video packing proof station for Indian sellers. All videos save to your local drive."
+    />
+    <meta name="twitter:image" content="https://claimproof.in/og-image.png" />
+
+    <!-- Theme & Icons -->
+    <meta name="theme-color" content="#0a0c12" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --cp-bg: #0a0c12;
+        --cp-surface: #10131b;
+        --cp-surface-2: #171b26;
+        --cp-surface-hover: #1e2330;
+        --cp-line: rgba(148, 163, 184, 0.12);
+        --cp-line-bright: rgba(148, 163, 184, 0.24);
+        --cp-text: #edeff5;
+        --cp-text-muted: #9aa3b2;
+        --cp-text-subtle: #6b7482;
+        --cp-accent: #3b82f6;
+        --cp-accent-hover: #2563eb;
+        --cp-accent-light: #93c5fd;
+        --cp-warn: #fbbf24;
+        --cp-danger: #ef4444;
+        --cp-success: #22c55e;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        background-color: var(--cp-bg);
+      }
+
+      body {
+        background-color: var(--cp-bg);
+        color: var(--cp-text);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      /* Background styling */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          radial-gradient(ellipse 70% 50% at 50% 0%, rgba(59, 130, 246, 0.09) 0%, transparent 70%),
+          radial-gradient(circle 1px at center, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+        background-size: 100% 100%, 40px 40px;
+        opacity: 0.7;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Navbar */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(10, 12, 18, 0.82);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--cp-line);
+      }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 4.25rem;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: #fff;
+      }
+      .brand-icon {
+        width: 2.25rem;
+        height: 2.25rem;
+        background: var(--cp-surface-2);
+        border: 1px solid rgba(59, 130, 246, 0.4);
+        border-radius: 0.65rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cp-accent);
+      }
+      .brand-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .brand-title span {
+        color: var(--cp-accent);
+      }
+      .nav-links {
+        display: none;
+        align-items: center;
+        gap: 2rem;
+      }
+      @media (min-width: 768px) {
+        .nav-links {
+          display: flex;
+        }
+      }
+      .nav-link {
+        color: var(--cp-text-muted);
+        text-decoration: none;
+        font-size: 0.92rem;
+        font-weight: 500;
+        transition: color 0.15s ease;
+      }
+      .nav-link:hover {
+        color: #fff;
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        padding: 0.75rem 1.4rem;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid transparent;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      }
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+      }
+      .btn-secondary {
+        background: var(--cp-surface-2);
+        color: var(--cp-text);
+        border-color: var(--cp-line-bright);
+      }
+      .btn-secondary:hover {
+        background: var(--cp-surface-hover);
+        color: #fff;
+        border-color: rgba(148, 163, 184, 0.4);
+      }
+      .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        border-radius: 0.6rem;
+      }
+      .btn-lg {
+        padding: 0.95rem 1.85rem;
+        font-size: 1.05rem;
+        border-radius: 0.85rem;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 4.5rem 0 3rem;
+        text-align: center;
+      }
+      .badge-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 9999px;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: var(--cp-accent-light);
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.02em;
+      }
+      .hero-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.25rem, 5vw, 3.75rem);
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+        color: #ffffff;
+        max-width: 960px;
+        margin: 0 auto 1.25rem;
+      }
+      .hero-title .gradient-text {
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #93c5fd 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero-promise {
+        font-size: clamp(1.05rem, 2vw, 1.25rem);
+        color: var(--cp-text-muted);
+        max-width: 820px;
+        margin: 0 auto 2.25rem;
+        line-height: 1.65;
+        font-weight: 400;
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .hero-guarantees {
+        font-size: 0.85rem;
+        color: var(--cp-text-subtle);
+      }
+
+      /* Marketplaces Bar */
+      .marketplaces {
+        margin: 3.5rem 0 1rem;
+        text-align: center;
+      }
+      .marketplaces-label {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--cp-text-subtle);
+        margin-bottom: 1.25rem;
+        font-weight: 600;
+      }
+      .marketplaces-grid {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+      }
+      .mp-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--cp-surface);
+        border: 1px solid var(--cp-line);
+        padding: 0.5rem 1rem;
+        border-radius: 0.65rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--cp-text);
+      }
+
+      /* Demo Section */
+      .demo-section {
+        padding: 4.5rem 0;
+      }
+      .section-header {
+        text-align: center;
+        max-width: 720px;
+        margin: 0 auto 3rem;
+      }
+      .section-badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--cp-accent);
+        margin-bottom: 0.65rem;
+      }
+      .section-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #ffffff;
+        margin-bottom: 0.85rem;
+      }
+      .section-desc {
+        color: var(--cp-text-muted);
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+
+      .demo-frame {
+        background: var(--cp-surface);
+        border: 1px solid var(--cp-line-bright);
+        border-radius: 1.25rem;
+        padding: 1rem;
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px -10px rgba(59, 130, 246, 0.15);
+        overflow: hidden;
+      }
+      .demo-media {
+        width: 100%;
+        display: block;
+        border-radius: 0.85rem;
+        background: #07090e;
+      }
+      .demo-caption {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 0.5rem 0.25rem;
+        font-size: 0.88rem;
+        color: var(--cp-text-muted);
+      }
+      .demo-caption-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .demo-caption-item strong {
+        color: var(--cp-text);
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--cp-success);
+        box-shadow: 0 0 8px var(--cp-success);
+      }
+
+      /* Steps Section */
+      .steps-section {
+        padding: 4.5rem 0;
+      }
+      .steps-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      @media (min-width: 768px) {
+        .steps-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .step-card {
+        background: var(--cp-surface);
+        border: 1px solid var(--cp-line);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+      }
+      .step-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+      .step-number {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--cp-accent);
+        background: rgba(59, 130, 246, 0.12);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 0.65rem;
+        margin-bottom: 1.25rem;
+      }
+      .step-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+      }
+      .step-body {
+        color: var(--cp-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.25rem;
+        flex-grow: 1;
+      }
+      .step-bullets {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--cp-text);
+      }
+      .step-bullets li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .step-bullets li::before {
+        content: '✓';
+        color: var(--cp-accent);
+        font-weight: 700;
+      }
+
+      /* Local-First Architecture Callout */
+      .privacy-callout {
+        margin: 4.5rem 0;
+        background: linear-gradient(135deg, rgba(23, 27, 38, 0.9) 0%, rgba(16, 19, 27, 0.9) 100%);
+        border: 1px solid var(--cp-line-bright);
+        border-radius: 1.5rem;
+        padding: 3rem 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .privacy-callout::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .privacy-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        align-items: center;
+      }
+      @media (min-width: 900px) {
+        .privacy-grid {
+          grid-template-columns: 1.2fr 1fr;
+        }
+      }
+      .privacy-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 1rem;
+      }
+      .privacy-desc {
+        color: var(--cp-text-muted);
+        font-size: 1rem;
+        line-height: 1.65;
+        margin-bottom: 1.5rem;
+      }
+      .privacy-features {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .privacy-feature-card {
+        background: rgba(10, 12, 18, 0.6);
+        border: 1px solid var(--cp-line);
+        padding: 1rem;
+        border-radius: 0.75rem;
+      }
+      .privacy-feature-card h4 {
+        font-size: 0.95rem;
+        color: #fff;
+        margin-bottom: 0.35rem;
+      }
+      .privacy-feature-card p {
+        font-size: 0.82rem;
+        color: var(--cp-text-muted);
+        line-height: 1.45;
+      }
+
+      /* Pricing Table Section */
+      .pricing-section {
+        padding: 4.5rem 0;
+      }
+      .pricing-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2rem 0 3rem;
+      }
+      .toggle-btn {
+        background: var(--cp-surface-2);
+        border: 1px solid var(--cp-line);
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.75rem;
+        color: var(--cp-text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .toggle-btn.active {
+        background: var(--cp-accent);
+        color: #fff;
+        border-color: var(--cp-accent);
+      }
+      .toggle-badge {
+        background: rgba(34, 197, 94, 0.15);
+        color: var(--cp-success);
+        padding: 0.25rem 0.65rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      @media (min-width: 640px) {
+        .pricing-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1024px) {
+        .pricing-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      .pricing-card {
+        background: var(--cp-surface);
+        border: 1px solid var(--cp-line);
+        border-radius: 1.25rem;
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+      }
+      .pricing-card.popular {
+        background: linear-gradient(180deg, rgba(23, 27, 38, 0.95) 0%, rgba(16, 19, 27, 0.95) 100%);
+        border-color: var(--cp-accent);
+        box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.35);
+      }
+      .pricing-card:hover {
+        transform: translateY(-4px);
+      }
+      .popular-badge {
+        position: absolute;
+        top: -0.75rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+      }
+      .plan-name {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.35rem;
+      }
+      .plan-tagline {
+        font-size: 0.82rem;
+        color: var(--cp-text-muted);
+        margin-bottom: 1.5rem;
+        min-height: 2.5rem;
+        line-height: 1.45;
+      }
+      .plan-price-wrap {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--cp-line);
+      }
+      .plan-price {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+      }
+      .plan-period {
+        font-size: 0.85rem;
+        color: var(--cp-text-subtle);
+        margin-top: 0.35rem;
+      }
+      .plan-savings {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--cp-success);
+        font-weight: 600;
+        margin-top: 0.25rem;
+      }
+      .plan-features {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        font-size: 0.88rem;
+        color: var(--cp-text-muted);
+        margin-bottom: 2rem;
+        flex-grow: 1;
+      }
+      .plan-features li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        line-height: 1.4;
+      }
+      .plan-features li strong {
+        color: #fff;
+      }
+      .feature-check {
+        color: var(--cp-accent);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .feature-cross {
+        color: var(--cp-text-subtle);
+        flex-shrink: 0;
+      }
+      .plan-btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      /* Detailed Feature Comparison Table */
+      .comparison-wrap {
+        margin-top: 4rem;
+        overflow-x: auto;
+      }
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
+        font-size: 0.88rem;
+      }
+      .comparison-table th,
+      .comparison-table td {
+        padding: 0.85rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--cp-line);
+      }
+      .comparison-table th {
+        font-family: 'Space Grotesk', sans-serif;
+        color: #fff;
+        font-weight: 700;
+        background: var(--cp-surface);
+      }
+      .comparison-table th:first-child {
+        border-top-left-radius: 0.75rem;
+      }
+      .comparison-table th:last-child {
+        border-top-right-radius: 0.75rem;
+      }
+      .comparison-table td {
+        color: var(--cp-text-muted);
+      }
+      .comparison-table td:first-child {
+        font-weight: 500;
+        color: var(--cp-text);
+      }
+      .comparison-table tr:hover td {
+        background: rgba(23, 27, 38, 0.5);
+      }
+
+      /* FAQ Section */
+      .faq-section {
+        padding: 4.5rem 0;
+      }
+      .faq-grid {
+        max-width: 820px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+      .faq-item {
+        background: var(--cp-surface);
+        border: 1px solid var(--cp-line);
+        border-radius: 1rem;
+        padding: 1.5rem;
+      }
+      .faq-q {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+      .faq-q::before {
+        content: 'Q.';
+        color: var(--cp-accent);
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .faq-a {
+        color: var(--cp-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.65;
+        padding-left: 1.85rem;
+      }
+      .faq-a strong {
+        color: var(--cp-text);
+      }
+
+      /* CTA Banner */
+      .cta-section {
+        padding: 5rem 0;
+      }
+      .cta-card {
+        background: linear-gradient(135deg, rgba(23, 27, 38, 0.98) 0%, rgba(16, 19, 27, 0.98) 100%);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 1.75rem;
+        padding: 4rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7);
+      }
+      .cta-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle at center, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .cta-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 1rem;
+        position: relative;
+      }
+      .cta-desc {
+        color: var(--cp-text-muted);
+        font-size: 1.1rem;
+        max-width: 640px;
+        margin: 0 auto 2.25rem;
+        position: relative;
+      }
+      .cta-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        position: relative;
+      }
+
+      /* Footer */
+      .footer {
+        border-top: 1px solid var(--cp-line);
+        padding: 3.5rem 0 2.5rem;
+        background: #07090e;
+        font-size: 0.88rem;
+        color: var(--cp-text-subtle);
+      }
+      .footer-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+      @media (min-width: 768px) {
+        .footer-inner {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+      }
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+      .footer-link {
+        color: var(--cp-text-muted);
+        text-decoration: none;
+        transition: color 0.15s ease;
+      }
+      .footer-link:hover {
+        color: #fff;
+      }
+      .footer-disclaimer {
+        font-size: 0.78rem;
+        line-height: 1.5;
+        color: var(--cp-text-subtle);
+        margin-top: 1.5rem;
+        border-top: 1px solid var(--cp-line);
+        padding-top: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header class="nav">
+      <div class="container nav-inner">
+        <a href="/" class="brand" aria-label="ClaimProof Home">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8V4h4" />
+              <path d="M20 8V4h-4" />
+              <path d="M4 16v4h4" />
+              <path d="M20 16v4h-4" />
+              <rect width="8" height="8" x="8" y="8" rx="1.5" />
+            </svg>
+          </div>
+          <div class="brand-title">Claim<span>Proof</span></div>
+        </a>
+
+        <nav class="nav-links" aria-label="Main Navigation">
+          <a href="#demo" class="nav-link">30s Demo</a>
+          <a href="#how-it-works" class="nav-link">How It Works</a>
+          <a href="#privacy" class="nav-link">Local-First Security</a>
+          <a href="#pricing" class="nav-link">Free vs Paid</a>
+          <a href="#faq" class="nav-link">FAQ</a>
+        </nav>
+
+        <div>
+          <a href="/#labels" class="btn btn-primary btn-sm">Try Free Forever</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="badge-eyebrow">
+            <span>🛡️</span>
+            <span>100% Local-First Desktop PWA · Zero Server Cost · Works Offline</span>
+          </div>
+
+          <h1 class="hero-title">
+            Stop Marketplace Return Fraud With <span class="gradient-text">Uncut Barcode Proof</span>
+          </h1>
+
+          <p class="hero-promise">
+            ClaimProof pairs daily thermal shipping label printing with uncut barcode-verified packing and unboxing video evidence—saving Indian marketplace sellers from return fraud without cloud fees or data uploads.
+          </p>
+
+          <div class="hero-actions">
+            <a href="/#labels" class="btn btn-primary btn-lg">
+              <span>Try Free Forever</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+            <a href="#demo" class="btn btn-secondary btn-lg">
+              <span>Watch 30s Demo</span>
+            </a>
+          </div>
+
+          <p class="hero-guarantees">
+            Free forever: 40 labels + 10 videos/day · No credit card required · Zero cloud data uploads
+          </p>
+
+          <!-- Marketplace compatibility strip -->
+          <div class="marketplaces">
+            <div class="marketplaces-label">Engineered specifically for Indian marketplace workflows</div>
+            <div class="marketplaces-grid">
+              <span class="mp-chip">Meesho SAFE</span>
+              <span class="mp-chip">Flipkart SPF</span>
+              <span class="mp-chip">Amazon SAFE-T</span>
+              <span class="mp-chip">Myntra Returns</span>
+              <span class="mp-chip">AJIO Disputes</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 30-Second Demo Section (GIF / Video Placeholder) -->
+      <section id="demo" class="demo-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-badge">Fast Hands-Free Workflow</span>
+            <h2 class="section-title">See It In Action In 30 Seconds</h2>
+            <p class="section-desc">
+              How a seller scans an AWB barcode, records uncut packing proof with an indelible burned-in timestamp, and auto-saves to local hard drive with zero mouse clicks.
+            </p>
+          </div>
+
+          <div class="demo-frame">
+            <!-- 30-second demo visual illustration -->
+            <img
+              src="/demo-preview.svg"
+              alt="30-second workflow demo: Scan AWB barcode, record uncut video with live IST timestamp, auto-stitch 4-photo collage, and save directly to local hard drive"
+              class="demo-media"
+              width="960"
+              height="540"
+              loading="eager"
+            />
+
+            <div class="demo-caption">
+              <div class="demo-caption-item">
+                <span class="status-dot"></span>
+                <span>Recording station status: <strong>Active Compositor (1080p 60fps)</strong></span>
+              </div>
+              <div class="demo-caption-item">
+                <span>Trigger: <strong>&lt;80ms Barcode Gun or Webcam</strong></span>
+              </div>
+              <div class="demo-caption-item">
+                <span>Storage: <strong>Local Hard Drive (Chromium File System Access)</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works in 3 Steps -->
+      <section id="how-it-works" class="steps-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-badge">How It Works</span>
+            <h2 class="section-title">Three Steps From Label To Irrefutable Proof</h2>
+            <p class="section-desc">
+              Built directly into your warehouse packing table routine so packers never have to stop or click a mouse.
+            </p>
+          </div>
+
+          <div class="steps-grid">
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-number">01</div>
+              <h3 class="step-title">Batch Drop &amp; Vector Crop Labels</h3>
+              <p class="step-body">
+                Drop up to 15 Meesho, Flipkart, Amazon, or AJIO shipping PDFs at once. SmartLabel Studio vector-crops them to clean 4×6 inch thermal labels without blurry distortion.
+              </p>
+              <ul class="step-bullets">
+                <li>Automatic SKU, size, color, and qty footer stamps</li>
+                <li>Multi-unit warning borders on parcels with Qty &gt; 1</li>
+                <li>Auto-generates picklists and handover manifests</li>
+                <li>Pre-indexes AWBs into local memory for instant scanning</li>
+              </ul>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-number">02</div>
+              <h3 class="step-title">Hands-Free Barcode Video Recording</h3>
+              <p class="step-body">
+                Scan the package barcode with any USB/Bluetooth handheld barcode gun or webcam. ClaimProof instantly starts continuous uncut recording.
+              </p>
+              <ul class="step-bullets">
+                <li>Burnt-in forensic banner with live IST microsecond timestamps</li>
+                <li>Stitches 4 timed high-res frames into a 2×2 photo collage</li>
+                <li>Sub-100ms parcel chaining: next AWB scan saves and loops</li>
+                <li>Supports Dispatch packing and Return Unboxing modes</li>
+              </ul>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-number">03</div>
+              <h3 class="step-title">Track Deadlines &amp; File Claims</h3>
+              <p class="step-body">
+                When customer returns or RTO parcels arrive damaged or swapped, flag them in unboxing mode. ClaimRadar tracks marketplace filing windows.
+              </p>
+              <ul class="step-bullets">
+                <li>Real-time filing countdown radars (72h / 14d / 30d) <em>[needs verification]</em></li>
+                <li>Side-by-side evidence matcher: Dispatch vs. Return</li>
+                <li>1-click auto-generated dispute dossier text</li>
+                <li>Direct photo collage &amp; MP4 video attachment for tickets</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Local-First Architecture Callout -->
+      <section id="privacy" class="container">
+        <div class="privacy-callout">
+          <div class="privacy-grid">
+            <div>
+              <h3 class="privacy-title">100% Local-First. Zero Cloud Fees. Zero Data Leaks.</h3>
+              <p class="privacy-desc">
+                Cloud-based evidence systems charge monthly storage fees and require gigabytes of daily video uploads over warehouse internet. ClaimProof uses the Chromium File System Access API to write uncut MP4 videos and high-res JPEG collages straight to your workstation's hard drive or external SSD.
+              </p>
+              <a href="/#labels" class="btn btn-secondary">Test On Your Local Drive</a>
+            </div>
+            <div class="privacy-features">
+              <div class="privacy-feature-card">
+                <h4>🔒 Zero Server Uploads</h4>
+                <p>No customer addresses, phone numbers, or video footage ever leave your computer.</p>
+              </div>
+              <div class="privacy-feature-card">
+                <h4>⚡ Instant Local Storage</h4>
+                <p>Videos write at full SSD write speeds with zero network buffering or upload queues.</p>
+              </div>
+              <div class="privacy-feature-card">
+                <h4>📴 True Offline PWA</h4>
+                <p>Keep packing and recording seamlessly during internet outages and broadband drops.</p>
+              </div>
+              <div class="privacy-feature-card">
+                <h4>🔑 Hardware Licensing</h4>
+                <p>Offline ES256 cryptographic JWT licenses with 1-click self-serve machine transfer.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Free vs Paid Pricing Table -->
+      <section id="pricing" class="pricing-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-badge">Transparent Pricing</span>
+            <h2 class="section-title">Free Forever Or Unlimited Power</h2>
+            <p class="section-desc">
+              All plans include complete offline privacy. Start free without an account; upgrade whenever your daily volume demands unlimited packing capacity.
+            </p>
+
+            <!-- Monthly / Annual Toggle -->
+            <div class="pricing-toggle">
+              <button type="button" class="toggle-btn" id="btn-monthly" onclick="setBilling('monthly')">Monthly Billing</button>
+              <button type="button" class="toggle-btn active" id="btn-annual" onclick="setBilling('annual')">
+                Annual Billing <span class="toggle-badge">Save up to 40%</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards Grid -->
+          <div class="pricing-grid">
+            <!-- Free Tier -->
+            <div class="pricing-card">
+              <h3 class="plan-name">Free Forever</h3>
+              <p class="plan-tagline">Ideal for small sellers testing their packing setup</p>
+              <div class="plan-price-wrap">
+                <div class="plan-price">₹0</div>
+                <div class="plan-period">free forever</div>
+                <span class="plan-savings">No credit card needed</span>
+              </div>
+              <ul class="plan-features">
+                <li><span class="feature-check">✓</span> <strong>40 label crops</strong> / day</li>
+                <li><span class="feature-check">✓</span> <strong>10 AWB videos</strong> / day</li>
+                <li><span class="feature-check">✓</span> Standard forensic watermark</li>
+                <li><span class="feature-check">✓</span> Picklists &amp; manifests (with seal)</li>
+                <li><span class="feature-check">✓</span> 1 PC workstation</li>
+                <li><span class="feature-cross">✕</span> Auto 4-photo collage</li>
+                <li><span class="feature-cross">✕</span> Claim deadline radar</li>
+                <li><span class="feature-cross">✕</span> Side-by-side return matcher</li>
+              </ul>
+              <a href="/#labels" class="btn btn-secondary plan-btn">Try Free Forever</a>
+            </div>
+
+            <!-- Starter Station -->
+            <div class="pricing-card">
+              <h3 class="plan-name">Starter Station</h3>
+              <p class="plan-tagline">Unlimited label cropping &amp; barcode packing videos for 1 workstation</p>
+              <div class="plan-price-wrap">
+                <div class="plan-price price-val" data-monthly="₹349" data-annual="₹2,499">₹2,499</div>
+                <div class="plan-period period-val" data-monthly="/ month" data-annual="/ year (₹208/mo)">/ year (₹208/mo)</div>
+                <span class="plan-savings savings-val" data-monthly="Regular billing" data-annual="Save 40% (₹7/day)">Save 40% (₹7/day)</span>
+              </div>
+              <ul class="plan-features">
+                <li><span class="feature-check">✓</span> <strong>Unlimited</strong> 4×6 / 4×4 label cropping</li>
+                <li><span class="feature-check">✓</span> <strong>Unlimited</strong> uncut AWB packing videos</li>
+                <li><span class="feature-check">✓</span> Burnt-in IST forensic watermark</li>
+                <li><span class="feature-check">✓</span> Clean white-label manifests</li>
+                <li><span class="feature-check">✓</span> 1 PC offline license</li>
+                <li><span class="feature-check">✓</span> Email support</li>
+                <li><span class="feature-cross">✕</span> Auto 4-photo collage</li>
+                <li><span class="feature-cross">✕</span> Claim deadline radar</li>
+              </ul>
+              <a href="/#pricing" class="btn btn-secondary plan-btn">Get Starter</a>
+            </div>
+
+            <!-- ClaimRadar Pro (Most Popular) -->
+            <div class="pricing-card popular">
+              <div class="popular-badge">MOST POPULAR</div>
+              <h3 class="plan-name">ClaimRadar Pro</h3>
+              <p class="plan-tagline">Complete forensic dispute proof suite to overturn rejected claims</p>
+              <div class="plan-price-wrap">
+                <div class="plan-price price-val" data-monthly="₹599" data-annual="₹4,499">₹4,499</div>
+                <div class="plan-period period-val" data-monthly="/ month" data-annual="/ year (₹375/mo)">/ year (₹375/mo)</div>
+                <span class="plan-savings savings-val" data-monthly="Regular billing" data-annual="Save 37% (₹12/day)">Save 37% (₹12/day)</span>
+              </div>
+              <ul class="plan-features">
+                <li><span class="feature-check">✓</span> <strong>Everything in Starter Station</strong></li>
+                <li><span class="feature-check">✓</span> <strong>Auto 4-photo collage</strong> (T+0.5, 3, 6, 9s)</li>
+                <li><span class="feature-check">✓</span> <strong>Claim deadline radar</strong> (72h / 14d / 30d) <em>[needs verification]</em></li>
+                <li><span class="feature-check">✓</span> <strong>Dispatch-to-return matcher</strong></li>
+                <li><span class="feature-check">✓</span> <strong>1-click dispute dossier</strong> for Meesho, Flipkart &amp; Amazon</li>
+                <li><span class="feature-check">✓</span> 1 PC offline license</li>
+                <li><span class="feature-check">✓</span> Priority email support</li>
+              </ul>
+              <a href="/#pricing" class="btn btn-primary plan-btn">Get ClaimRadar Pro</a>
+            </div>
+
+            <!-- Warehouse 3-Table Pack -->
+            <div class="pricing-card">
+              <h3 class="plan-name">Warehouse Pack</h3>
+              <p class="plan-tagline">Multi-table packing team license for factories &amp; wholesale hubs</p>
+              <div class="plan-price-wrap">
+                <div class="plan-price price-val" data-monthly="₹1,199" data-annual="₹8,999">₹8,999</div>
+                <div class="plan-period period-val" data-monthly="/ month" data-annual="/ year (₹750/mo)">/ year (₹750/mo)</div>
+                <span class="plan-savings savings-val" data-monthly="Regular billing" data-annual="Save 37% (₹25/day)">Save 37% (₹25/day)</span>
+              </div>
+              <ul class="plan-features">
+                <li><span class="feature-check">✓</span> <strong>Everything in ClaimRadar Pro</strong></li>
+                <li><span class="feature-check">✓</span> <strong>3 simultaneous PC licenses</strong> for packing tables</li>
+                <li><span class="feature-check">✓</span> <strong>Phone-as-scanner</strong> companion seats</li>
+                <li><span class="feature-check">✓</span> Shared central vault folder support</li>
+                <li><span class="feature-check">✓</span> Dedicated 1-on-1 WhatsApp dispute support</li>
+              </ul>
+              <a href="/#pricing" class="btn btn-secondary plan-btn">Get Warehouse Pack</a>
+            </div>
+          </div>
+
+          <!-- Feature Matrix Table -->
+          <div class="comparison-wrap">
+            <table class="comparison-table" aria-label="Detailed Plan Feature Matrix">
+              <thead>
+                <tr>
+                  <th>Feature Comparison</th>
+                  <th>Free Tier</th>
+                  <th>Starter Station</th>
+                  <th>ClaimRadar Pro ★</th>
+                  <th>Warehouse 3-Pack</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Daily Label Cropping Limit</td>
+                  <td>40 labels / day</td>
+                  <td>Unlimited</td>
+                  <td>Unlimited</td>
+                  <td>Unlimited</td>
+                </tr>
+                <tr>
+                  <td>Daily AWB Video Recording</td>
+                  <td>10 videos / day</td>
+                  <td>Unlimited</td>
+                  <td>Unlimited</td>
+                  <td>Unlimited</td>
+                </tr>
+                <tr>
+                  <td>Forensic Timestamp Watermark</td>
+                  <td>Standard IST</td>
+                  <td>Burnt-in HD IST</td>
+                  <td>Burnt-in HD IST</td>
+                  <td>Burnt-in HD IST</td>
+                </tr>
+                <tr>
+                  <td>Automated 4-Photo Collage</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>Yes (T+0.5, 3, 6, 9s)</td>
+                  <td>Yes (T+0.5, 3, 6, 9s)</td>
+                </tr>
+                <tr>
+                  <td>Dispute Deadline Radar</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>Yes (72h / 14d / 30d) <em>[needs verification]</em></td>
+                  <td>Yes (72h / 14d / 30d) <em>[needs verification]</em></td>
+                </tr>
+                <tr>
+                  <td>Side-by-Side Return Matcher</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>Yes (Dispatch vs Return)</td>
+                  <td>Yes (Dispatch vs Return)</td>
+                </tr>
+                <tr>
+                  <td>Workstation Licenses</td>
+                  <td>1 PC</td>
+                  <td>1 PC</td>
+                  <td>1 PC</td>
+                  <td>3 PCs simultaneous</td>
+                </tr>
+                <tr>
+                  <td>Storage Architecture</td>
+                  <td>Local Drive / Downloads</td>
+                  <td>Local Drive (File System Access)</td>
+                  <td>Local Drive (File System Access)</td>
+                  <td>Shared Central Vault Folder</td>
+                </tr>
+                <tr>
+                  <td>Support Channel</td>
+                  <td>Community</td>
+                  <td>Email</td>
+                  <td>Priority Email</td>
+                  <td>Dedicated 1-on-1 WhatsApp</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section id="faq" class="faq-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-badge">Frequently Asked Questions</span>
+            <h2 class="section-title">Clear Answers, Zero Guesswork</h2>
+            <p class="section-desc">
+              Everything you need to know about local-first privacy, device transfers, and returns.
+            </p>
+          </div>
+
+          <div class="faq-grid">
+            <div class="faq-item">
+              <h3 class="faq-q">Is my data uploaded anywhere?</h3>
+              <div class="faq-a">
+                <strong>No. ClaimProof is strictly local-first.</strong> All shipping label parsing, barcode detection, video recording, and photo collages execute 100% on your workstation in your browser. Videos and images are saved directly to your local hard drive via the Chromium File System Access API (or browser Downloads fallback). Zero customer data, tracking numbers, or video bytes are ever uploaded to any cloud server or database.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <h3 class="faq-q">What if I change PC or format my workstation?</h3>
+              <div class="faq-a">
+                <strong>ClaimProof includes soft device binding. You are never locked out.</strong> If you upgrade your laptop, switch warehouse packing tables, or format your computer, you can move your active license with 1 click right from the app (<em>"Move license to this device"</em>). Your video files remain safely on your hard drive or external SSD where you saved them.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <h3 class="faq-q">What is the refund policy?</h3>
+              <div class="faq-a">
+                We offer a <strong>Free Forever plan (40 labels/day and 10 recordings/day)</strong> so you can test ClaimProof thoroughly on your actual warehouse setup before paying anything. For paid licenses, if the software does not work on your setup or hardware, contact support within 7 days of purchase for a prompt refund.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <h3 class="faq-q">Can I use ClaimProof without an active internet connection?</h3>
+              <div class="faq-a">
+                <strong>Yes. ClaimProof is a true offline-first Progressive Web App (PWA).</strong> Once loaded or installed on your desktop, all label vector cropping, barcode scanning, video recording, and license verification run completely offline. You never need an internet connection at the packing table.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <h3 class="faq-q">What barcode scanners and cameras are compatible?</h3>
+              <div class="faq-a">
+                ClaimProof works with <strong>any standard USB or Bluetooth handheld barcode scanner gun</strong> (HID keyboard emulation mode) and <strong>any standard USB webcam or built-in camera</strong>. No proprietary hardware or drivers are required.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <h3 class="faq-q">Are marketplace dispute deadlines guaranteed?</h3>
+              <div class="faq-a">
+                Return dispute filing deadlines (e.g. Meesho SAFE 72h, Flipkart SPF 14 days, Amazon SAFE-T 30 days) are based on published platform guidelines and are marked <em>[needs verification]</em> because marketplaces periodically adjust their seller policies. ClaimProof provides real-time configurable countdowns to keep your team ahead of deadlines.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Final CTA Section -->
+      <section class="cta-section">
+        <div class="container">
+          <div class="cta-card">
+            <h2 class="cta-title">Start Protecting Your Orders Today</h2>
+            <p class="cta-desc">
+              Join Indian marketplace sellers using local-first thermal label cropping and barcode-verified uncut proof to stop transit fraud.
+            </p>
+            <div class="cta-buttons">
+              <a href="/#labels" class="btn btn-primary btn-lg">
+                <span>Try Free Forever</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </a>
+              <a href="/#pricing" class="btn btn-secondary btn-lg">View All Plans</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; color: #fff; font-weight: 700; margin-bottom: 0.5rem;">
+            <span>ClaimProof Suite</span>
+          </div>
+          <p>© 2026 ClaimProof.in. Local-first desktop PWA for Indian marketplace sellers.</p>
+        </div>
+
+        <div class="footer-links">
+          <a href="/#overview" class="footer-link">App Overview</a>
+          <a href="/#labels" class="footer-link">SmartLabel Studio</a>
+          <a href="/#recorder" class="footer-link">AWB Recorder</a>
+          <a href="/#claims" class="footer-link">ClaimRadar</a>
+          <a href="/#pricing" class="footer-link">Pricing &amp; License</a>
+          <a href="mailto:support@claimproof.in" class="footer-link">Support (needs verification)</a>
+          <a href="/sitemap.xml" class="footer-link">Sitemap</a>
+        </div>
+      </div>
+
+      <div class="container footer-disclaimer">
+        Disclaimer: ClaimProof is an independent software application and is not affiliated with, authorized, maintained, sponsored, or endorsed by Meesho, Flipkart, Amazon, AJIO, or Myntra. All marketplace names, trademarks, and logos are property of their respective owners. Marketplace dispute filing deadlines and rubrics are subject to platform policy changes and are marked [needs verification].
+      </div>
+    </footer>
+
+    <!-- Billing Interval Toggle Script (Vanilla JS, 0 dependencies) -->
+    <script>
+      function setBilling(interval) {
+        var isAnnual = interval === 'annual';
+        var btnM = document.getElementById('btn-monthly');
+        var btnA = document.getElementById('btn-annual');
+        if (btnM && btnA) {
+          if (isAnnual) {
+            btnA.classList.add('active');
+            btnM.classList.remove('active');
+          } else {
+            btnM.classList.add('active');
+            btnA.classList.remove('active');
+          }
+        }
+
+        var prices = document.querySelectorAll('.price-val');
+        var periods = document.querySelectorAll('.period-val');
+        var savings = document.querySelectorAll('.savings-val');
+
+        prices.forEach(function (el) {
+          el.textContent = isAnnual ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
+        });
+        periods.forEach(function (el) {
+          el.textContent = isAnnual ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
+        });
+        savings.forEach(function (el) {
+          el.textContent = isAnnual ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "claimproof-root",
+  "private": true,
+  "scripts": {
+    "typecheck": "npm --prefix claimproof run typecheck",
+    "lint": "npm --prefix claimproof run lint",
+    "format": "npm --prefix claimproof run format",
+    "test": "npm --prefix claimproof test",
+    "test:e2e": "npm --prefix claimproof run test:e2e",
+    "test:supabase": "npm --prefix claimproof run test:supabase",
+    "build": "npm --prefix claimproof run build",
+    "check": "npm --prefix claimproof run check",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0"
+  }
+}

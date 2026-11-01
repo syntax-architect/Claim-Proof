@@ -1,0 +1,32 @@
+[
+  {
+    "page": 1,
+    "marketplace": "Unknown",
+    "awb": "",
+    "orderId": "UNKNOWN",
+    "courier": "Unknown",
+    "sku": "",
+    "size": "",
+    "color": "",
+    "qty": 1,
+    "invoiceTotal": null,
+    "confidence": {
+      "awb": 0,
+      "orderId": 0,
+      "courier": 0,
+      "marketplace": 0,
+      "sku": 0,
+      "qty": 0,
+      "size": 0,
+      "color": 0,
+      "invoiceTotal": 0
+    },
+    "needsManualEdit": true,
+    "missingFields": [
+      "awb",
+      "sku"
+    ],
+    "isImageOnly": true,
+    "warning": "Scanned / image-only PDF detected (no digital text layer). Manual entry or original vector PDF required."
+  }
+]

@@ -3,27 +3,37 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   CornerDownLeft,
+  FileText,
   FolderOpen,
   IndianRupee,
   LayoutDashboard,
+  LifeBuoy,
   MonitorDown,
   Radar,
+  RotateCcw,
   ScanBarcode,
   Search,
   Settings,
+  ShieldCheck,
   SunMoon,
   Video,
   Volume2,
   VolumeX,
   type LucideIcon
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent
+} from 'react';
 import { isBeepsMuted, setBeepsMuted } from '../../lib/audioBeeps';
 import { ROUTES, ROUTE_LABELS, navigateTo } from '../../lib/router';
 import { currentTheme, toggleTheme } from '../../lib/theme';
 import { connectVault } from '../../services/vaultWriter';
 import { cn } from '../../lib/utils';
-import { Kbd, useToast } from '../ui';
+import { EmptyState, Kbd, useToast } from '../ui';
 
 interface Command {
   id: string;
@@ -41,7 +51,11 @@ const ROUTE_ICONS: Record<string, LucideIcon> = {
   claims: Radar,
   vault: FolderOpen,
   pricing: IndianRupee,
-  settings: Settings
+  settings: Settings,
+  privacy: ShieldCheck,
+  terms: FileText,
+  refund: RotateCcw,
+  support: LifeBuoy
 };
 
 export function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -52,6 +66,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
   const commands = useMemo<Command[]>(() => {
     const nav: Command[] = ROUTES.map((r) => ({
@@ -74,8 +89,8 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
       },
       {
         id: 'sound',
-        label: isBeepsMuted() ? 'Unmute scanner beeps' : 'Mute scanner beeps',
-        icon: isBeepsMuted() ? VolumeX : Volume2,
+        label: beeps ? 'Unmute scanner beeps' : 'Mute scanner beeps',
+        icon: beeps ? VolumeX : Volume2,
         group: 'Actions',
         run: () => {
           setBeepsMuted(!isBeepsMuted());
@@ -92,7 +107,9 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
             .then((mode) =>
               toast.success(
                 mode === 'fs-api' ? 'Vault connected' : 'Downloads fallback active',
-                mode === 'fs-api' ? 'Evidence writes straight to disk.' : 'This browser has no File System Access API.'
+                mode === 'fs-api'
+                  ? 'Evidence writes straight to disk.'
+                  : 'This browser has no File System Access API.'
               )
             )
             .catch(() => toast.warn('Vault connection cancelled'));
@@ -133,10 +150,14 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
 
   useEffect(() => {
     if (open) {
+      triggerRef.current = document.activeElement as HTMLElement | null;
       setQuery('');
       setBeeps(isBeepsMuted());
       const t = setTimeout(() => inputRef.current?.focus(), 40);
       return () => clearTimeout(t);
+    } else if (triggerRef.current) {
+      triggerRef.current.focus();
+      triggerRef.current = null;
     }
   }, [open]);
 
@@ -183,7 +204,13 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
           exit={{ opacity: 0 }}
           transition={{ duration: 0.16 }}
         >
-          <div className="absolute inset-0 bg-black/45 backdrop-blur-sm" onClick={onClose} />
+          <button
+            type="button"
+            aria-label="Close command palette"
+            tabIndex={-1}
+            className="absolute inset-0 bg-black/45 backdrop-blur-sm"
+            onClick={onClose}
+          />
           <motion.div
             className="glass relative w-full max-w-xl overflow-hidden border-line-bright shadow-2xl"
             initial={{ opacity: 0, y: -14, scale: 0.98 }}
@@ -192,6 +219,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
             transition={{ type: 'spring', stiffness: 420, damping: 34 }}
             role="dialog"
             aria-modal="true"
+            aria-label="Command palette"
           >
             <div className="flex items-center gap-3 border-b border-line px-4 py-3.5">
               <Search className="h-4 w-4 shrink-0 text-slate-400" />
@@ -200,6 +228,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onKeyDown}
+                aria-label="Search commands"
                 placeholder="Search commands…"
                 className="min-w-0 flex-1 bg-transparent text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none"
               />
@@ -207,9 +236,17 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
             </div>
             <div ref={listRef} className="max-h-[52vh] overflow-y-auto p-2">
               {filtered.length === 0 ? (
-                <div className="px-4 py-8 text-center text-sm text-slate-500">
-                  No commands match “{query}”.
-                </div>
+                <EmptyState
+                  icon={Search}
+                  title="No matching commands"
+                  description={`No commands found matching "${query}". Try searching for pages, themes, or sounds.`}
+                  primaryAction={{
+                    label: 'Clear search',
+                    onClick: () => setQuery(''),
+                    variant: 'secondary'
+                  }}
+                  className="py-6"
+                />
               ) : (
                 groups.map(({ group, items }) => (
                   <div key={group} className="pb-1">
@@ -233,10 +270,17 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
                           <span
                             className={cn(
                               'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors',
-                              active ? 'border-transparent bg-proof-500' : 'border-line bg-ink-800/60'
+                              active
+                                ? 'border-transparent bg-proof-500'
+                                : 'border-line bg-ink-800/60'
                             )}
                           >
-                            <cmd.icon className={cn('h-3.5 w-3.5', active ? 'text-on-accent' : 'text-slate-300')} />
+                            <cmd.icon
+                              className={cn(
+                                'h-3.5 w-3.5',
+                                active ? 'text-on-accent' : 'text-slate-300'
+                              )}
+                            />
                           </span>
                           <span className="flex-1 truncate">{cmd.label}</span>
                           {active && <CornerDownLeft className="h-3.5 w-3.5 text-slate-500" />}

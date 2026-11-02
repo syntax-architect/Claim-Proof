@@ -132,6 +132,6 @@ export async function renderUpiQr(
   return QRCode.toDataURL(text, {
     width: size,
     margin: 1,
-    color: { dark: '#05070B', light: '#FFFFFF' }
+    color: { dark: '#0B0C0E', light: '#FFFFFF' }
   });
 }

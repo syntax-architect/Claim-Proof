@@ -93,8 +93,10 @@ describe('Static Pages & Legal Verification', () => {
       expect(screen.getAllByText(/Amazon India/i).length).toBeGreaterThanOrEqual(1);
 
       // Claim Outcomes & Dispute Disclaimers
-      expect(screen.getByText(/Marketplace Claims Outcomes & Dispute Disclaimers/i)).toBeDefined();
-      expect(screen.getByText(/NO ASSURANCE OF CLAIM APPROVAL/i)).toBeDefined();
+      expect(
+        screen.getByText(/Marketplace Claims Outcomes (&|&amp;) (Dispute Disclaimers|No Payout Guarantee)/i)
+      ).toBeDefined();
+      expect(screen.getByText(/NO (ASSURANCE|GUARANTEE) OF CLAIM APPROVAL/i)).toBeDefined();
 
       // Contains [NEEDS LEGAL REVIEW] placeholders
       const legalPlaceholders = screen.getAllByText(/\[NEEDS LEGAL REVIEW\]/i);

@@ -397,9 +397,9 @@ export function StatCard({
 
 const RING_COLORS: Record<string, string> = {
   proof: 'var(--cp-accent-solid)',
-  warn: '#f59e0b',
-  danger: '#ef4444',
-  info: '#06b6d4',
+  warn: '#E39A4F',
+  danger: '#D9534A',
+  info: '#7F96AD',
   neutral: 'var(--cp-surface-3)'
 };
 

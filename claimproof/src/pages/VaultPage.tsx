@@ -31,6 +31,7 @@ import {
   Button,
   Card,
   EmptyState,
+  LoadingSkeleton,
   Modal,
   PageHeader,
   Segmented,
@@ -110,9 +111,11 @@ function RecordingPlayer({
           </div>
           <div className="glass-soft overflow-hidden">
             {loadingMedia ? (
-              <div className="flex h-56 items-center justify-center text-sm text-slate-500">
-                Loading from vault…
-              </div>
+              <LoadingSkeleton
+                variant="rect"
+                className="h-56 w-full"
+                ariaLabel="Loading video from vault…"
+              />
             ) : resolved?.videoUrl ? (
               <video
                 key={resolved.videoUrl}
@@ -191,6 +194,14 @@ export default function VaultPage() {
   const [selected, setSelected] = useState<RecordingMeta | null>(null);
   const [orderSortDesc, setOrderSortDesc] = useState(true);
   const [vaultStatus, setVaultStatus] = useState<VaultStatus>('connected');
+  const [lastSavedId] = useState<number | null>(() => {
+    try {
+      const stored = sessionStorage.getItem('cp_last_saved_id');
+      return stored ? Number(stored) : null;
+    } catch {
+      return null;
+    }
+  });
 
   useEffect(() => {
     void getVaultStatus().then(setVaultStatus);
@@ -443,52 +454,61 @@ export default function VaultPage() {
                   />
                 )
               ) : (
-                filteredRecordings.map((r) => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => setSelected(r)}
-                    className="flex w-full items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-ink-850/70"
-                  >
-                    <div
+                filteredRecordings.map((r) => {
+                  const isRecentlySaved = r.id === lastSavedId;
+                  return (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => setSelected(r)}
                       className={cn(
-                        'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border',
-                        r.type === 'dispatch'
-                          ? 'border-info-500/25 bg-info-500/10 text-info-300'
-                          : 'border-warn-500/25 bg-warn-500/10 text-warn-300'
+                        'flex w-full items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-ink-850/70',
+                        isRecentlySaved &&
+                          'animate-[gold-pulse_2.2s_ease-out_1] border-l-2 border-proof-400 bg-proof-500/10 shadow-[0_0_16px_rgba(201,164,92,0.18)]'
                       )}
                     >
-                      {r.type === 'dispatch' ? (
-                        <Video className="h-4 w-4" />
-                      ) : (
-                        <Undo2 className="h-4 w-4" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono text-sm font-semibold text-white">{r.awb}</span>
-                        <Badge tone={r.type === 'dispatch' ? 'info' : 'warn'}>
-                          {recordingTypeLabel(r.type)}
-                        </Badge>
-                        {r.flagged && <Badge tone="danger">FLAGGED</Badge>}
-                        {r.demo && <Badge tone="outline">demo</Badge>}
-                        {r.photoCollage && <Badge tone="proof">collage</Badge>}
+                      <div
+                        className={cn(
+                          'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border',
+                          r.type === 'dispatch'
+                            ? 'border-info-500/25 bg-info-500/10 text-info-300'
+                            : 'border-warn-500/25 bg-warn-500/10 text-warn-300'
+                        )}
+                      >
+                        {r.type === 'dispatch' ? (
+                          <Video className="h-4 w-4" />
+                        ) : (
+                          <Undo2 className="h-4 w-4" />
+                        )}
                       </div>
-                      <div className="mt-0.5 truncate font-mono text-[11px] text-slate-500">
-                        {r.sku} · {r.courier} · {vaultSubPath(r.type, r.startedAt, r.awb)}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-sm font-semibold text-white">
+                            {r.awb}
+                          </span>
+                          <Badge tone={r.type === 'dispatch' ? 'info' : 'warn'}>
+                            {recordingTypeLabel(r.type)}
+                          </Badge>
+                          {r.flagged && <Badge tone="danger">FLAGGED</Badge>}
+                          {r.demo && <Badge tone="outline">demo</Badge>}
+                          {r.photoCollage && <Badge tone="proof">collage</Badge>}
+                        </div>
+                        <div className="mt-0.5 truncate font-mono text-[11px] text-slate-500">
+                          {r.sku} · {r.courier} · {vaultSubPath(r.type, r.startedAt, r.awb)}
+                        </div>
                       </div>
-                    </div>
-                    <div className="hidden shrink-0 text-right sm:block">
-                      <div className="font-mono text-xs text-slate-300 mono-tabular">
-                        {r.durationSec}s · {formatBytes(r.videoBytes + r.photoBytes)}
+                      <div className="hidden shrink-0 text-right sm:block">
+                        <div className="font-mono text-xs text-slate-300 mono-tabular">
+                          {r.durationSec}s · {formatBytes(r.videoBytes + r.photoBytes)}
+                        </div>
+                        <div className="mt-0.5 font-mono text-[11px] text-slate-500">
+                          {formatISTShort(r.startedAt)}
+                        </div>
                       </div>
-                      <div className="mt-0.5 font-mono text-[11px] text-slate-500">
-                        {formatISTShort(r.startedAt)}
-                      </div>
-                    </div>
-                    <Play className="h-4 w-4 shrink-0 text-slate-600" />
-                  </button>
-                ))
+                      <Play className="h-4 w-4 shrink-0 text-slate-600" />
+                    </button>
+                  );
+                })
               )}
             </div>
           </Card>

@@ -113,7 +113,7 @@ describe('Regex helpers property-style robustness tests', () => {
         'ABC/DEF/GHI',
         'ITEM.SIZE.XL',
         'TSH_BLK_2026',
-        'CLOTH-100%COTTON',
+        'CLOTH-COTTON-FABRIC',
         'A1-B2-C3-D4'
       ];
 

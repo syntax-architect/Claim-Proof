@@ -65,7 +65,7 @@ function inspectPayloadForSensitiveData(payload: unknown): string | null {
   return null;
 }
 
-describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage', () => {
+describe('Offline-First Privacy Policy: Zero Network Telemetry & Data Leakage', () => {
   const interceptedCalls: NetworkCallRecord[] = [];
   const leakViolations: string[] = [];
 
@@ -172,7 +172,7 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
     }
   });
 
-  it('guarantees label parsing, vector cropping, and manifest generation make 0 network calls and leak 0 user data', async () => {
+  it('ensures label parsing, vector cropping, and manifest generation make 0 network calls and leak 0 user data', async () => {
     // Generate a fresh PDF with sensitive seller data
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -226,7 +226,7 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
     expect(leakViolations).toEqual([]);
   });
 
-  it('guarantees recording pipeline and local vault saving make 0 network calls and leak 0 video data', async () => {
+  it('ensures recording pipeline and local vault saving make 0 network calls and leak 0 video data', async () => {
     // Mock getUserMedia & canvas for recording pipeline
     const mockTrack = {
       kind: 'video',
@@ -370,7 +370,8 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
     const headersContent = readFileSync(headersPath, 'utf8');
 
     expect(headersContent).toContain('Content-Security-Policy:');
-    expect(headersContent).toContain("script-src 'self' 'unsafe-inline' blob:");
+    expect(headersContent).toContain("script-src 'self' blob:");
+    expect(headersContent).not.toMatch(/script-src[^;]*'unsafe-inline'/);
     expect(headersContent).toContain(
       "connect-src 'self' blob: data: https://*.supabase.co wss://*.supabase.co https://api.razorpay.com"
     );
@@ -393,9 +394,15 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
     expect(headerMap['Content-Security-Policy']).toContain(
       "connect-src 'self' blob: data: https://*.supabase.co wss://*.supabase.co https://api.razorpay.com"
     );
+    expect(headerMap['Content-Security-Policy']).not.toMatch(/script-src[^;]*'unsafe-inline'/);
     expect(headerMap['X-Content-Type-Options']).toBe('nosniff');
     expect(headerMap['Referrer-Policy']).toBe('strict-origin-when-cross-origin');
     expect(headerMap['Permissions-Policy']).toContain('camera=(self)');
     expect(headerMap['X-Frame-Options']).toBe('DENY');
+
+    // 3. Verify Cloudflare Pages and Vercel CSP match exactly
+    const cloudflareCspMatch = headersContent.match(/Content-Security-Policy:\s*([^\r\n]+)/);
+    const cloudflareCsp = cloudflareCspMatch ? cloudflareCspMatch[1].trim() : '';
+    expect(cloudflareCsp).toBe(headerMap['Content-Security-Policy']);
   });
 });

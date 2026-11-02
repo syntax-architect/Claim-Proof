@@ -314,14 +314,10 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
       <Card className="relative overflow-hidden">
         <div className="grid-bg absolute inset-0 opacity-70" />
         <div
-          className="absolute -right-24 -top-32 h-80 w-80 animate-float-slow rounded-full opacity-25 blur-3xl"
+          className="overview-champagne-drift pointer-events-none absolute -right-20 -top-28 h-96 w-96 rounded-full opacity-20 blur-3xl"
           style={{
             background: 'radial-gradient(closest-side, var(--cp-accent-solid), transparent)'
           }}
-        />
-        <div
-          className="absolute -left-20 bottom-0 h-64 w-64 animate-float-slower rounded-full opacity-15 blur-3xl"
-          style={{ background: 'radial-gradient(closest-side, var(--cp-info-text), transparent)' }}
         />
         <div className="relative p-7 sm:p-9">
           <div className="flex flex-wrap items-center gap-2">
@@ -385,8 +381,7 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
                   <div className="font-mono text-[10px] font-bold text-info-300">STEP 2</div>
                   <div className="mt-1 text-xs font-semibold text-white">Record Proof</div>
                   <div className="mt-1 text-[11px] leading-snug text-slate-400">
-                    Scan barcodes to record uncut packing video with burned-in live IST forensic
-                    timestamp.
+                    Scan barcodes to record uncut packing video with burned-in live IST timestamp.
                   </div>
                 </div>
                 <div className="glass-soft rounded-xl border border-line p-3">
@@ -450,12 +445,12 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
         <StaggerItem>
           <StatCard
             icon={TrendingUp}
-            label="Claim win rate"
+            label="Claims resolved"
             value={
               claimStats?.rate === null || claimStats?.rate === undefined ? '—' : claimStats.rate
             }
             suffix={claimStats?.rate !== null && claimStats?.rate !== undefined ? '%' : undefined}
-            sub={`${claimStats?.won ?? 0} won · ${claimStats?.lost ?? 0} lost`}
+            sub={`${claimStats?.won ?? 0} approved · ${claimStats?.lost ?? 0} rejected`}
             tone="warn"
           />
         </StaggerItem>
@@ -487,7 +482,7 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
               icon={Video}
               step="STEP 2"
               title={`${BRAND.name} AWB`}
-              body="Scan a barcode — the uncut video starts itself with a burnt-in forensic bar. Scan the next parcel and it chains in under 100 ms."
+              body="Scan a barcode — the uncut video starts itself with a burnt-in timestamp bar. Scan the next parcel and it chains in under 100 ms."
               stat={`${totalRecordings ?? 0} proof clips in the vault`}
               cta="Open the Recorder"
               onClick={() => navigate('recorder')}
@@ -552,8 +547,8 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
               labels printed.
             </div>
             <div className="mt-0.5 text-xs text-slate-400">
-              Reorder 4×6 thermal rolls &amp; tamper-proof courier bags at direct Surat factory
-              rates before you run out mid-dispatch.
+              Reorder 4×6 thermal rolls &amp; security courier bags at direct Surat factory rates
+              before you run out mid-dispatch.
             </div>
           </div>
           <Button

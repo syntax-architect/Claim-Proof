@@ -99,7 +99,7 @@ describe('OnboardingModal', () => {
     expect(step2?.textContent).toContain('<Vault_Root>');
     expect(step2?.textContent).toContain('{AWB}_Video.mp4');
     expect(step2?.textContent).toContain('{AWB}_Photo_Collage.jpg');
-    expect(step2?.textContent).toContain('100% Offline & Private');
+    expect(step2?.textContent).toContain('Offline & Private');
 
     // Advance to Step 3
     const next2Btn = container?.querySelector(

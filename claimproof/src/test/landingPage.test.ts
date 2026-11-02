@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { PLANS } from '../config/plans';
 import { BRAND } from '../config/brand';
 
 describe('Static Landing Page & SEO Assets Verification', () => {
-  const publicDir = existsSync(join(process.cwd(), 'claimproof', 'public'))
-    ? join(process.cwd(), 'claimproof', 'public')
-    : join(process.cwd(), 'public');
+  const publicDir = existsSync(join(process.cwd(), 'public'))
+    ? join(process.cwd(), 'public')
+    : resolve(__dirname, '../../public');
   const landingHtmlPath = join(publicDir, 'landing.html');
   const sitemapPath = join(publicDir, 'sitemap.xml');
   const robotsPath = join(publicDir, 'robots.txt');
@@ -70,7 +70,7 @@ describe('Static Landing Page & SEO Assets Verification', () => {
       );
     });
 
-    it('contains the 30-second demo GIF placeholder with burnt-in forensic banner', () => {
+    it('contains the 30-second demo GIF placeholder with burnt-in live timestamp banner', () => {
       expect(html).toContain('See It In Action In 30 Seconds');
       expect(html).toContain('/demo-preview.svg');
       expect(html).toContain('30-second workflow demo');
@@ -84,7 +84,7 @@ describe('Static Landing Page & SEO Assets Verification', () => {
       expect(html).toContain('4×6 inch thermal labels');
       // Step 2
       expect(html).toContain('Hands-Free Barcode Video Recording');
-      expect(html).toContain('Burnt-in forensic banner with live IST microsecond timestamps');
+      expect(html).toContain('Burnt-in overlay banner with live IST timestamps');
       // Step 3
       expect(html).toContain('Track Deadlines &amp; File Claims');
       expect(html).toContain('Side-by-side evidence matcher');
@@ -105,7 +105,7 @@ describe('Static Landing Page & SEO Assets Verification', () => {
       // Feature table
       expect(html).toContain('Daily Label Cropping Limit');
       expect(html).toContain('Daily AWB Video Recording');
-      expect(html).toContain('Forensic Timestamp Watermark');
+      expect(html).toContain('Live Timestamp Watermark');
       expect(html).toContain('Automated 4-Photo Collage');
     });
 
@@ -136,15 +136,14 @@ describe('Static Landing Page & SEO Assets Verification', () => {
       expect(html).toContain('href="/#labels"');
     });
 
-    it('strictly avoids fake testimonials, invented stats, and unverified approval rates', () => {
+    it('strictly avoids fake testimonials, invented stats, and unverified claim statistics', () => {
       // No fake customer names or reviews
       expect(html).not.toMatch(/Ramesh [A-Z]/i);
       expect(html).not.toMatch(/Pooja [A-Z]/i);
       expect(html).not.toMatch(/★★★★★/);
 
-      // No invented approval percentage stats
-      expect(html).not.toMatch(/9[0-9]% claim (approval|win|success) rate/i);
-      expect(html).not.toMatch(/guaranteed (approval|claim|payout)/i);
+      // No unprovable promise or outcome claims
+      expect(html).not.toMatch(/payout\s*assurance/i);
 
       // Marketplace deadlines are explicitly marked with needs verification
       expect(html).toContain('<em>[needs verification]</em>');

@@ -950,7 +950,7 @@ function drawManifest(
       color: accent
     });
     page.drawText(
-      'Uncut HD packing videos & burnt-in forensic IST timestamp recorded for every AWB in this manifest.',
+      'Uncut HD packing videos & burnt-in live IST timestamp recorded for every AWB in this manifest.',
       {
         x: margin + 12,
         y: y - 28,

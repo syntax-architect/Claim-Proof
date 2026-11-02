@@ -48,7 +48,9 @@ import { usePaywall } from '../../providers/PaywallProvider';
 import { registerActiveRecording } from '../../services/recorderCrashGuard';
 import { trackFirstRecordingSaved } from '../../services/telemetry';
 import { RECORDER_CONFIG } from '../../config/recorderConfig';
+import { setRecordingActive } from '../../lib/motion';
 import {
+  AnimatedCheckDraw,
   Badge,
   Button,
   Card,
@@ -272,6 +274,12 @@ export function VideoRecorderStation({ className }: { className?: string }) {
   });
   const [pairing, setPairing] = useState<{ code: string; qr: string | null } | null>(null);
   const [pairingBusy, setPairingBusy] = useState(false);
+  const [scanFlash, setScanFlash] = useState(false);
+
+  useEffect(() => {
+    setRecordingActive(stage === 'recording');
+    return () => setRecordingActive(false);
+  }, [stage]);
 
   const [targetSizeMB, setTargetSizeMB] = useState(RECORDER_CONFIG.defaultTargetSizeMB);
   const [maxDurationSec, setMaxDurationSec] = useState(RECORDER_CONFIG.defaultMaxDurationSec);
@@ -607,6 +615,11 @@ export function VideoRecorderStation({ className }: { className?: string }) {
         photo: canCollage ? result.photoCollage : null
       });
       await db.recordings.update(id, { vaultPath: save.vaultPath });
+      try {
+        sessionStorage.setItem('cp_last_saved_id', String(id));
+      } catch {
+        /* storage may be restricted */
+      }
       void trackFirstRecordingSaved();
 
       if (wasFlagged && type === 'return') {
@@ -684,6 +697,8 @@ export function VideoRecorderStation({ className }: { className?: string }) {
     async (raw: string) => {
       const code = raw.trim().toUpperCase();
       if (!code) return;
+      setScanFlash(true);
+      setTimeout(() => setScanFlash(false), 280);
       if (stageRef.current === 'recording') {
         const currentAwb = parcelRef.current?.awb ?? '';
         if (code === currentAwb) {
@@ -968,6 +983,29 @@ export function VideoRecorderStation({ className }: { className?: string }) {
             <canvas ref={canvasRef} className="block aspect-video w-full" />
             <video ref={videoRef} className="hidden" playsInline muted />
 
+            {/* Scan flash ring */}
+            {scanFlash && (
+              <motion.div
+                initial={{ opacity: 0.85, scale: 0.98 }}
+                animate={{ opacity: 0, scale: 1.02 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                className="pointer-events-none absolute inset-0 z-30 rounded-2xl border-2 border-proof-400 shadow-[0_0_24px_rgba(201,164,92,0.6)]"
+              />
+            )}
+
+            {/* Saving feedback overlay */}
+            {stage === 'saving' && (
+              <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
+                <AnimatedCheckDraw size={52} className="text-proof-400" />
+                <div className="mt-4 font-display text-lg font-bold text-white">
+                  Saving Evidence…
+                </div>
+                <div className="mt-1 font-mono text-xs text-slate-400">
+                  Finalizing video &amp; photo collage
+                </div>
+              </div>
+            )}
+
             {/* Idle overlay */}
             {stage === 'idle' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -980,7 +1018,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
                 <div className="mt-4 font-display text-xl font-bold tracking-[0.2em] text-slate-50">
                   WAITING FOR SCAN
                 </div>
-                <div className="mt-2 font-mono text-xs text-[#94a3b8]">
+                <div className="mt-2 font-mono text-xs text-slate-400">
                   Scan an AWB barcode — or type it below and press <Kbd>Enter</Kbd>
                 </div>
                 {mode && (
@@ -996,7 +1034,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
               <>
                 <div className="pointer-events-none absolute inset-0 bg-black/15" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4">
-                  <div className="pointer-events-auto mx-auto flex max-w-2xl items-center justify-between gap-3 rounded-2xl border border-[#3a4a5e] bg-[#0b1017]/90 px-4 py-3 backdrop-blur">
+                  <div className="pointer-events-auto mx-auto flex max-w-2xl items-center justify-between gap-3 rounded-2xl border border-line bg-ink-950/90 px-4 py-3 backdrop-blur">
                     {HUD_STEPS.map((step, i) => (
                       <div key={step.title} className="flex min-w-0 items-center gap-2">
                         <span
@@ -1006,7 +1044,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
                               ? 'border-success-400/60 bg-success-500/20 text-success-300'
                               : i === activeStep
                                 ? 'animate-rec-pulse border-warn-400/70 bg-warn-500/20 text-warn-300'
-                                : 'border-[#3a4a5e] bg-[#17202c] text-[#64748b]'
+                                : 'border-line bg-ink-850 text-slate-400'
                           )}
                         >
                           {i < activeStep ? <CheckCircle2 className="h-3.5 w-3.5" /> : i + 1}
@@ -1014,7 +1052,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
                         <span
                           className={cn(
                             'hidden truncate text-xs font-medium sm:block',
-                            i === activeStep ? 'text-slate-50' : 'text-[#64748b]'
+                            i === activeStep ? 'text-slate-50' : 'text-slate-400'
                           )}
                         >
                           {step.title}

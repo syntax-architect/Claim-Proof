@@ -12,7 +12,7 @@ import {
   Video
 } from 'lucide-react';
 import { deleteClaim, updateClaimStatus, useClaims } from '../../services/claimEngine';
-import { claimWindowLabel } from '../../lib/claimRules';
+import { claimWindowLabel, isClaimWindowUnverified, UNVERIFIED_LABEL } from '../../lib/claimRules';
 import { deadlineTone, formatCountdown, formatISTShort } from '../../lib/dateUtils';
 import { planHasFeature, useLicense } from '../../services/licenseService';
 import { usePaywall } from '../../providers/PaywallProvider';
@@ -79,6 +79,11 @@ function ClaimRow({
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-mono text-lg font-bold text-white">{claim.awb}</span>
               <Badge tone="info">{claimWindowLabel(claim.marketplace)}</Badge>
+              {isClaimWindowUnverified(claim.marketplace) && (
+                <Badge tone="warn" title="Unconfirmed dispute deadline — check seller panel">
+                  {UNVERIFIED_LABEL}
+                </Badge>
+              )}
               <Badge tone="warn">{claim.flagReason}</Badge>
               {claim.status !== 'pending' && (
                 <Badge
@@ -203,7 +208,7 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
               onClick={() => openPaywall({ scope: 'claimRadar', plan: 'claimradar' })}
             >
               Unlock ClaimRadar Pro — ₹4,499/yr{' '}
-              <span className="ml-1 font-mono text-sm text-[#ffffff] font-bold line-through">
+              <span className="ml-1 font-mono text-sm text-on-accent/70 font-bold line-through">
                 ₹7,188
               </span>
             </Button>
@@ -228,6 +233,11 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
           <div className="min-w-0 flex-1 truncate font-mono text-sm text-slate-200">
             {nearest.awb} — {formatCountdown(nearest.deadlineAt - Date.now())} left to file{' '}
             <span className="text-slate-500">({claimWindowLabel(nearest.marketplace)})</span>
+            {isClaimWindowUnverified(nearest.marketplace) && (
+              <Badge tone="warn" className="ml-2">
+                {UNVERIFIED_LABEL}
+              </Badge>
+            )}
           </div>
           <Button
             variant="outline"
@@ -272,7 +282,14 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
             }}
           >
             <div className="mt-4 rounded-xl border border-line bg-ink-900/60 p-4 text-left text-xs text-slate-300">
-              <div className="font-semibold text-white">Marketplace dispute deadlines tracked:</div>
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-white">
+                  Marketplace dispute deadlines tracked:
+                </span>
+                <span className="font-mono text-[10px] text-warn-300">
+                  Default windows UNVERIFIED — edit in Settings
+                </span>
+              </div>
               <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 text-slate-400">
                 <li className="flex items-start gap-2">
                   <span className="font-bold text-warn-400">72 hours:</span>

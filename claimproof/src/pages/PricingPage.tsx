@@ -24,6 +24,7 @@ import {
 } from '../services/licenseService';
 import { BRAND } from '../config/brand';
 import { getPaymentUrl, PLANS } from '../config/plans';
+import { getWhatsAppBuyUrl } from '../config/support';
 import { trackEvent } from '../services/telemetry';
 import { formatISTShort } from '../lib/dateUtils';
 import { cn, formatRupees, truncate } from '../lib/utils';
@@ -52,7 +53,7 @@ const COMPARISON: {
     warehouse: 'Unlimited HD'
   },
   {
-    feature: 'Forensic IST timestamp overlay',
+    feature: 'Live IST timestamp overlay',
     free: '✓ Standard',
     starter: '✓ Burnt-in HD',
     pro: '✓ Burnt-in HD',
@@ -166,11 +167,16 @@ export default function PricingPage() {
   const handleBuy = (planId: PlanId) => {
     void trackEvent('purchase_started', { planId, interval });
     const url = getPaymentUrl(planId, interval);
-    window.open(url, '_blank', 'noopener,noreferrer');
-    toast.info(
-      'Opening Razorpay checkout',
-      'Complete payment in the new tab. Your license key will be issued for offline activation.'
-    );
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      toast.info(
+        'Opening Razorpay checkout',
+        'Complete payment in the new tab. Your license key will be issued for offline activation.'
+      );
+    } else {
+      const plan = PLANS.find((p) => p.id === planId);
+      window.open(getWhatsAppBuyUrl(plan?.name, interval), '_blank', 'noopener,noreferrer');
+    }
   };
 
   return (
@@ -312,8 +318,8 @@ export default function PricingPage() {
             <div className="mt-1 text-xs text-slate-300 leading-relaxed">
               In Indian e-commerce, a single rejected return on Meesho SAFE, Flipkart SPF, or Amazon
               SAFE-T costs you ₹400 to ₹1,500. ClaimRadar Pro costs just{' '}
-              <strong className="text-proof-300">₹12/day</strong>. If it overturns even ONE wrongful
-              dispute rejection, your software is 100% free for the month.
+              <strong className="text-proof-300">₹12/day</strong>. Saves each packing video named by
+              AWB in your own folder so your team has clear evidence ready for marketplace claims.
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -453,16 +459,42 @@ export default function PricingPage() {
                 ))}
               </ul>
 
-              <Button
-                variant={plan.best ? 'primary' : 'secondary'}
-                size="lg"
-                className="mt-6 w-full"
-                disabled={owned}
-                icon={owned ? BadgeCheck : ExternalLink}
-                onClick={() => handleBuy(plan.id)}
-              >
-                {owned ? 'Current plan active' : `Buy ${plan.name}`}
-              </Button>
+              {owned ? (
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="mt-6 w-full"
+                  disabled
+                  icon={BadgeCheck}
+                >
+                  Current plan active
+                </Button>
+              ) : getPaymentUrl(plan.id, interval) ? (
+                <Button
+                  variant={plan.best ? 'primary' : 'secondary'}
+                  size="lg"
+                  className="mt-6 w-full"
+                  icon={ExternalLink}
+                  onClick={() => handleBuy(plan.id)}
+                >
+                  Buy {plan.name}
+                </Button>
+              ) : (
+                <a
+                  href={getWhatsAppBuyUrl(plan.name, interval)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    'mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all',
+                    plan.best
+                      ? 'bg-proof-600 text-white shadow-sm hover:bg-proof-500'
+                      : 'border border-line-bright bg-ink-800 text-slate-200 hover:bg-ink-750 hover:text-white'
+                  )}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  <span>Contact support to buy</span>
+                </a>
+              )}
             </Card>
           );
         })}
@@ -530,7 +562,7 @@ export default function PricingPage() {
             <div className="font-display text-base font-bold text-white">Enter License Key</div>
             <div className="mt-0.5 text-xs text-slate-400">
               Completed payment via Razorpay? Paste your signed license key below. It is verified
-              100% on-device via ES256 and bound to this workstation without needing internet
+              directly on-device via ES256 and bound to this workstation without needing internet
               access.
             </div>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">

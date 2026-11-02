@@ -46,13 +46,13 @@ function NavItem({
     >
       {active && (
         <motion.span
-          layoutId="cp-nav-pill"
-          className="absolute inset-0 rounded-xl border border-proof-500/25 bg-proof-500/10"
-          transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+          layoutId="sidebar-active-gold-indicator"
+          className="absolute inset-0 rounded-xl border border-proof-400/40 bg-proof-500/10 shadow-[0_0_14px_rgba(201,164,92,0.15)]"
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
         />
       )}
       {active && (
-        <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-proof-400" />
+        <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-proof-400 shadow-[0_0_8px_rgba(201,164,92,0.45)]" />
       )}
       <Icon className="relative z-10 h-4.5 w-4.5 shrink-0" />
       <span className="relative z-10 flex-1 truncate text-left">{entry.label}</span>
@@ -146,7 +146,7 @@ export default function Sidebar({
         <div className="glass-soft flex items-center gap-2.5 p-3">
           <ShieldCheck className="h-4 w-4 shrink-0 text-proof-400" />
           <div className="min-w-0">
-            <div className="text-[11px] font-semibold text-slate-200">100% local-first</div>
+            <div className="text-[11px] font-semibold text-slate-200">Local-first storage</div>
             <div className="text-[10px] text-slate-500">₹0 server · files stay on this PC</div>
           </div>
         </div>
@@ -181,9 +181,9 @@ export function MobileNav({ route, navigate }: { route: Route; navigate: (r: Rou
         >
           {route === r && (
             <motion.span
-              layoutId="cp-mnav-pill"
-              className="absolute inset-0 rounded-lg border border-proof-500/25 bg-proof-500/10"
-              transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+              layoutId="mobile-sidebar-active-gold-indicator"
+              className="absolute inset-0 rounded-lg border border-proof-400/40 bg-proof-500/10 shadow-[0_0_10px_rgba(201,164,92,0.15)]"
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             />
           )}
           <Icon className="relative z-10 h-3.5 w-3.5" />

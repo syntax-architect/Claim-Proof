@@ -41,7 +41,7 @@
 
   <text x="820" y="26" font-family="'JetBrains Mono', monospace" font-size="12" fill="#64748b">00:14 / 00:30</text>
 
-  <!-- Burnt-in Indelible Forensic Watermark Banner (Crucial Spec Requirement) -->
+  <!-- Burnt-in Live Timestamp Banner -->
   <g transform="translate(30, 60)">
     <rect width="900" height="48" rx="8" fill="#07090e" fill-opacity="0.95" stroke="#fbbf24" stroke-width="1" stroke-opacity="0.4" />
     <!-- Yellow Caution Stripe Bar -->
@@ -113,7 +113,7 @@
     <rect width="380" height="320" rx="12" fill="#131722" stroke="#94a3b8" stroke-width="1" stroke-opacity="0.1" />
 
     <text x="20" y="28" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#f8fafc">
-      Automated 4-Photo Forensic Collage
+      Automated 4-Photo Evidence Collage
     </text>
     <text x="20" y="44" font-family="'Inter', sans-serif" font-size="10.5" fill="#94a3b8">
       Stitched at T+0.5s, 3s, 6s, 9s during recording

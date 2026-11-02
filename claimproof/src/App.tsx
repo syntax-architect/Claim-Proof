@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { ToastProvider } from './components/ui';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { OnboardingModal } from './components/onboarding/OnboardingModal';
@@ -25,6 +25,7 @@ import { PaywallProvider } from './providers/PaywallProvider';
 import { useHashRoute, type Route } from './lib/router';
 import { useRouteSeo } from './lib/seo';
 import { UpdatePrompt } from './components/pwa/UpdatePrompt';
+import { fadeUp } from './lib/motion';
 
 export function CurrentPage({ route, navigate }: { route: Route; navigate: (r: Route) => void }) {
   switch (route) {
@@ -94,37 +95,42 @@ export default function App() {
   }, []);
 
   return (
-    <ToastProvider>
-      <PaywallProvider>
-        <div className="flex h-full min-h-screen">
-          <Sidebar route={route} navigate={navigate} />
-          <div className="flex min-w-0 flex-1 flex-col">
-            <TopBar route={route} />
-            <MobileNav route={route} navigate={navigate} />
-            <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-              <ErrorBoundary level="page" resetKey={route}>
-                <motion.div
-                  key={route}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <CurrentPage route={route} navigate={navigate} />
-                </motion.div>
-              </ErrorBoundary>
-            </main>
-            <Footer navigate={navigate} />
+    <MotionConfig reducedMotion="user">
+      <ToastProvider>
+        <PaywallProvider>
+          <div className="flex h-full min-h-screen">
+            <Sidebar route={route} navigate={navigate} />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <TopBar route={route} />
+              <MobileNav route={route} navigate={navigate} />
+              <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+                <ErrorBoundary level="page" resetKey={route}>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={route}
+                      variants={fadeUp}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <CurrentPage route={route} navigate={navigate} />
+                    </motion.div>
+                  </AnimatePresence>
+                </ErrorBoundary>
+              </main>
+              <Footer navigate={navigate} />
+            </div>
           </div>
-        </div>
-        <PaywallModal />
-        <OnboardingModal
-          open={onboardingOpen}
-          onClose={() => setOnboardingOpen(false)}
-          navigate={navigate}
-        />
-        <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
-        <UpdatePrompt />
-      </PaywallProvider>
-    </ToastProvider>
+          <PaywallModal />
+          <OnboardingModal
+            open={onboardingOpen}
+            onClose={() => setOnboardingOpen(false)}
+            navigate={navigate}
+          />
+          <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+          <UpdatePrompt />
+        </PaywallProvider>
+      </ToastProvider>
+    </MotionConfig>
   );
 }

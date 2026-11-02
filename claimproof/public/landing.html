@@ -33,36 +33,106 @@
     <meta name="twitter:image" content="https://saboot.in/og-image.png" />
 
     <!-- Theme & Icons -->
-    <meta name="theme-color" content="#0a0c12" />
+    <meta name="theme-color" content="#0B0C0E" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#FAF8F4" media="(prefers-color-scheme: light)" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- Typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
-
+    
+    <!-- Typography: Self-hosted with size-adjusted fallbacks -->
     <style>
+      @font-face {
+        font-family: 'Inter-fallback';
+        src: local('Arial');
+        ascent-override: 90%;
+        descent-override: 22.5%;
+        line-gap-override: 0%;
+        size-adjust: 107%;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Fraunces-fallback';
+        src: local('Georgia'), local('Times New Roman'), local('serif');
+        ascent-override: 90%;
+        descent-override: 25%;
+        line-gap-override: 0%;
+        size-adjust: 100%;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'JetBrainsMono-fallback';
+        src: local('Courier New'), local('monospace');
+        ascent-override: 90%;
+        descent-override: 20%;
+        line-gap-override: 0%;
+        size-adjust: 98%;
+        font-display: swap;
+      }
+    </style>
+<style>
       :root {
-        --cp-bg: #0a0c12;
-        --cp-surface: #10131b;
-        --cp-surface-2: #171b26;
-        --cp-surface-hover: #1e2330;
-        --cp-line: rgba(148, 163, 184, 0.12);
-        --cp-line-bright: rgba(148, 163, 184, 0.24);
-        --cp-text: #edeff5;
-        --cp-text-muted: #9aa3b2;
-        --cp-text-subtle: #6b7482;
-        --cp-accent: #3b82f6;
-        --cp-accent-hover: #2563eb;
-        --cp-accent-light: #93c5fd;
-        --cp-warn: #fbbf24;
-        --cp-danger: #ef4444;
-        --cp-success: #22c55e;
+        --cp-bg: #0B0C0E;
+        --cp-surface: #121316;
+        --cp-surface-2: #181A1F;
+        --cp-surface-3: #22252B;
+        --cp-line: rgba(232, 226, 212, 0.10);
+        --cp-linestrong: rgba(232, 226, 212, 0.20);
+        --cp-text: #F2EFE8;
+        --cp-text-2: #A9A59B;
+        --cp-text-3: #8F8B82;
+        --cp-accent: #D4B483;
+        --cp-accent-text: #E3C896;
+        --cp-accentsolid: #C9A45C;
+        --cp-accent-strong: #B8923F;
+        --cp-accentsoft: rgba(212, 180, 131, 0.12);
+        --cp-on-accent: #14110A;
+        --cp-successtext: #6CC29A;
+        --cp-warn-text: #E39A4F;
+        --cp-danger-text: #E88A82;
+        --cp-infotext: #9DB1C6;
+        --cp-glass: rgba(18, 19, 22, 0.88);
+        --cp-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        --cp-hero-1: rgba(201, 164, 92, 0.07);
+        --cp-hero2: rgba(157, 177, 198, 0.04);
+
+        /* Semantic compatibility mappings */
+        --cp-surface-hover: var(--cp-surface-3);
+        --cp-line-bright: var(--cp-linestrong);
+        --cp-text-muted: var(--cp-text-2);
+        --cp-text-subtle: var(--cp-text-3);
+        --cp-accent-hover: var(--cp-accent-strong);
+        --cp-accent-light: var(--cp-accent-text);
+        --cp-warn: var(--cp-warn-text);
+        --cp-danger: var(--cp-danger-text);
+        --cp-success: var(--cp-successtext);
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --cp-bg: #FAF8F4;
+          --cp-surface: #FFFFFF;
+          --cp-surface-2: #F3F0EA;
+          --cp-surface-3: #E8E3DA;
+          --cp-line: rgba(21, 19, 15, 0.09);
+          --cp-linestrong: rgba(21, 19, 15, 0.18);
+          --cp-text: #15130F;
+          --cp-text-2: #55504A;
+          --cp-text-3: #6B655D;
+          --cp-accent: #9A7428;
+          --cp-accent-text: #7A5A1B;
+          --cp-accentsolid: #7A5A1B;
+          --cp-accent-strong: #5F4512;
+          --cp-accentsoft: rgba(154, 116, 40, 0.10);
+          --cp-on-accent: #FFFFFF;
+          --cp-successtext: #2F7A55;
+          --cp-warn-text: #9A5A12;
+          --cp-danger-text: #B3382F;
+          --cp-infotext: #476178;
+          --cp-glass: rgba(255, 255, 255, 0.92);
+          --cp-shadow: 0 0 0 1px rgba(21, 19, 15, 0.03), 0 1px 2px rgba(21, 19, 15, 0.04), 0 8px 24px -10px rgba(21, 19, 15, 0.10);
+          --cp-hero-1: rgba(154, 116, 40, 0.07);
+          --cp-hero2: rgba(71, 97, 120, 0.04);
+        }
       }
 
       * {
@@ -79,7 +149,7 @@
       body {
         background-color: var(--cp-bg);
         color: var(--cp-text);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: 'Inter Variable', 'Inter', 'Inter-fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
@@ -91,8 +161,8 @@
         position: fixed;
         inset: 0;
         background-image:
-          radial-gradient(ellipse 70% 50% at 50% 0%, rgba(59, 130, 246, 0.09) 0%, transparent 70%),
-          radial-gradient(circle 1px at center, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+          radial-gradient(ellipse 70% 50% at 50% 0%, var(--cp-hero-1) 0%, transparent 70%),
+          radial-gradient(circle 1px at center, var(--cp-line) 1px, transparent 1px);
         background-size: 100% 100%, 40px 40px;
         opacity: 0.7;
         pointer-events: none;
@@ -129,13 +199,13 @@
         align-items: center;
         gap: 0.75rem;
         text-decoration: none;
-        color: #fff;
+        color: var(--cp-text);
       }
       .brand-icon {
         width: 2.25rem;
         height: 2.25rem;
         background: var(--cp-surface-2);
-        border: 1px solid rgba(59, 130, 246, 0.4);
+        border: 1px solid var(--cp-accentsolid);
         border-radius: 0.65rem;
         display: flex;
         align-items: center;
@@ -169,7 +239,7 @@
         transition: color 0.15s ease;
       }
       .nav-link:hover {
-        color: #fff;
+        color: var(--cp-text);
       }
 
       /* Buttons */
@@ -189,12 +259,12 @@
         border: 1px solid transparent;
       }
       .btn-primary {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, var(--cp-accent) 0%, var(--cp-accentsolid) 100%);
+        color: var(--cp-text);
         box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
       }
       .btn-primary:hover {
-        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        background: linear-gradient(135deg, var(--cp-accent-text) 0%, var(--cp-accent-strong) 100%);
         transform: translateY(-1px);
         box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
       }
@@ -205,7 +275,7 @@
       }
       .btn-secondary:hover {
         background: var(--cp-surface-hover);
-        color: #fff;
+        color: var(--cp-text);
         border-color: rgba(148, 163, 184, 0.4);
       }
       .btn-sm {
@@ -230,8 +300,8 @@
         gap: 0.5rem;
         padding: 0.35rem 0.9rem;
         border-radius: 9999px;
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.3);
+        background: var(--cp-accentsoft);
+        border: 1px solid var(--cp-linestrong);
         color: var(--cp-accent-light);
         font-size: 0.82rem;
         font-weight: 600;
@@ -244,12 +314,12 @@
         font-weight: 700;
         line-height: 1.15;
         letter-spacing: -0.03em;
-        color: #ffffff;
+        color: var(--cp-text);
         max-width: 960px;
         margin: 0 auto 1.25rem;
       }
       .hero-title .gradient-text {
-        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #93c5fd 100%);
+        background: linear-gradient(135deg, var(--cp-accent-text) 0%, var(--cp-accentsolid) 50%, var(--cp-accent) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
@@ -269,7 +339,7 @@
         gap: 1rem;
         margin-bottom: 1.5rem;
       }
-      .hero-guarantees {
+      .hero-commitments {
         font-size: 0.85rem;
         color: var(--cp-text-subtle);
       }
@@ -330,7 +400,7 @@
         font-size: clamp(1.85rem, 3.5vw, 2.75rem);
         font-weight: 700;
         letter-spacing: -0.02em;
-        color: #ffffff;
+        color: var(--cp-text);
         margin-bottom: 0.85rem;
       }
       .section-desc {
@@ -344,14 +414,14 @@
         border: 1px solid var(--cp-line-bright);
         border-radius: 1.25rem;
         padding: 1rem;
-        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px -10px rgba(59, 130, 246, 0.15);
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px -10px var(--cp-accentsoft);
         overflow: hidden;
       }
       .demo-media {
         width: 100%;
         display: block;
         border-radius: 0.85rem;
-        background: #07090e;
+        background: var(--cp-surface-2);
       }
       .demo-caption {
         display: flex;
@@ -404,14 +474,14 @@
       }
       .step-card:hover {
         transform: translateY(-3px);
-        border-color: rgba(59, 130, 246, 0.4);
+        border-color: var(--cp-accentsolid);
       }
       .step-number {
         font-family: 'JetBrains Mono', monospace;
         font-size: 0.85rem;
         font-weight: 700;
         color: var(--cp-accent);
-        background: rgba(59, 130, 246, 0.12);
+        background: var(--cp-accentsoft);
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -424,7 +494,7 @@
         font-family: 'Space Grotesk', sans-serif;
         font-size: 1.35rem;
         font-weight: 700;
-        color: #ffffff;
+        color: var(--cp-text);
         margin-bottom: 0.75rem;
       }
       .step-body {
@@ -470,7 +540,7 @@
         right: 0;
         width: 300px;
         height: 300px;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+        background: radial-gradient(circle, var(--cp-accentsoft) 0%, transparent 70%);
         pointer-events: none;
       }
       .privacy-grid {
@@ -488,7 +558,7 @@
         font-family: 'Space Grotesk', sans-serif;
         font-size: 1.85rem;
         font-weight: 700;
-        color: #fff;
+        color: var(--cp-text);
         margin-bottom: 1rem;
       }
       .privacy-desc {
@@ -510,7 +580,7 @@
       }
       .privacy-feature-card h4 {
         font-size: 0.95rem;
-        color: #fff;
+        color: var(--cp-text);
         margin-bottom: 0.35rem;
       }
       .privacy-feature-card p {
@@ -543,7 +613,7 @@
       }
       .toggle-btn.active {
         background: var(--cp-accent);
-        color: #fff;
+        color: var(--cp-text);
         border-color: var(--cp-accent);
       }
       .toggle-badge {
@@ -584,7 +654,7 @@
       .pricing-card.popular {
         background: linear-gradient(180deg, rgba(23, 27, 38, 0.95) 0%, rgba(16, 19, 27, 0.95) 100%);
         border-color: var(--cp-accent);
-        box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.35);
+        box-shadow: 0 10px 30px -10px var(--cp-linestrong);
       }
       .pricing-card:hover {
         transform: translateY(-4px);
@@ -594,8 +664,8 @@
         top: -0.75rem;
         left: 50%;
         transform: translateX(-50%);
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, var(--cp-accent) 0%, var(--cp-accentsolid) 100%);
+        color: var(--cp-text);
         font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.08em;
@@ -608,7 +678,7 @@
         font-family: 'Space Grotesk', sans-serif;
         font-size: 1.25rem;
         font-weight: 700;
-        color: #fff;
+        color: var(--cp-text);
         margin-bottom: 0.35rem;
       }
       .plan-tagline {
@@ -627,7 +697,7 @@
         font-family: 'JetBrains Mono', monospace;
         font-size: 2.25rem;
         font-weight: 700;
-        color: #fff;
+        color: var(--cp-text);
         line-height: 1;
       }
       .plan-period {
@@ -659,7 +729,7 @@
         line-height: 1.4;
       }
       .plan-features li strong {
-        color: #fff;
+        color: var(--cp-text);
       }
       .feature-check {
         color: var(--cp-accent);
@@ -694,7 +764,7 @@
       }
       .comparison-table th {
         font-family: 'Space Grotesk', sans-serif;
-        color: #fff;
+        color: var(--cp-text);
         font-weight: 700;
         background: var(--cp-surface);
       }
@@ -736,7 +806,7 @@
         font-family: 'Space Grotesk', sans-serif;
         font-size: 1.15rem;
         font-weight: 700;
-        color: #fff;
+        color: var(--cp-text);
         margin-bottom: 0.75rem;
         display: flex;
         align-items: center;
@@ -763,7 +833,7 @@
       }
       .cta-card {
         background: linear-gradient(135deg, rgba(23, 27, 38, 0.98) 0%, rgba(16, 19, 27, 0.98) 100%);
-        border: 1px solid rgba(59, 130, 246, 0.3);
+        border: 1px solid var(--cp-linestrong);
         border-radius: 1.75rem;
         padding: 4rem 2rem;
         text-align: center;
@@ -775,14 +845,14 @@
         content: '';
         position: absolute;
         inset: 0;
-        background-image: radial-gradient(circle at center, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+        background-image: radial-gradient(circle at center, var(--cp-accentsoft) 0%, transparent 70%);
         pointer-events: none;
       }
       .cta-title {
         font-family: 'Space Grotesk', sans-serif;
         font-size: clamp(2rem, 4vw, 3rem);
         font-weight: 700;
-        color: #fff;
+        color: var(--cp-text);
         margin-bottom: 1rem;
         position: relative;
       }
@@ -806,7 +876,7 @@
       .footer {
         border-top: 1px solid var(--cp-line);
         padding: 3.5rem 0 2.5rem;
-        background: #07090e;
+        background: var(--cp-surface-2);
         font-size: 0.88rem;
         color: var(--cp-text-subtle);
       }
@@ -833,7 +903,7 @@
         transition: color 0.15s ease;
       }
       .footer-link:hover {
-        color: #fff;
+        color: var(--cp-text);
       }
       .footer-disclaimer {
         font-size: 0.78rem;
@@ -882,7 +952,7 @@
         <div class="container">
           <div class="badge-eyebrow">
             <span>🛡️</span>
-            <span>100% Local-First Desktop PWA · Zero Server Cost · Works Offline</span>
+            <span>Local-First Desktop PWA · Zero Server Cost · Works Offline</span>
           </div>
 
           <h1 class="hero-title">
@@ -906,7 +976,7 @@
             </a>
           </div>
 
-          <p class="hero-guarantees">
+          <p class="hero-commitments">
             Free forever: 40 labels + 10 videos/day · No credit card required · Zero cloud data uploads
           </p>
 
@@ -997,7 +1067,7 @@
                 Scan the package barcode with any USB/Bluetooth handheld barcode gun or webcam. SABOOT instantly starts continuous uncut recording.
               </p>
               <ul class="step-bullets">
-                <li>Burnt-in forensic banner with live IST microsecond timestamps</li>
+                <li>Burnt-in overlay banner with live IST timestamps</li>
                 <li>Stitches 4 timed high-res frames into a 2×2 photo collage</li>
                 <li>Sub-100ms parcel chaining: next AWB scan saves and loops</li>
                 <li>Supports Dispatch packing and Return Unboxing modes</li>
@@ -1027,7 +1097,7 @@
         <div class="privacy-callout">
           <div class="privacy-grid">
             <div>
-              <h3 class="privacy-title">100% Local-First. Zero Cloud Fees. Zero Data Leaks.</h3>
+              <h3 class="privacy-title">Local-First Storage. Zero Cloud Fees. Zero Data Leaks.</h3>
               <p class="privacy-desc">
                 Cloud-based evidence systems charge monthly storage fees and require gigabytes of daily video uploads over warehouse internet. SABOOT uses the Chromium File System Access API to write uncut MP4 videos and high-res JPEG collages straight to your workstation's hard drive or external SSD.
               </p>
@@ -1067,8 +1137,8 @@
 
             <!-- Monthly / Annual Toggle -->
             <div class="pricing-toggle">
-              <button type="button" class="toggle-btn" id="btn-monthly" onclick="setBilling('monthly')">Monthly Billing</button>
-              <button type="button" class="toggle-btn active" id="btn-annual" onclick="setBilling('annual')">
+              <button type="button" class="toggle-btn" id="btn-monthly" >Monthly Billing</button>
+              <button type="button" class="toggle-btn active" id="btn-annual" >
                 Annual Billing <span class="toggle-badge">Save up to 40%</span>
               </button>
             </div>
@@ -1088,7 +1158,7 @@
               <ul class="plan-features">
                 <li><span class="feature-check">✓</span> <strong>40 label crops</strong> / day</li>
                 <li><span class="feature-check">✓</span> <strong>10 AWB videos</strong> / day</li>
-                <li><span class="feature-check">✓</span> Standard forensic watermark</li>
+                <li><span class="feature-check">✓</span> Standard live timestamp watermark</li>
                 <li><span class="feature-check">✓</span> Picklists &amp; manifests (with seal)</li>
                 <li><span class="feature-check">✓</span> 1 PC workstation</li>
                 <li><span class="feature-cross">✕</span> Auto 4-photo collage</li>
@@ -1110,7 +1180,7 @@
               <ul class="plan-features">
                 <li><span class="feature-check">✓</span> <strong>Unlimited</strong> 4×6 / 4×4 label cropping</li>
                 <li><span class="feature-check">✓</span> <strong>Unlimited</strong> uncut AWB packing videos</li>
-                <li><span class="feature-check">✓</span> Burnt-in IST forensic watermark</li>
+                <li><span class="feature-check">✓</span> Burnt-in IST live timestamp watermark</li>
                 <li><span class="feature-check">✓</span> Clean white-label manifests</li>
                 <li><span class="feature-check">✓</span> 1 PC offline license</li>
                 <li><span class="feature-check">✓</span> Email support</li>
@@ -1124,7 +1194,7 @@
             <div class="pricing-card popular">
               <div class="popular-badge">MOST POPULAR</div>
               <h3 class="plan-name">ClaimRadar Pro</h3>
-              <p class="plan-tagline">Complete forensic dispute proof suite to overturn rejected claims</p>
+              <p class="plan-tagline">Dispute evidence studio for return parcel claims</p>
               <div class="plan-price-wrap">
                 <div class="plan-price price-val" data-monthly="₹599" data-annual="₹4,499">₹4,499</div>
                 <div class="plan-period period-val" data-monthly="/ month" data-annual="/ year (₹375/mo)">/ year (₹375/mo)</div>
@@ -1190,7 +1260,7 @@
                   <td>Unlimited</td>
                 </tr>
                 <tr>
-                  <td>Forensic Timestamp Watermark</td>
+                  <td>Live Timestamp Watermark</td>
                   <td>Standard IST</td>
                   <td>Burnt-in HD IST</td>
                   <td>Burnt-in HD IST</td>
@@ -1259,7 +1329,7 @@
             <div class="faq-item">
               <h3 class="faq-q">Is my data uploaded anywhere?</h3>
               <div class="faq-a">
-                <strong>No. SABOOT is strictly local-first.</strong> All shipping label parsing, barcode detection, video recording, and photo collages execute 100% on your workstation in your browser. Videos and images are saved directly to your local hard drive via the Chromium File System Access API (or browser Downloads fallback). Zero customer data, tracking numbers, or video bytes are ever uploaded to any cloud server or database.
+                <strong>No. SABOOT is strictly local-first.</strong> All shipping label parsing, barcode detection, video recording, and photo collages execute entirely on your workstation in your browser. Videos and images are saved directly to your local hard drive via the Chromium File System Access API (or browser Downloads fallback). Zero customer data, tracking numbers, or video bytes are ever uploaded to any cloud server or database.
               </div>
             </div>
 
@@ -1292,7 +1362,7 @@
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-q">Are marketplace dispute deadlines guaranteed?</h3>
+              <h3 class="faq-q">Are marketplace dispute deadlines exact?</h3>
               <div class="faq-a">
                 Return dispute filing deadlines (e.g. Meesho SAFE 72h, Flipkart SPF 14 days, Amazon SAFE-T 30 days) are based on published platform guidelines and are marked <em>[needs verification]</em> because marketplaces periodically adjust their seller policies. SABOOT provides real-time configurable countdowns to keep your team ahead of deadlines.
               </div>
@@ -1328,7 +1398,7 @@
     <footer class="footer">
       <div class="container footer-inner">
         <div>
-          <div style="display: flex; align-items: center; gap: 0.5rem; color: #fff; font-weight: 700; margin-bottom: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--cp-text); font-weight: 700; margin-bottom: 0.5rem;">
             <span>SABOOT Suite</span>
           </div>
           <p>© 2026 SABOOT.in. Local-first desktop PWA for Indian marketplace sellers.</p>
@@ -1351,35 +1421,6 @@
     </footer>
 
     <!-- Billing Interval Toggle Script (Vanilla JS, 0 dependencies) -->
-    <script>
-      function setBilling(interval) {
-        var isAnnual = interval === 'annual';
-        var btnM = document.getElementById('btn-monthly');
-        var btnA = document.getElementById('btn-annual');
-        if (btnM && btnA) {
-          if (isAnnual) {
-            btnA.classList.add('active');
-            btnM.classList.remove('active');
-          } else {
-            btnM.classList.add('active');
-            btnA.classList.remove('active');
-          }
-        }
-
-        var prices = document.querySelectorAll('.price-val');
-        var periods = document.querySelectorAll('.period-val');
-        var savings = document.querySelectorAll('.savings-val');
-
-        prices.forEach(function (el) {
-          el.textContent = isAnnual ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
-        });
-        periods.forEach(function (el) {
-          el.textContent = isAnnual ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
-        });
-        savings.forEach(function (el) {
-          el.textContent = isAnnual ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
-        });
-      }
-    </script>
+    <script src="/landing.js" defer></script>
   </body>
 </html>

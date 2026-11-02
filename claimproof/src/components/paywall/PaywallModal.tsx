@@ -26,6 +26,7 @@ import { usePaywall } from '../../providers/PaywallProvider';
 import { activateDemoPlan, verifyAndActivateToken } from '../../services/licenseService';
 import { cn, formatRupees } from '../../lib/utils';
 import { getPaymentUrl, PLANS } from '../../config/plans';
+import { getWhatsAppBuyUrl } from '../../config/support';
 import { trackEvent } from '../../services/telemetry';
 import { Badge, Button, Field, Modal, useToast } from '../ui';
 import type { BillingInterval, PlanId } from '../../types';
@@ -71,10 +72,16 @@ export function PaywallModal(): JSX.Element {
   const payableAmount =
     interval === 'annual' ? selectedPlan.annualPrice : selectedPlan.monthlyPrice;
 
+  const paymentUrl = getPaymentUrl(selected, interval);
+  const whatsappUrl = getWhatsAppBuyUrl(selectedPlan.name, interval);
+
   const handleBuy = () => {
+    if (!paymentUrl) {
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
     void trackEvent('purchase_started', { plan: selected, interval });
-    const url = getPaymentUrl(selected, interval);
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(paymentUrl, '_blank', 'noopener,noreferrer');
     toast.info(
       'Razorpay checkout opened',
       'Complete payment in the new tab. You will receive an offline license key to activate below.'
@@ -343,15 +350,27 @@ export function PaywallModal(): JSX.Element {
               </span>
             </div>
           </div>
-          <Button
-            size="lg"
-            variant="primary"
-            icon={ExternalLink}
-            onClick={handleBuy}
-            className="w-full sm:w-auto"
-          >
-            Buy {selectedPlan.name} via Razorpay
-          </Button>
+          {paymentUrl ? (
+            <Button
+              size="lg"
+              variant="primary"
+              icon={ExternalLink}
+              onClick={handleBuy}
+              className="w-full sm:w-auto"
+            >
+              Buy {selectedPlan.name} via Razorpay
+            </Button>
+          ) : (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-proof-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-proof-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-proof-400 w-full sm:w-auto"
+            >
+              <ExternalLink className="h-4 w-4" />
+              <span>Contact support to buy</span>
+            </a>
+          )}
         </div>
 
         <div className="mt-4">

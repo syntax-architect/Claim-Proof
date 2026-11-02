@@ -43,17 +43,17 @@ export default function RefundPolicyPage({ navigate }: { navigate: (r: Route) =>
         </div>
       </Card>
 
-      {/* 1. 7-Day Money Back Guarantee */}
+      {/* 1. 7-Day Refund Policy */}
       <Card className="p-6 space-y-3">
         <div className="flex items-center gap-2 text-base font-bold text-white">
           <Clock className="h-5 w-5 text-proof-400" />
-          1. 7-Day Money-Back Guarantee
+          1. 7-Day Refund Policy
         </div>
         <p className="text-xs leading-relaxed text-slate-300">
           If you purchase a Starter Station, ClaimRadar Pro, or Warehouse license and determine that
           the software does not fit your warehouse packing workflow or workstation setup, you are
           entitled to request a{' '}
-          <strong className="text-white">100% full refund within 7 calendar days</strong> from the
+          <strong className="text-white">full refund within 7 calendar days</strong> from the
           initial date of purchase{' '}
           <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.
         </p>

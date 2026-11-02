@@ -203,7 +203,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.16 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           <button
             type="button"
@@ -214,10 +214,10 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
           />
           <motion.div
             className="glass relative w-full max-w-xl overflow-hidden border-line-bright shadow-2xl"
-            initial={{ opacity: 0, y: -14, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 32 }}
             role="dialog"
             aria-modal="true"
             aria-label="Command palette"

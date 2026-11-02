@@ -1,6 +1,6 @@
 /* SABOOT AWB — canvas video compositor + MediaRecorder pipeline.
  * Draws the camera (or a synthetic demo scene) onto a 1280×720 canvas with a
- * burnt-in forensic bar, records at 1.2 Mbps (≈ under 4.5 MB for 30 s), and
+ * burnt-in live timestamp bar, records at 1.2 Mbps (≈ under 4.5 MB for 30 s), and
  * extracts four timed JPEG stills stitched into a 2×2 evidence collage. */
 
 import { BRAND } from '../config/brand';
@@ -19,7 +19,7 @@ export function getContainerFormat(mime: string): ContainerFormat {
   return 'unknown';
 }
 
-export interface ForensicMeta {
+export interface OverlayMeta {
   awb: string;
   orderId: string;
   sku: string;
@@ -28,6 +28,7 @@ export interface ForensicMeta {
   type: RecordingType;
   freeTier: boolean;
 }
+
 
 export interface PipelineEvents {
   onPhotoTaken?: (index: 0 | 1 | 2 | 3, dataUrl: string) => void;
@@ -89,7 +90,7 @@ export class RecordingPipeline {
   private chunks: Blob[] = [];
   private recordedBytes = 0;
   private maxDurationSec = 300;
-  private meta: ForensicMeta | null = null;
+  private meta: OverlayMeta | null = null;
   private events: PipelineEvents | null = null;
   private startedAt = 0;
   private lastElapsedSec = -1;
@@ -193,7 +194,7 @@ export class RecordingPipeline {
   }
 
   startRecording(
-    meta: ForensicMeta,
+    meta: OverlayMeta,
     events?: PipelineEvents,
     options?: { maxDurationSec?: number }
   ): void {
@@ -386,7 +387,7 @@ export class RecordingPipeline {
       this.drawDemoScene(ctx);
     }
 
-    this.drawForensicBar(ctx);
+    this.drawOverlayBar(ctx);
     if (this.meta?.freeTier && this.recorder) this.drawFreeWatermark(ctx);
 
     /* Elapsed ticker & max-duration monitor. */
@@ -418,7 +419,7 @@ export class RecordingPipeline {
     this.events?.onPhotoTaken?.(index, off.toDataURL('image/jpeg', 0.55));
   }
 
-  private drawForensicBar(ctx: CanvasRenderingContext2D): void {
+  private drawOverlayBar(ctx: CanvasRenderingContext2D): void {
     const recording = this.recorder !== null;
     const meta = this.meta;
 
@@ -449,7 +450,7 @@ export class RecordingPipeline {
       ctx.fill();
     }
 
-    /* Forensic text — auto-shrinks to fit the space right of the REC badge.
+    /* Overlay text — auto-shrinks to fit the space right of the REC badge.
      * Uses real-time wall-clock IST timestamp Date.now(). */
     const text =
       recording && meta

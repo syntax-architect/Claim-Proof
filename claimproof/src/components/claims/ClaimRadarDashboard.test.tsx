@@ -96,6 +96,9 @@ describe('ClaimRadarDashboard Component', () => {
     expect(screen.getByText('AWB-DELHIVERY-12345')).toBeDefined();
     expect(screen.getAllByText(/left to file/i).length).toBeGreaterThan(0);
 
+    // Shows unverified badge next to unconfirmed window
+    expect(screen.getAllByText('UNVERIFIED - check your seller panel').length).toBeGreaterThan(0);
+
     const prepareBtn = screen.getByRole('button', {
       name: /Prepare Claim/i
     });
@@ -124,6 +127,39 @@ describe('ClaimRadarDashboard Component', () => {
     expect(screen.getByText('AWB-EKART-554433')).toBeDefined();
     expect(screen.getByText(/WINDOW EXPIRED — file manually with proof of delay/i)).toBeDefined();
     expect(screen.getByText('END')).toBeDefined();
+
+    // Verify unverified badge for Flipkart
+    expect(screen.getAllByText('UNVERIFIED - check your seller panel').length).toBeGreaterThan(0);
+
+    const results = await axe(container, {
+      rules: { region: { enabled: false }, 'heading-order': { enabled: false } }
+    });
+    expect(results).toHaveNoViolations();
+  });
+
+  it('renders claim right at 0ms boundary with expired indicator and passes axe', async () => {
+    const boundaryClaim: ClaimItem = {
+      id: 103,
+      awb: 'AWB-BOUNDARY-0MS',
+      orderId: 'ORD-BOUNDARY',
+      sku: 'SKU-BOUNDARY',
+      qty: 1,
+      courier: 'Delhivery',
+      marketplace: 'Meesho',
+      status: 'pending',
+      flagReason: 'Damaged',
+      notes: '',
+      disputeText: '',
+      returnScanAt: Date.now() - 72 * 3600 * 1000,
+      deadlineAt: Date.now() // exactly at deadline (0ms)
+    };
+
+    vi.spyOn(claimEngine, 'useClaims').mockReturnValue([boundaryClaim]);
+
+    const { container } = renderDashboard();
+    expect(screen.getByText('AWB-BOUNDARY-0MS')).toBeDefined();
+    expect(screen.getByText('END')).toBeDefined();
+    expect(screen.getByText(/WINDOW EXPIRED — file manually with proof of delay/i)).toBeDefined();
 
     const results = await axe(container, {
       rules: { region: { enabled: false }, 'heading-order': { enabled: false } }

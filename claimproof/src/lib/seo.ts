@@ -24,7 +24,7 @@ export const ROUTE_SEO: Record<string, RouteSeoMetadata> = {
   recorder: {
     title: 'AWB Video Recorder — Packing Proof Station',
     description:
-      'Record uncut packing and return unboxing videos with live IST forensic timestamps, barcode scans, and auto-stitched 4-photo collages.',
+      'Record uncut packing and return unboxing videos with live IST timestamps, barcode scans, and auto-stitched 4-photo collages.',
     canonical: `https://${BRAND.domain}/#/recorder`
   },
   claims: {
@@ -34,7 +34,7 @@ export const ROUTE_SEO: Record<string, RouteSeoMetadata> = {
     canonical: `https://${BRAND.domain}/#/claims`
   },
   vault: {
-    title: 'Evidence Vault — 100% Private Local Storage',
+    title: 'Evidence Vault — Private Local Storage',
     description:
       'Browse, search, and replay uncut packing videos and photo collages stored directly on your computer. Zero cloud uploads or storage fees.',
     canonical: `https://${BRAND.domain}/#/vault`
@@ -51,7 +51,7 @@ export const ROUTE_SEO: Record<string, RouteSeoMetadata> = {
     canonical: `https://${BRAND.domain}/#/settings`
   },
   privacy: {
-    title: 'Privacy Policy — 100% Local-First Guarantee',
+    title: 'Privacy Policy — Local-First Data Protection',
     description: `Read how ${BRAND.name} keeps your packing videos, shipping labels, and customer order data entirely on your local machine with zero uploads.`,
     canonical: `https://${BRAND.domain}/#/privacy`
   },

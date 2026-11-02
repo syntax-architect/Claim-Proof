@@ -25,7 +25,15 @@ function versionedServiceWorkerPlugin() {
       if (fs.existsSync(assetsDir)) {
         const files = fs.readdirSync(assetsDir);
         assets = files
-          .filter((f) => (f.endsWith('.js') || f.endsWith('.css')) && !f.endsWith('.map'))
+          .filter(
+            (f) =>
+              (f.endsWith('.js') ||
+                f.endsWith('.css') ||
+                f.endsWith('.woff2') ||
+                f.endsWith('.woff') ||
+                f.endsWith('.ttf')) &&
+              !f.endsWith('.map')
+          )
           .map((f) => `/assets/${f}`);
       }
 
@@ -49,15 +57,22 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('pdfjs-dist')) return 'pdfjs';
-            if (id.includes('pdf-lib')) return 'pdf-lib';
-            if (id.includes('@zxing')) return 'zxing';
-            if (id.includes('@supabase')) return 'supabase';
-            if (id.includes('qrcode')) return 'qr';
-            if (id.includes('framer-motion')) return 'vendor-motion';
-            if (id.includes('lucide-react')) return 'vendor-icons';
-            if (id.includes('dexie')) return 'vendor-dexie';
+          const normalizedId = id.replace(/\\/g, '/');
+          if (normalizedId.includes('node_modules')) {
+            if (normalizedId.includes('pdfjs-dist')) return 'pdfjs';
+            if (normalizedId.includes('pdf-lib')) return 'pdf-lib';
+            if (normalizedId.includes('@zxing')) return 'zxing';
+            if (normalizedId.includes('@supabase')) return 'supabase';
+            if (normalizedId.includes('qrcode')) return 'qr';
+            if (normalizedId.includes('framer-motion')) return 'vendor-motion';
+            if (normalizedId.includes('lucide-react')) return 'vendor-icons';
+            if (normalizedId.includes('dexie')) return 'vendor-dexie';
+            if (
+              normalizedId.includes('react-dom') ||
+              normalizedId.includes('/react/') ||
+              normalizedId.includes('scheduler')
+            )
+              return 'vendor-react';
           }
         }
       }

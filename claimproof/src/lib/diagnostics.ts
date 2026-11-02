@@ -2,7 +2,7 @@
  * Zero-PII Diagnostic Info Collector for SABOOT Support.
  *
  * Collects ONLY technical capabilities, storage metrics, and browser specifications.
- * Strictly guarantees that ZERO personal data (no customer details, order IDs,
+ * Strictly ensures that ZERO personal data (no customer details, order IDs,
  * AWBs, video paths, or label contents) is included in the diagnostic payload.
  */
 
@@ -160,7 +160,7 @@ export async function getDiagnosticInfo(): Promise<WorkstationDiagnostics> {
       awbsRecordedToday
     },
     privacyNotice:
-      'Zero personal data guarantee: No order IDs, AWBs, customer identities, video frames, or label contents are included.'
+      'Zero personal data policy: No order IDs, AWBs, customer identities, video frames, or label contents are included.'
   };
 }
 

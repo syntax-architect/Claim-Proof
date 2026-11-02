@@ -7,6 +7,7 @@ import { PaywallModal } from './PaywallModal';
 import { PaywallProvider, usePaywall } from '../../providers/PaywallProvider';
 import { ToastProvider } from '../ui';
 import * as licenseService from '../../services/licenseService';
+import * as plans from '../../config/plans';
 
 expect.extend(toHaveNoViolations);
 
@@ -70,6 +71,8 @@ describe('PaywallModal Component', () => {
   });
 
   it('allows selecting plans and billing intervals with accessible updates and passes axe', async () => {
+    vi.spyOn(plans, 'getPaymentUrl').mockReturnValue('https://rzp.io/l/test_checkout');
+
     const { container } = renderPaywall();
 
     // Initial state: default plan is ClaimRadar Pro, interval is Annual Pass
@@ -114,6 +117,62 @@ describe('PaywallModal Component', () => {
       rules: { region: { enabled: false } }
     });
     expect(results).toHaveNoViolations();
+  });
+
+  describe('Payment Link vs Contact Support States (VITE_PAYMENT_LINK)', () => {
+    it('State A: when VITE_PAYMENT_LINK is set, displays payment button and opens checkout on click', async () => {
+      vi.spyOn(plans, 'getPaymentUrl').mockReturnValue('https://rzp.io/l/configured_payment_link');
+      const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+      const { container } = renderPaywall();
+
+      const buyButton = screen.getByRole('button', {
+        name: /Buy ClaimRadar Pro via Razorpay/i
+      });
+      expect(buyButton).toBeDefined();
+
+      // Contact support to buy must NOT be shown when payment link exists
+      expect(screen.queryByRole('link', { name: /Contact support to buy/i })).toBeNull();
+
+      fireEvent.click(buyButton);
+      expect(openSpy).toHaveBeenCalledWith(
+        'https://rzp.io/l/configured_payment_link',
+        '_blank',
+        'noopener,noreferrer'
+      );
+
+      const results = await axe(container, {
+        rules: { region: { enabled: false } }
+      });
+      expect(results).toHaveNoViolations();
+    });
+
+    it('State B: when VITE_PAYMENT_LINK is NOT set, hides payment button and displays "Contact support to buy" with WhatsApp link', async () => {
+      // Simulate VITE_PAYMENT_LINK is unset
+      vi.spyOn(plans, 'getPaymentUrl').mockReturnValue(null);
+
+      const { container } = renderPaywall();
+
+      // Payment button must be hidden
+      expect(
+        screen.queryByRole('button', {
+          name: /Buy .* via Razorpay/i
+        })
+      ).toBeNull();
+
+      // "Contact support to buy" link must be visible and point to WhatsApp
+      const supportLink = screen.getByRole('link', {
+        name: /Contact support to buy/i
+      });
+      expect(supportLink).toBeDefined();
+      expect(supportLink.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/\d+/);
+      expect(supportLink.getAttribute('href')).toContain('text=');
+
+      const results = await axe(container, {
+        rules: { region: { enabled: false } }
+      });
+      expect(results).toHaveNoViolations();
+    });
   });
 
   it('handles license key entry and successful activation', async () => {

@@ -186,7 +186,7 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
           </div>
 
           <div className="flex items-center gap-2">
-            <Badge tone="proof">0% PII Guaranteed</Badge>
+            <Badge tone="proof">Zero Personal Data Collected</Badge>
             <Button
               variant="primary"
               size="sm"
@@ -202,7 +202,7 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
         <div className="glass-soft p-4 rounded-xl border border-line text-xs text-slate-300 leading-relaxed space-y-1">
           <div className="flex items-center gap-2 text-proof-300 font-semibold">
             <ShieldCheck className="h-4 w-4 shrink-0" />
-            Privacy Protection Guarantee
+            Privacy Protection &amp; Data Policy
           </div>
           <p>
             When seeking assistance with a webcam, scanner, or printer issue, pasting this technical
@@ -272,7 +272,7 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
             <p className="text-slate-300">
               When printing cropped 4×6 inch (100×150 mm) labels, set your browser print dialog
               paper size to <strong className="text-white">4×6 in</strong>, scale to{' '}
-              <strong className="text-white">Actual size / 100%</strong>, and margins to{' '}
+              <strong className="text-white">Actual size (1:1 scale)</strong>, and margins to{' '}
               <strong className="text-white">None</strong> to prevent thermal cutoffs.
             </p>
           </div>

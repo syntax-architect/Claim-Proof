@@ -13,7 +13,7 @@ describe('Route SEO Metadata & Length Constraints', () => {
     if (oldCanonical) oldCanonical.remove();
   });
 
-  it('guarantees every known route has SEO config with title <= 60 chars and description <= 160 chars', () => {
+  it('ensures every known route has SEO config with title <= 60 chars and description <= 160 chars', () => {
     for (const route of ROUTES) {
       const seo = ROUTE_SEO[route];
       expect(seo, `Route ${route} should have SEO metadata`).toBeDefined();

@@ -16,12 +16,12 @@ export default function Footer({ navigate }: { navigate?: (r: Route) => void }) 
     <footer className="mt-auto border-t border-line bg-ink-950/80 backdrop-blur-xl">
       <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          {/* Brand & Guarantee */}
+          {/* Brand & Architecture */}
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <Logo />
               <span className="rounded-full border border-proof-500/30 bg-proof-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-proof-300">
-                100% Local-First
+                Local-First Storage
               </span>
             </div>
             <p className="text-xs text-slate-400 max-w-md leading-relaxed">

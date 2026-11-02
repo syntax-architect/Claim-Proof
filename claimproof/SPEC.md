@@ -33,13 +33,13 @@ A rapid, hands-free video recording packing station designed for fast warehouse 
 * **Hands-Free Triggering:**
   * Physical USB / Bluetooth HID barcode scanner gun (<80ms burst key listener with trailing Enter).
   * Web camera barcode scanner (native browser `BarcodeDetector` API with `@zxing/library` fallback).
-* **Forensic Video Stream (`MediaRecorder` & Canvas Compositor):**
+* **Packing Video Stream (`MediaRecorder` & Canvas Compositor):**
   * Records continuous uncut MP4/WebM video at ~1.2 Mbps.
-  * Dynamically burns in an indelible forensic evidence banner across the top:
+  * Dynamically burns in an live timestamp evidence banner across the top:
     `VERIFIED UNCUT PROOF | AWB | ORDER ID | SKU (QTY) | LIVE IST TIMESTAMP (DD-MMM-YYYY HH:mm:ss.SSS)`
 * **Automated Evidence Photo Collage:**
   * Automatically captures 4 timed high-resolution JPEG still frames mid-recording (at T+0.5s, T+3s, T+6s, and T+9s).
-  * Stitches the 4 stills into a 2×2 forensic photo collage (`{AWB}_Photo_Collage.jpg`).
+  * Stitches the 4 stills into a 2×2 evidence photo collage (`{AWB}_Photo_Collage.jpg`).
 * **Sub-100ms Parcel Chaining:** Scanning the next AWB immediately finalizes, saves the previous recording, and starts the next clip with zero mouse or keyboard interaction.
 * **Dual Operation Modes:**
   * **Dispatch Mode:** For outbound order packing.
@@ -60,7 +60,7 @@ A real-time dispute radar and evidence preparation studio for recovering revenue
 * **Dispute Dossier Packaging:** Generates marketplace-tailored dispute claim text and packages side-by-side photo collages and video files for 1-click upload to seller support tickets.
 
 ### 1.4 Evidence Vault
-A zero-cloud, 100% private local storage engine.
+A zero-cloud, private local storage engine.
 * **Direct File System Access:** Uses the Chromium File System Access API (`showDirectoryPicker`) to write MP4/WebM videos and JPEG collages directly to the seller's hard drive without server bandwidth or cloud storage fees.
 * **Directory Layout:**
   ```
@@ -102,7 +102,7 @@ A hardware-bound, offline-verifiable cryptographic licensing system.
   - `"renews on"`: Rendered when recurring subscription is active with upcoming renewal date.
   - `"payment failed, update your payment method"`: Rendered when payment attempt fails or subscription is halted.
   - `"expired, features limited"`: Rendered when license and 3-day grace have lapsed (pro features revert to Free tier quota).
-* **ES256 Offline JWT Tokens:** Licenses are digitally signed using an ECDSA P-256 private key and validated 100% on-device using a public JWK (`src/lib/licenseKeys.ts`). Verification requires zero network calls or server round-trips. Every token includes `plan`, `exp` (expiry), and `cid`/`sub` (customer ID).
+* **ES256 Offline JWT Tokens:** Licenses are digitally signed using an ECDSA P-256 private key and validated strictly on-device using a public JWK (`src/lib/licenseKeys.ts`). Verification requires zero network calls or server round-trips. Every token includes `plan`, `exp` (expiry), and `cid`/`sub` (customer ID).
 * **Soft Device Binding:** Tokens support soft binding to up to 2 workstations per license. If a customer upgrades their PC or hits the limit, the app provides a 1-click "Move license to this device" option rather than a rigid lockout.
 
 ### 1.6 Opt-In Analytics & Scrubbed Error Monitoring
@@ -156,7 +156,7 @@ Database version 1 defines 9 object stores:
 | **Pricing (Annual)** | Free Forever | ₹2,499 / year *(₹208/mo)* | ₹4,499 / year *(₹375/mo)* | ₹8,999 / year *(₹750/mo)* |
 | **Label Cropping & Sorting** | 40 labels / day | Unlimited | Unlimited | Unlimited |
 | **AWB Video Recording** | 10 videos / day | Unlimited | Unlimited | Unlimited |
-| **Forensic Watermark** | Standard | Burnt-in HD | Burnt-in HD | Burnt-in HD |
+| **Live Timestamp Watermark** | Standard | Burnt-in HD | Burnt-in HD | Burnt-in HD |
 | **Picklist & Manifests** | Included (SABOOT seal) | Clean / White-label | Clean / White-label | Clean / White-label |
 | **Viral Manifest Footer** | Yes *(Phase 3 loop)* | Removed | Removed | Removed |
 | **Auto 4-Photo Collage** | No | No | Yes (T+0.5, 3, 6, 9s) | Yes (T+0.5, 3, 6, 9s) |
@@ -170,11 +170,12 @@ Database version 1 defines 9 object stores:
 
 ## 4. Marketplace Rules & Policy Flags
 
-All marketplace-specific dispute filing windows and claim rubrics are subject to platform policy changes and are formally marked as **`[needs verification]`**:
-* Meesho SAFE claim window: 72 hours *[needs verification]*
-* AJIO dispute window: 72 hours *[needs verification]*
-* Snapdeal claim window: 72 hours *[needs verification]*
-* Myntra claim window: 72 hours *[needs verification]*
-* Flipkart SPF claim window: 14 days (336 hours) *[needs verification]*
-* Amazon India SAFE-T claim window: 30 days (720 hours) *[needs verification]*
+All marketplace-specific dispute filing windows, official seller help URLs, and claim rubrics are centralized in `src/config/claimWindows.ts`. All default windows are marked **`UNVERIFIED`** (`[needs verification]`) with a visible `"UNVERIFIED - check your seller panel"` badge in ClaimRadar until confirmed by the seller, and can be customized at any time in the Settings screen:
+* Meesho SAFE claim window: 72 hours (Source: `https://supplier.meesho.com/support`) *[needs verification]*
+* AJIO dispute window: 72 hours (Source: `https://supplier.ajio.com/`) *[needs verification]*
+* Snapdeal claim window: 72 hours (Source: `https://sellers.snapdeal.com/`) *[needs verification]*
+* Myntra claim window: 72 hours (Source: `https://partner.myntra.com/`) *[needs verification]*
+* Flipkart SPF claim window: 14 days (336 hours) (Source: `https://seller.flipkart.com/help/protection-fund`) *[needs verification]*
+* Amazon India SAFE-T claim window: 30 days (720 hours) (Source: `https://sellercentral.amazon.in/help/hub/reference/G202103440`) *[needs verification]*
+* GlowRoad claim window: 72 hours (Source: `https://glowroad.com/`) *[needs verification]*
 

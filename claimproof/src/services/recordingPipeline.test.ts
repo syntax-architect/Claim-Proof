@@ -3,7 +3,7 @@ import {
   getContainerFormat,
   pickMime,
   RecordingPipeline,
-  type ForensicMeta
+  type OverlayMeta
 } from './recordingPipeline';
 import * as crashGuard from './recorderCrashGuard';
 
@@ -228,7 +228,7 @@ describe('RecordingPipeline and format helpers', () => {
   });
 
   describe('Recording state transitions and safeguards', () => {
-    const meta: ForensicMeta = {
+    const meta: OverlayMeta = {
       awb: 'AWB987654321',
       orderId: 'ORD123456',
       sku: 'TEST-SKU-M',

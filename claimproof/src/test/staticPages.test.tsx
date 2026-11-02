@@ -29,7 +29,7 @@ describe('Static Pages & Legal Verification', () => {
   });
 
   describe('PrivacyPolicyPage', () => {
-    it('renders with zero-cloud guarantee and explicit device-only statement', async () => {
+    it('renders with local storage architecture and explicit device-only statement', async () => {
       const navigate = vi.fn();
       const { container } = render(
         <ToastProvider>
@@ -38,9 +38,7 @@ describe('Static Pages & Legal Verification', () => {
       );
 
       // Explicitly: videos and labels stay on the user's device
-      expect(
-        screen.getByText(new RegExp(`The ${BRAND.name} Zero-Cloud Guarantee`, 'i'))
-      ).toBeDefined();
+      expect(screen.getByText(/Local Storage Architecture/i)).toBeDefined();
       expect(screen.getByText(/Your Videos & Labels Never Leave Your Device/i)).toBeDefined();
       expect(
         screen.getByText(
@@ -94,9 +92,9 @@ describe('Static Pages & Legal Verification', () => {
       expect(screen.getAllByText(/Flipkart/i).length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText(/Amazon India/i).length).toBeGreaterThanOrEqual(1);
 
-      // Claim Outcomes & No Payout Guarantee
-      expect(screen.getByText(/Marketplace Claims Outcomes & No Payout Guarantee/i)).toBeDefined();
-      expect(screen.getByText(/NO GUARANTEE OF CLAIM APPROVAL/i)).toBeDefined();
+      // Claim Outcomes & Dispute Disclaimers
+      expect(screen.getByText(/Marketplace Claims Outcomes & Dispute Disclaimers/i)).toBeDefined();
+      expect(screen.getByText(/NO ASSURANCE OF CLAIM APPROVAL/i)).toBeDefined();
 
       // Contains [NEEDS LEGAL REVIEW] placeholders
       const legalPlaceholders = screen.getAllByText(/\[NEEDS LEGAL REVIEW\]/i);
@@ -109,7 +107,7 @@ describe('Static Pages & Legal Verification', () => {
   });
 
   describe('RefundPolicyPage', () => {
-    it('renders refund policy with 7-day guarantee and 3-day grace period', async () => {
+    it('renders refund policy with 7-day refund policy and 3-day grace period', async () => {
       const navigate = vi.fn();
       const { container } = render(
         <ToastProvider>
@@ -120,9 +118,9 @@ describe('Static Pages & Legal Verification', () => {
       // Free Tier try-before-you-buy
       expect(screen.getByText(/Try Before You Buy with Our Perpetual Free Tier/i)).toBeDefined();
 
-      // 7-day guarantee
-      expect(screen.getByText(/7-Day Money-Back Guarantee/i)).toBeDefined();
-      expect(screen.getByText(/100% full refund within 7 calendar days/i)).toBeDefined();
+      // 7-day refund policy
+      expect(screen.getByText(/7-Day Refund Policy/i)).toBeDefined();
+      expect(screen.getByText(/full refund within 7 calendar days/i)).toBeDefined();
 
       // 3-day grace period
       expect(screen.getAllByText(/3-Day Grace Period/i).length).toBeGreaterThanOrEqual(1);
@@ -212,7 +210,7 @@ describe('Static Pages & Legal Verification', () => {
       expect(diag.storage).toBeDefined();
       expect(diag.license).toBeDefined();
       expect(diag.todayActivityCounts).toBeDefined();
-      expect(diag.privacyNotice).toContain('Zero personal data guarantee');
+      expect(diag.privacyNotice).toContain('Zero personal data policy');
 
       // Check ZERO personal data
       // No order IDs, no customer identities, no emails in technical report, no private keys

@@ -25,10 +25,10 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
         icon={ShieldCheck}
         kicker="PRIVACY & DATA PROTECTION"
         title="Privacy Policy"
-        subtitle="100% Local-First Architecture · Your Videos & Labels Never Leave Your Device"
+        subtitle="Local-First Architecture · Your Videos & Labels Never Leave Your Device"
       />
 
-      {/* Hero Guarantee Callout */}
+      {/* Hero Commitment Callout */}
       <Card
         glow
         className="border-proof-500/40 bg-gradient-to-r from-proof-950/40 via-ink-900 to-ink-950 p-6"
@@ -39,7 +39,7 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
           </div>
           <div className="space-y-2">
             <div className="font-display text-lg font-bold text-white">
-              The {BRAND.name} Zero-Cloud Guarantee
+              The {BRAND.name} Zero-Cloud Guarantee &amp; Local Storage Architecture
             </div>
             <p className="text-sm leading-relaxed text-slate-300">
               {BRAND.name} is architected from the ground up as a strictly{' '}
@@ -77,7 +77,7 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
             <div className="text-xs text-slate-300 leading-relaxed">
               When activating a paid plan, a digitally signed cryptographic token (ES256 JWT)
               containing your plan tier and expiration timestamp is saved locally in your browser's
-              IndexedDB. Verification happens 100% on-device with zero network pings.
+              IndexedDB. Verification happens strictly on-device with zero network pings.
             </div>
           </div>
 

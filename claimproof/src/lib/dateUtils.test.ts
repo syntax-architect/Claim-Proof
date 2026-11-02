@@ -35,7 +35,7 @@ describe('dateUtils — IST-first date and time helpers', () => {
     });
   });
 
-  describe('formatIST (forensic overlay format)', () => {
+  describe('formatIST (live overlay format)', () => {
     it('formats timestamp into DD-MMM-YYYY HH:mm:ss a IST', () => {
       // 2026-10-31 16:35:12 IST = 2026-10-31 11:05:12 UTC
       const ms = new Date('2026-10-31T11:05:12Z').getTime();

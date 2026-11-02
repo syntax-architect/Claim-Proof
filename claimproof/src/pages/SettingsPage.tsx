@@ -2,8 +2,10 @@ import { useEffect, useState, type ReactNode } from 'react';
 import {
   Activity,
   Cable,
+  Clock,
   Database,
   Download,
+  ExternalLink,
   FileText,
   FolderCheck,
   FolderOpen,
@@ -32,6 +34,26 @@ import { isBeepsMuted, setBeepsMuted } from '../lib/audioBeeps';
 import { isTelemetryEnabled, setTelemetryEnabled } from '../services/telemetry';
 import { navigateTo } from '../lib/router';
 import { RECORDER_CONFIG } from '../config/recorderConfig';
+import {
+  MARKETPLACE_CLAIM_WINDOWS,
+  UNVERIFIED_LABEL,
+  getCustomClaimWindows,
+  saveCustomClaimWindowHours,
+  resetSingleClaimWindow,
+  resetCustomClaimWindows,
+  isClaimWindowUnverified
+} from '../config/claimWindows';
+import type { Marketplace } from '../types';
+
+const CLAIM_MARKETPLACES: Marketplace[] = [
+  'Meesho',
+  'Flipkart',
+  'Amazon',
+  'AJIO',
+  'Snapdeal',
+  'Myntra',
+  'GlowRoad'
+];
 
 function Section({
   icon: Icon,
@@ -70,11 +92,20 @@ export default function SettingsPage() {
   const [maxDurationSec, setMaxDurationSec] = useState<number>(
     RECORDER_CONFIG.defaultMaxDurationSec
   );
+  const [customClaimWindows, setCustomClaimWindowsState] = useState<
+    Partial<Record<Marketplace, number>>
+  >(() => getCustomClaimWindows());
 
   useEffect(() => {
     const onTelemetryChanged = () => setTelemetryEnabledState(isTelemetryEnabled());
     window.addEventListener('cp-telemetry-changed', onTelemetryChanged);
     return () => window.removeEventListener('cp-telemetry-changed', onTelemetryChanged);
+  }, []);
+
+  useEffect(() => {
+    const onClaimWindowsChanged = () => setCustomClaimWindowsState(getCustomClaimWindows());
+    window.addEventListener('cp-claim-windows-changed', onClaimWindowsChanged);
+    return () => window.removeEventListener('cp-claim-windows-changed', onClaimWindowsChanged);
   }, []);
 
   useEffect(() => {
@@ -85,6 +116,38 @@ export default function SettingsPage() {
       setMaxDurationSec
     );
   }, []);
+
+  const handleClaimWindowChange = (m: Marketplace, valStr: string) => {
+    const val = Math.max(1, Math.min(2160, Number(valStr) || 1));
+    saveCustomClaimWindowHours(m, val);
+    setCustomClaimWindowsState((prev) => ({ ...prev, [m]: val }));
+    void setSetting('claim_windows_hours', { ...getCustomClaimWindows(), [m]: val });
+    toast.success(
+      'Claim window updated',
+      `${MARKETPLACE_CLAIM_WINDOWS[m]?.displayName || m} set to ${val} hours.`
+    );
+  };
+
+  const handleResetSingleWindow = (m: Marketplace) => {
+    resetSingleClaimWindow(m);
+    setCustomClaimWindowsState((prev) => {
+      const next = { ...prev };
+      delete next[m];
+      return next;
+    });
+    void setSetting('claim_windows_hours', getCustomClaimWindows());
+    toast.info(
+      'Claim window reset',
+      `${MARKETPLACE_CLAIM_WINDOWS[m]?.displayName || m} restored to default.`
+    );
+  };
+
+  const handleResetAllWindows = () => {
+    resetCustomClaimWindows();
+    setCustomClaimWindowsState({});
+    void setSetting('claim_windows_hours', {});
+    toast.info('All claim windows reset to defaults');
+  };
 
   const vaultStatus = useLiveQuery(() => getVaultStatus(), []);
   const paired = isPhonePairingConfigured();
@@ -310,6 +373,105 @@ export default function SettingsPage() {
         </Section>
 
         <Section
+          icon={Clock}
+          title="Marketplace claim filing windows"
+          sub="Dispute deadline hours per marketplace. All default values require verification."
+        >
+          <div className="space-y-3">
+            <div className="rounded-lg border border-line bg-ink-950/70 p-3 text-[11px] text-slate-400">
+              Dispute filing windows for bad/damaged returns. Custom hours override defaults in
+              ClaimRadar countdown timers immediately.
+            </div>
+
+            <div className="space-y-2.5">
+              {CLAIM_MARKETPLACES.map((m) => {
+                const config = MARKETPLACE_CLAIM_WINDOWS[m];
+                const customHours = customClaimWindows[m];
+                const currentHours = customHours ?? config.hours;
+                const isCustom = customHours !== undefined && customHours !== config.hours;
+                const unverified = isClaimWindowUnverified(m);
+
+                return (
+                  <div
+                    key={m}
+                    className="glass-soft flex flex-col gap-2 rounded-lg p-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-white">
+                          {config.displayName}
+                        </span>
+                        {unverified && (
+                          <Badge tone="warn" className="text-[10px]">
+                            {UNVERIFIED_LABEL}
+                          </Badge>
+                        )}
+                        {isCustom && (
+                          <Badge tone="proof" className="text-[10px]">
+                            Custom
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="mt-1 flex flex-wrap items-center gap-3 text-[11px] text-slate-400">
+                        {config.sourceUrl ? (
+                          <a
+                            href={config.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-proof-400 hover:underline"
+                          >
+                            Official seller help <ExternalLink className="h-3 w-3" />
+                          </a>
+                        ) : (
+                          <span>No official link</span>
+                        )}
+                        <span>Default: {config.hours}h</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <label
+                        htmlFor={`setting-claim-window-${m.toLowerCase()}`}
+                        className="sr-only"
+                      >
+                        {config.displayName} claim window hours
+                      </label>
+                      <input
+                        id={`setting-claim-window-${m.toLowerCase()}`}
+                        type="number"
+                        min="1"
+                        max="2160"
+                        value={currentHours}
+                        onChange={(e) => handleClaimWindowChange(m, e.target.value)}
+                        className="glass-soft h-8 w-20 px-2 font-mono text-xs text-white focus:outline-none"
+                        aria-label={`${config.displayName} claim window hours`}
+                      />
+                      <span className="font-mono text-xs text-slate-400">hours</span>
+                      {isCustom && (
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          icon={RotateCcw}
+                          onClick={() => handleResetSingleWindow(m)}
+                          aria-label={`Reset ${config.displayName} to default`}
+                          title="Reset to default"
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <Button variant="ghost" size="xs" icon={RotateCcw} onClick={handleResetAllWindows}>
+                Reset all claim windows to default
+              </Button>
+            </div>
+          </div>
+        </Section>
+
+        <Section
           icon={Database}
           title="Data & backups"
           sub="IndexedDB metadata — media stays on disk"
@@ -383,7 +545,7 @@ export default function SettingsPage() {
                     : 'Analytics & error reporting disabled',
                   enabled
                     ? 'Only 5 milestone events and scrubbed error messages will be shared.'
-                    : '100% private mode active. Zero telemetry is transmitted.'
+                    : 'Private mode active. Zero telemetry is transmitted.'
                 );
               }}
               label="Share anonymous milestone statistics & scrubbed error reports"
@@ -424,7 +586,7 @@ export default function SettingsPage() {
         <Section
           icon={ShieldCheck}
           title="Legal & Support"
-          sub="Privacy, terms, refunds & technical help — 100% transparent"
+          sub="Privacy, terms, refunds & technical help — strictly transparent"
         >
           <div className="space-y-3">
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">

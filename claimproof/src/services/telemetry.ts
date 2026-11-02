@@ -384,7 +384,7 @@ function generateEventId(): string {
 
 /**
  * Reports an unhandled or caught application error to Sentry/GlitchTip,
- * with 100% of AWBs, order IDs, SKUs, and file paths completely scrubbed.
+ * with all AWBs, order IDs, SKUs, and file paths completely scrubbed.
  */
 export async function reportError(
   error: unknown,

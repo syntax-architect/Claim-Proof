@@ -1,6 +1,6 @@
 /* SABOOT licensing engine — offline-verifiable ES256 license JWTs.
  *
- * Verification is 100% on-device: the payment webhook or admin script
+ * Verification is strictly on-device: the payment webhook or admin script
  * signs a compact JWT with the issuer's P-256 private key; the app only ships
  * the PUBLIC JWK (src/lib/licenseKeys.ts) and validates locally. No account,
  * no server round-trip at activation time.

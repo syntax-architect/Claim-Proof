@@ -43,8 +43,10 @@ export function Card({
     <div
       className={cn(
         'glass',
-        hover && 'hover:-translate-y-0.5 hover:border-line-bright',
-        glow && 'border-proof-500/35 shadow-[0_10px_36px_-16px_color-mix(in_srgb,var(--cp-accentsolid)_45%,transparent)]',
+        hover &&
+          'transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-proof-400/35 hover:shadow-[0_8px_24px_-10px_rgba(201,164,92,0.14)]',
+        glow &&
+          'border-proof-500/35 shadow-[0_10px_36px_-16px_color-mix(in_srgb,var(--cp-accentsolid)_45%,transparent)]',
         className
       )}
     >
@@ -58,7 +60,7 @@ export function Card({
 export function Stagger({
   children,
   className,
-  gap = 0.06,
+  gap = 0.04,
   delay = 0
 }: {
   children: ReactNode;
@@ -72,6 +74,7 @@ export function Stagger({
       initial="off"
       animate="on"
       variants={{
+        off: {},
         on: { transition: { staggerChildren: gap, delayChildren: delay } }
       }}
     >
@@ -83,18 +86,29 @@ export function Stagger({
 export function StaggerItem({
   children,
   className,
-  y = 14
+  y = 8,
+  index
 }: {
   children: ReactNode;
   className?: string;
   y?: number;
+  index?: number;
 }) {
+  const itemDelay = index !== undefined && index > 8 ? 8 * 0.04 : undefined;
   return (
     <motion.div
       className={className}
       variants={{
         off: { opacity: 0, y },
-        on: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } }
+        on: {
+          opacity: 1,
+          y: 0,
+          transition: {
+            duration: 0.2,
+            ease: [0.16, 1, 0.3, 1],
+            delay: itemDelay
+          }
+        }
       }}
     >
       {children}
@@ -109,7 +123,7 @@ type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    'bg-proof-500 text-on-accent font-semibold hover:bg-proof-600 active:bg-proof-700 shadow-sm hover:shadow-md active:scale-[0.98]',
+    'relative overflow-hidden bg-proof-500 text-on-accent font-semibold hover:bg-proof-600 active:bg-proof-700 shadow-sm hover:shadow-md active:scale-[0.98]',
   secondary:
     'bg-ink-700/70 text-slate-100 border border-line hover:bg-ink-600 hover:border-line-bright active:scale-[0.98]',
   ghost: 'text-slate-400 hover:text-slate-200 hover:bg-ink-800/70',
@@ -144,12 +158,15 @@ export function Button({
   className,
   children,
   disabled,
+  onMouseEnter,
   ...rest
 }: ButtonProps) {
+  const [hasHovered, setHasHovered] = useState(false);
+
   return (
     <button
       className={cn(
-        'inline-flex select-none items-center justify-center font-medium transition-all duration-150',
+        'inline-flex select-none items-center justify-center font-medium transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)]',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-proof-500/60',
         'disabled:pointer-events-none disabled:opacity-45',
         BUTTON_SIZES[size],
@@ -157,8 +174,23 @@ export function Button({
         className
       )}
       disabled={disabled || loading}
+      onMouseEnter={(e) => {
+        if (variant === 'primary' && !hasHovered) {
+          setHasHovered(true);
+        }
+        onMouseEnter?.(e);
+      }}
       {...rest}
     >
+      {variant === 'primary' && hasHovered && (
+        <motion.span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
+          initial={{ x: '-100%' }}
+          animate={{ x: '200%' }}
+          transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+        />
+      )}
       {loading ? (
         <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
       ) : (
@@ -195,14 +227,17 @@ const BADGE_TONES: Record<BadgeTone, string> = {
 export function Badge({
   tone = 'neutral',
   className,
+  title,
   children
 }: {
   tone?: BadgeTone;
   className?: string;
+  title?: string;
   children: ReactNode;
 }) {
   return (
     <span
+      title={title}
       className={cn(
         'inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold leading-4 tracking-wide',
         BADGE_TONES[tone],
@@ -256,7 +291,9 @@ export function StatusDot({
 
 /* ── CountUp / StatCard ──────────────────────────────────────────────── */
 
-function CountUp({ value, duration = 750 }: { value: number; duration?: number }) {
+const inNumberFormatter = new Intl.NumberFormat('en-IN');
+
+export function CountUp({ value, duration = 600 }: { value: number; duration?: number }) {
   const [display, setDisplay] = useState(0);
   const prev = useRef(0);
   useEffect(() => {
@@ -273,7 +310,7 @@ function CountUp({ value, duration = 750 }: { value: number; duration?: number }
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [value, duration]);
-  return <>{display.toLocaleString('en-IN')}</>;
+  return <>{inNumberFormatter.format(display)}</>;
 }
 
 const STAT_TONES = {
@@ -614,7 +651,7 @@ export function Modal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           <button
             type="button"
@@ -628,9 +665,9 @@ export function Modal({
               'glass relative flex max-h-[88vh] w-full flex-col border-line-bright bg-ink-900/95 shadow-2xl',
               maxW
             )}
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.98 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 380, damping: 32 }}
             role="dialog"
             aria-modal="true"
@@ -798,7 +835,10 @@ export function LoadingSkeleton({
       <div
         role="status"
         aria-label={ariaLabel}
-        className={cn('h-10 w-10 shrink-0 animate-pulse rounded-full bg-ink-700/60', className)}
+        className={cn(
+          'h-10 w-10 shrink-0 overflow-hidden rounded-full bg-ink-700/60 skeleton-shimmer',
+          className
+        )}
       >
         <span className="sr-only">{ariaLabel}</span>
       </div>
@@ -810,7 +850,10 @@ export function LoadingSkeleton({
       <div
         role="status"
         aria-label={ariaLabel}
-        className={cn('glass space-y-4 p-5 animate-pulse border-line', className)}
+        className={cn(
+          'glass space-y-4 p-5 border-line overflow-hidden skeleton-shimmer',
+          className
+        )}
       >
         <div className="flex items-center justify-between">
           <div className="h-4 w-1/3 rounded bg-ink-700/70" />
@@ -825,7 +868,11 @@ export function LoadingSkeleton({
 
   if (variant === 'table') {
     return (
-      <div role="status" aria-label={ariaLabel} className={cn('w-full space-y-3 p-4', className)}>
+      <div
+        role="status"
+        aria-label={ariaLabel}
+        className={cn('w-full space-y-3 p-4 overflow-hidden skeleton-shimmer', className)}
+      >
         <div className="h-8 w-full rounded bg-ink-700/60" />
         {Array.from({ length: Math.max(2, lines) }).map((_, i) => (
           <div key={i} className="flex items-center gap-3">
@@ -841,12 +888,16 @@ export function LoadingSkeleton({
 
   if (lines > 1) {
     return (
-      <div role="status" aria-label={ariaLabel} className={cn('space-y-2', className)}>
+      <div
+        role="status"
+        aria-label={ariaLabel}
+        className={cn('space-y-2 overflow-hidden skeleton-shimmer', className)}
+      >
         {Array.from({ length: lines }).map((_, i) => (
           <div
             key={i}
             className={cn(
-              'animate-pulse rounded bg-ink-700/60',
+              'rounded bg-ink-700/60',
               i === lines - 1 ? 'h-3.5 w-4/5' : 'h-3.5 w-full'
             )}
           />
@@ -860,7 +911,10 @@ export function LoadingSkeleton({
     <div
       role="status"
       aria-label={ariaLabel}
-      className={cn('animate-pulse rounded-lg bg-ink-700/60', className || 'h-6 w-full')}
+      className={cn(
+        'rounded-lg bg-ink-700/60 overflow-hidden skeleton-shimmer',
+        className || 'h-6 w-full'
+      )}
     >
       <span className="sr-only">{ariaLabel}</span>
     </div>
@@ -1014,13 +1068,46 @@ export function Logo({ className }: { className?: string }) {
       <div className="leading-none">
         <div className="font-display text-[17px] font-bold tracking-tight text-white">
           {BRAND.shortName}
-          <span className="text-proof-400">.in</span>
+          <span className="text-proof-600 dark:text-proof-400">.in</span>
         </div>
         <div className="mt-1 font-mono text-[9px] font-medium uppercase tracking-[0.24em] text-slate-500">
           Proof Suite
         </div>
       </div>
     </div>
+  );
+}
+
+/* ── AnimatedCheckDraw ────────────────────────────────────────────────── */
+
+export function AnimatedCheckDraw({ className, size = 28 }: { className?: string; size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <motion.circle
+        cx="12"
+        cy="12"
+        r="10"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+      />
+      <motion.path
+        d="M8 12.5l2.5 2.5L16 9"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: 1, opacity: 1 }}
+        transition={{ duration: 0.2, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+      />
+    </svg>
   );
 }
 
@@ -1122,9 +1209,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <motion.div
                 key={t.id}
                 layout
-                initial={{ opacity: 0, x: 40, scale: 0.96 }}
+                initial={{ opacity: 0, x: 24, scale: 0.98 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 24, scale: 0.97 }}
+                exit={{ opacity: 0, x: 24, scale: 0.98 }}
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="glass pointer-events-auto flex items-start gap-3 border-line-bright bg-ink-900/95 p-3.5 shadow-xl"
               >

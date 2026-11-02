@@ -1,15 +1,20 @@
 {
   "name": "saboot-root",
   "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
+    "preinstall": "node scripts/check-node-version.cjs",
     "dev": "npm --prefix claimproof run dev",
     "dev:site": "npm --prefix site run dev",
     "typecheck": "npm --prefix claimproof run typecheck && npm --prefix site run typecheck",
     "lint": "npm --prefix claimproof run lint",
     "format": "npm --prefix claimproof run format",
-    "test": "npm --prefix claimproof test && npm --prefix site test",
+    "test": "node scripts/run_tests.mjs",
     "test:e2e": "npm --prefix claimproof run test:e2e",
     "test:supabase": "npm --prefix claimproof run test:supabase",
+    "test:build": "npm --prefix claimproof run test:build",
     "test:site": "npm --prefix site test",
     "stress": "npm --prefix claimproof run stress",
     "stress:ci": "npm --prefix claimproof run stress:ci",
@@ -23,7 +28,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "husky": "^9.1.7",
-    "lint-staged": "^17.6.0"
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0"
   }
 }

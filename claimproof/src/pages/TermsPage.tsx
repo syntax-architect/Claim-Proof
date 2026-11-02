@@ -94,20 +94,20 @@ export default function TermsPage({ navigate }: { navigate: (r: Route) => void }
         </p>
       </Card>
 
-      {/* 3. Marketplace Claims & Reimbursement Disclaimer */}
+      {/* 3. Marketplace Claims Outcomes & Dispute Disclaimers */}
       <Card className="p-6 space-y-3 border-proof-500/20">
         <div className="flex items-center gap-2 text-base font-bold text-white">
           <Scale className="h-5 w-5 text-proof-400" />
-          3. Marketplace Claims Outcomes &amp; No Payout Guarantee
+          3. Marketplace Claims Outcomes &amp; Dispute Disclaimers
         </div>
         <p className="text-xs leading-relaxed text-slate-300">
-          {BRAND.name} provides organizational tools, live forensic evidence banners (with live IST
+          {BRAND.name} provides organizational tools, live timestamp evidence banners (with live IST
           timestamps and decoded AWB numbers), and formatted dispute templates.
         </p>
         <div className="glass-soft p-4 rounded-xl border border-line text-xs text-slate-300 leading-relaxed space-y-2">
           <p>
-            <strong className="text-white">NO GUARANTEE OF CLAIM APPROVAL:</strong> Under no
-            circumstances does {BRAND.name} guarantee, warrant, or represent that any marketplace
+            <strong className="text-white">NO ASSURANCE OF CLAIM APPROVAL:</strong> Under no
+            circumstances does {BRAND.name} promise, warrant, or represent that any marketplace
             platform (including but not limited to Meesho SAFE claims, Flipkart SPF claims, or
             Amazon SAFE-T claims) will approve, accept, or reimburse any dispute or ticket submitted
             by the user <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.

@@ -55,9 +55,6 @@ export class SabootDB extends Dexie {
   }
 }
 
-/** Legacy alias so existing code or references continue to compile cleanly */
-export { SabootDB as ClaimProofDB };
-
 export const db = new SabootDB();
 
 export async function getSetting<T>(key: string, fallback: T): Promise<T> {

@@ -4,6 +4,11 @@ import { axe, toHaveNoViolations } from 'jest-axe';
 import SettingsPage from './SettingsPage';
 import { ToastProvider } from '../components/ui';
 import { isTelemetryEnabled, setTelemetryEnabled } from '../services/telemetry';
+import {
+  getCustomClaimWindows,
+  resetCustomClaimWindows,
+  UNVERIFIED_LABEL
+} from '../config/claimWindows';
 
 expect.extend(toHaveNoViolations);
 
@@ -25,6 +30,7 @@ function renderSettingsPage() {
 describe('SettingsPage - Telemetry & Privacy Controls', () => {
   beforeEach(async () => {
     localStorage.clear();
+    resetCustomClaimWindows();
     await setTelemetryEnabled(false);
     vi.restoreAllMocks();
   });
@@ -91,6 +97,115 @@ describe('SettingsPage - Telemetry & Privacy Controls', () => {
     await waitFor(() => {
       expect(isTelemetryEnabled()).toBe(false);
       expect(toggle.getAttribute('aria-checked')).toBe('false');
+    });
+  });
+});
+
+describe('SettingsPage - Marketplace Claim Windows Customization', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    resetCustomClaimWindows();
+    vi.restoreAllMocks();
+  });
+
+  it('renders marketplace claim windows section with unverified badges, official links, and passes axe', async () => {
+    const { container } = renderSettingsPage();
+
+    // Section title
+    expect(screen.getByText('Marketplace claim filing windows')).toBeInTheDocument();
+
+    // Unverified warning badges
+    const unverifiedBadges = screen.getAllByText(UNVERIFIED_LABEL);
+    expect(unverifiedBadges.length).toBeGreaterThanOrEqual(6);
+
+    // Specific marketplaces displayed
+    expect(screen.getByText('Meesho SAFE')).toBeInTheDocument();
+    expect(screen.getByText('Flipkart SPF')).toBeInTheDocument();
+    expect(screen.getByText('Amazon SAFE-T')).toBeInTheDocument();
+
+    // Official help links present
+    const officialLinks = screen.getAllByRole('link', { name: /Official seller help/i });
+    expect(officialLinks.length).toBeGreaterThanOrEqual(5);
+
+    // Verify accessible inputs
+    const meeshoInput = screen.getByRole('spinbutton', {
+      name: /Meesho SAFE claim window hours/i
+    });
+    expect(meeshoInput).toBeInTheDocument();
+    expect((meeshoInput as HTMLInputElement).value).toBe('72');
+
+    const flipkartInput = screen.getByRole('spinbutton', {
+      name: /Flipkart SPF claim window hours/i
+    });
+    expect(flipkartInput).toBeInTheDocument();
+    expect((flipkartInput as HTMLInputElement).value).toBe('336');
+
+    // Accessibility check
+    const results = await axe(container, axeOptions);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('allows seller to edit claim window hours and overrides default in storage and UI', async () => {
+    renderSettingsPage();
+
+    const meeshoInput = screen.getByRole('spinbutton', {
+      name: /Meesho SAFE claim window hours/i
+    });
+    expect((meeshoInput as HTMLInputElement).value).toBe('72');
+
+    // Change Meesho from 72 to 48 hours
+    fireEvent.change(meeshoInput, { target: { value: '48' } });
+
+    await waitFor(() => {
+      expect((meeshoInput as HTMLInputElement).value).toBe('48');
+      expect(getCustomClaimWindows().Meesho).toBe(48);
+    });
+
+    // Custom badge appears
+    expect(screen.getByText('Custom')).toBeInTheDocument();
+
+    // Reset button appears and can be clicked to restore default
+    const resetBtn = screen.getByRole('button', {
+      name: /Reset Meesho SAFE to default/i
+    });
+    expect(resetBtn).toBeInTheDocument();
+
+    fireEvent.click(resetBtn);
+
+    await waitFor(() => {
+      expect((meeshoInput as HTMLInputElement).value).toBe('72');
+      expect(getCustomClaimWindows().Meesho).toBeUndefined();
+    });
+  });
+
+  it('allows resetting all claim windows to defaults', async () => {
+    renderSettingsPage();
+
+    const meeshoInput = screen.getByRole('spinbutton', {
+      name: /Meesho SAFE claim window hours/i
+    });
+    const flipkartInput = screen.getByRole('spinbutton', {
+      name: /Flipkart SPF claim window hours/i
+    });
+
+    fireEvent.change(meeshoInput, { target: { value: '24' } });
+    fireEvent.change(flipkartInput, { target: { value: '120' } });
+
+    await waitFor(() => {
+      expect(getCustomClaimWindows().Meesho).toBe(24);
+      expect(getCustomClaimWindows().Flipkart).toBe(120);
+    });
+
+    const resetAllBtn = screen.getByRole('button', {
+      name: /Reset all claim windows to default/i
+    });
+    fireEvent.click(resetAllBtn);
+
+    await waitFor(() => {
+      expect((meeshoInput as HTMLInputElement).value).toBe('72');
+      expect((flipkartInput as HTMLInputElement).value).toBe('336');
+      expect(getCustomClaimWindows().Meesho).toBeUndefined();
+      expect(getCustomClaimWindows().Flipkart).toBeUndefined();
     });
   });
 });

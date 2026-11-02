@@ -32,19 +32,19 @@
   /* Status accents — text tones darken in light mode for contrast */
   --color-success-300: var(--cp-successtext);
   --color-success-400: var(--cp-successtext);
-  --color-success-500: #4FA37A;
-  --color-success-600: #2F7A55;
+  --color-success-500: #4fa37a;
+  --color-success-600: #2f7a55;
   --color-warn-300: var(--cp-warn-text);
   --color-warn-400: var(--cp-warn-text);
-  --color-warn-500: #E39A4F;
-  --color-warn-600: #C9812F;
+  --color-warn-500: #e39a4f;
+  --color-warn-600: #c9812f;
   --color-danger-300: var(--cp-danger-text);
   --color-danger-400: var(--cp-danger-text);
-  --color-danger-500: #D9534A;
-  --color-danger-600: #B3382F;
+  --color-danger-500: #d9534a;
+  --color-danger-600: #b3382f;
   --color-info-300: var(--cp-infotext);
   --color-info-400: var(--cp-infotext);
-  --color-info-500: #7F96AD;
+  --color-info-500: #7f96ad;
 
   /* Text ramp — slate-* classes become theme-aware */
   --color-slate-100: var(--cp-text);
@@ -58,9 +58,13 @@
   /* Theme-flipped on-accent token */
   --color-on-accent: var(--cp-on-accent);
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans:
+    'Inter Variable', 'Inter', 'Inter-fallback', ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Fraunces Variable', 'Fraunces', 'Fraunces-fallback', Georgia, serif;
+  --font-mono:
+    'JetBrains Mono Variable', 'JetBrains Mono', 'JetBrainsMono-fallback', ui-monospace,
+    SFMono-Regular, Menlo, Consolas, monospace;
 
   --animate-rec-pulse: rec-pulse 1.6s ease-in-out infinite;
   --animate-scan-y: scan-y 3.4s ease-in-out infinite;
@@ -73,30 +77,30 @@
 
 /* ── Dark palette (default) ─────────────────────────────────────────── */
 .dark {
-  --cp-bg: #0B0C0E;
+  --cp-bg: #0b0c0e;
   --cp-surface: #121316;
-  --cp-surface-2: #181A1F;
-  --cp-surface-3: #22252B;
-  --cp-line: rgba(232, 226, 212, 0.10);
-  --cp-linestrong: rgba(232, 226, 212, 0.20);
-  --cp-line-strong: rgba(232, 226, 212, 0.20);
-  --cp-text: #F2EFE8;
-  --cp-text-2: #A9A59B;
-  --cp-text-3: #8F8B82;
-  --cp-accent: #D4B483;
-  --cp-accent-text: #E3C896;
-  --cp-accentsolid: #C9A45C;
-  --cp-accent-solid: #C9A45C;
-  --cp-accent-strong: #B8923F;
+  --cp-surface-2: #181a1f;
+  --cp-surface-3: #22252b;
+  --cp-line: rgba(232, 226, 212, 0.1);
+  --cp-linestrong: rgba(232, 226, 212, 0.2);
+  --cp-line-strong: rgba(232, 226, 212, 0.2);
+  --cp-text: #f2efe8;
+  --cp-text-2: #a9a59b;
+  --cp-text-3: #8f8b82;
+  --cp-accent: #d4b483;
+  --cp-accent-text: #e3c896;
+  --cp-accentsolid: #c9a45c;
+  --cp-accent-solid: #c9a45c;
+  --cp-accent-strong: #b8923f;
   --cp-accentsoft: rgba(212, 180, 131, 0.12);
   --cp-accent-soft: rgba(212, 180, 131, 0.12);
-  --cp-on-accent: #14110A;
-  --cp-successtext: #6CC29A;
-  --cp-success-text: #6CC29A;
-  --cp-warn-text: #E39A4F;
-  --cp-danger-text: #E88A82;
-  --cp-infotext: #9DB1C6;
-  --cp-info-text: #9DB1C6;
+  --cp-on-accent: #14110a;
+  --cp-successtext: #6cc29a;
+  --cp-success-text: #6cc29a;
+  --cp-warn-text: #e39a4f;
+  --cp-danger-text: #e88a82;
+  --cp-infotext: #9db1c6;
+  --cp-info-text: #9db1c6;
   --cp-glass: rgba(18, 19, 22, 0.88);
   --cp-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   --cp-hero-1: rgba(201, 164, 92, 0.07);
@@ -107,34 +111,34 @@
 
 /* ── Light palette ──────────────────────────────────────────────────── */
 .light {
-  --cp-bg: #FAF8F4;
-  --cp-surface: #FFFFFF;
-  --cp-surface-2: #F3F0EA;
-  --cp-surface-3: #E8E3DA;
+  --cp-bg: #faf8f4;
+  --cp-surface: #ffffff;
+  --cp-surface-2: #f3f0ea;
+  --cp-surface-3: #e8e3da;
   --cp-line: rgba(21, 19, 15, 0.09);
   --cp-linestrong: rgba(21, 19, 15, 0.18);
   --cp-line-strong: rgba(21, 19, 15, 0.18);
-  --cp-text: #15130F;
-  --cp-text-2: #55504A;
-  --cp-text-3: #6B655D;
-  --cp-accent: #9A7428;
-  --cp-accent-text: #7A5A1B;
-  --cp-accentsolid: #7A5A1B;
-  --cp-accent-solid: #7A5A1B;
-  --cp-accent-strong: #5F4512;
-  --cp-accentsoft: rgba(154, 116, 40, 0.10);
-  --cp-accent-soft: rgba(154, 116, 40, 0.10);
-  --cp-on-accent: #FFFFFF;
-  --cp-successtext: #2F7A55;
-  --cp-success-text: #2F7A55;
-  --cp-warn-text: #9A5A12;
-  --cp-danger-text: #B3382F;
+  --cp-text: #15130f;
+  --cp-text-2: #55504a;
+  --cp-text-3: #6b655d;
+  --cp-accent: #9a7428;
+  --cp-accent-text: #7a5a1b;
+  --cp-accentsolid: #7a5a1b;
+  --cp-accent-solid: #7a5a1b;
+  --cp-accent-strong: #5f4512;
+  --cp-accentsoft: rgba(154, 116, 40, 0.1);
+  --cp-accent-soft: rgba(154, 116, 40, 0.1);
+  --cp-on-accent: #ffffff;
+  --cp-successtext: #2f7a55;
+  --cp-success-text: #2f7a55;
+  --cp-warn-text: #9a5a12;
+  --cp-danger-text: #b3382f;
   --cp-infotext: #476178;
   --cp-info-text: #476178;
   --cp-glass: rgba(255, 255, 255, 0.92);
   --cp-shadow:
     0 0 0 1px rgba(21, 19, 15, 0.03), 0 1px 2px rgba(21, 19, 15, 0.04),
-    0 8px 24px -10px rgba(21, 19, 15, 0.10);
+    0 8px 24px -10px rgba(21, 19, 15, 0.1);
   --cp-hero-1: rgba(154, 116, 40, 0.07);
   --cp-hero2: rgba(71, 97, 120, 0.04);
   --cp-hero-2: rgba(71, 97, 120, 0.04);
@@ -226,8 +230,8 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
   transition:
-    background-color 0.35s ease,
-    color 0.35s ease;
+    background-color 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Soft ambient hero glow — calm in both themes */
@@ -240,7 +244,7 @@ body::before {
   background:
     radial-gradient(1000px 480px at 10% -6%, var(--cp-hero-1), transparent 60%),
     radial-gradient(860px 420px at 96% -2%, var(--cp-hero-2), transparent 58%);
-  transition: background 0.35s ease;
+  transition: background 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #root {
@@ -278,18 +282,20 @@ body::before {
   backdrop-filter: blur(12px);
   box-shadow: var(--cp-shadow);
   transition:
-    background-color 0.35s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    transform 0.2s ease;
+    background-color 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-soft {
   border-radius: 0.75rem;
   border: 1px solid var(--cp-line);
   background: color-mix(in srgb, var(--cp-surface-2) 78%, transparent);
   transition:
-    background-color 0.35s ease,
-    border-color 0.25s ease;
+    background-color 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 250ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .grid-bg {
   background-image:
@@ -300,6 +306,98 @@ body::before {
 }
 .mono-tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* ── Champagne shimmer & drift animations ──────────────────────────── */
+@keyframes champagne-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 164, 92, 0.06) 50%,
+    transparent 100%
+  );
+  animation: champagne-shimmer 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes champagne-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-32px, 24px, 0) scale(1.08);
+  }
+}
+
+.overview-champagne-drift {
+  animation: champagne-drift 24s ease-in-out infinite;
+}
+
+@keyframes gold-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(201, 164, 92, 0.5);
+    background-color: rgba(201, 164, 92, 0.16);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(201, 164, 92, 0.15);
+    background-color: rgba(201, 164, 92, 0.08);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 164, 92, 0);
+    background-color: transparent;
+  }
+}
+
+/* Suppress ambient UI animations while recording is active (except REC dot) */
+html[data-recording-active='true'] * {
+  animation-play-state: paused !important;
+}
+html[data-recording-active='true'] .animate-rec-pulse {
+  animation-play-state: running !important;
+}
+
+/* Reduced motion honoring: disable keyframes & transforms except opacity */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-opacity {
+    transition: opacity 200ms ease !important;
+  }
+
+  .overview-champagne-drift {
+    animation: none !important;
+  }
+
+  .skeleton-shimmer::after {
+    display: none !important;
+    animation: none !important;
+  }
 }
 
 /* Literal white plate for QR codes (must stay white in both themes) */

@@ -79,7 +79,7 @@
     <rect x="0" y="0" width="270" height="46" rx="12" fill="#171b26" stroke="#94a3b8" stroke-width="1" stroke-opacity="0.15" />
     <text x="20" y="28" font-family="'Inter', sans-serif" font-size="15" font-weight="600" fill="#e2e8f0">🏷️ 4×6 Thermal Label Crop</text>
 
-    <!-- Pill 2: Forensic Video -->
+    <!-- Pill 2: Packing Video -->
     <rect x="290" y="0" width="290" height="46" rx="12" fill="#171b26" stroke="#94a3b8" stroke-width="1" stroke-opacity="0.15" />
     <text x="310" y="28" font-family="'Inter', sans-serif" font-size="15" font-weight="600" fill="#e2e8f0">📹 Hands-Free AWB Video</text>
 
@@ -98,7 +98,7 @@
     <text x="80" y="25" font-family="'JetBrains Mono', monospace" font-size="11" fill="#94a3b8">00:14 / 00:30</text>
     <text x="235" y="25" font-family="'JetBrains Mono', monospace" font-size="11" fill="#3b82f6">1080p</text>
 
-    <!-- Burnt-in forensic banner box -->
+    <!-- Burnt-in timestamp banner box -->
     <rect x="14" y="58" width="282" height="66" rx="8" fill="#07090e" stroke="#fbbf24" stroke-width="1" stroke-opacity="0.4" />
     <text x="24" y="76" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#fbbf24">VERIFIED UNCUT PROOF · SABOOT</text>
     <text x="24" y="93" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#f8fafc">AWB: FMPP0982341201</text>
@@ -116,7 +116,7 @@
 
       <rect x="0" y="106" width="136" height="96" rx="6" fill="#171b26" stroke="#94a3b8" stroke-width="1" stroke-opacity="0.1" />
       <text x="12" y="128" font-family="'JetBrains Mono', monospace" font-size="9" fill="#3b82f6">T+6.0s</text>
-      <text x="12" y="160" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">Tamper Seal</text>
+      <text x="12" y="160" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">Security Seal</text>
 
       <rect x="146" y="106" width="136" height="96" rx="6" fill="#171b26" stroke="#94a3b8" stroke-width="1" stroke-opacity="0.1" />
       <text x="158" y="128" font-family="'JetBrains Mono', monospace" font-size="9" fill="#3b82f6">T+9.0s</text>

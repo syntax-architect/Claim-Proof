@@ -16,6 +16,8 @@ export const BRAND = {
   domain: 'saboot.in',
   websiteUrl: 'https://saboot.in',
   supportEmail: 'support@saboot.in',
+  whatsapp: '+919876543210',
+  whatsappUrl: 'https://wa.me/919876543210',
 
   // Offline license issuer tokens
   licenseIssuer: 'https://saboot.in',
@@ -32,6 +34,8 @@ export const BRAND = {
   legacyVaultFolder: 'ClaimProof_Vault',
 
   // Video banner & evidence burn-in strings
+  burnedInVideoHeaderPrefix: 'SABOOT VERIFIED UNCUT PROOF',
+  videoHeaderPrefix: 'SABOOT VERIFIED UNCUT PROOF',
   videoWatermarkHeader: 'SABOOT VERIFIED UNCUT PROOF',
   videoStationLive: 'SABOOT.in — PACKING STATION LIVE',
   videoFreeWatermark: 'Recorded via SABOOT.in — Free Tier',
@@ -55,7 +59,21 @@ export const BRAND = {
     legacyVaultDirName: 'claimproof_vault_dir_name',
     migratedFromClaimproof: 'saboot_migrated_from_claimproof',
     swUpdated: 'saboot_sw_updated',
+    claimWindows: 'saboot_claim_windows_hours',
+    legacyClaimWindows: 'claimproof_claim_windows_hours',
     telemetryOptIn: 'cp_telemetry_enabled',
     audioMuted: 'cp_beeps_muted'
   }
 };
+
+// Named exports per brand configuration contract
+export const name = BRAND.name;
+export const shortName = BRAND.shortName;
+export const domain = BRAND.domain;
+export const supportEmail = BRAND.supportEmail;
+export const whatsapp = BRAND.whatsapp;
+export const tagline = BRAND.tagline;
+export const burnedInVideoHeaderPrefix = BRAND.burnedInVideoHeaderPrefix;
+export const videoHeaderPrefix = BRAND.videoHeaderPrefix;
+
+export default BRAND;

@@ -368,7 +368,7 @@ export function OnboardingModal({ open, onClose, navigate }: OnboardingModalProp
               <div className="rounded-xl border border-proof-500/30 bg-proof-500/10 p-4 space-y-2.5">
                 <div className="flex items-center gap-2 text-xs font-semibold text-proof-300">
                   <ShieldCheck className="h-4 w-4" />
-                  100% Offline &amp; Private — Where are files saved?
+                  Offline &amp; Private — Where are files saved?
                 </div>
                 <div className="rounded-lg border border-line bg-ink-950/80 p-3 font-mono text-[11px] leading-relaxed text-slate-400">
                   <span className="text-proof-300">{'<Vault_Root>'}</span>

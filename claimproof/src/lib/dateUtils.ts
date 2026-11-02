@@ -26,7 +26,7 @@ export function istDateKey(d: Date = new Date()): string {
   return `${p.year}-${p.month}-${p.day}`;
 }
 
-/** `31-Oct-2026 16:35:12 IST` — the forensic-bar timestamp format. */
+/** `31-Oct-2026 16:35:12 IST` — the live overlay timestamp format. */
 export function formatIST(ms: number): string {
   const p = istParts(new Date(ms));
   const month = new Intl.DateTimeFormat('en-GB', { timeZone: IST, month: 'short' }).format(

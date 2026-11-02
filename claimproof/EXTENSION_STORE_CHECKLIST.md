@@ -118,7 +118,10 @@ Chrome Web Store requires 1280×800 px or 640×400 px JPEG/PNG screenshots with 
 * [ ] **Store Icon (128×128 px PNG):**
   - Located at `public/icons/icon-128.png`.
 * [ ] **Small Promo Tile (440×280 px PNG):**
-  - Clean SABOOT mark on dark navy background (`#0B0E14`).
+  - Clean SABOOT mark on Obsidian background (`#0B0C0E`) with champagne accents.
+
+> [!IMPORTANT]
+> **Redesign Notice:** Store checklist screenshots 1 through 5 must be retaken following the Obsidian & Champagne palette redesign to reflect the updated luxury aesthetic across SmartLabel Studio, AWB Recorder, Photo Collage, ClaimRadar, and Vault.
 
 ---
 

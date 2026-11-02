@@ -1039,8 +1039,8 @@ export function LogoMark({ size = 34, className }: { size?: number; className?: 
       className={cn('shrink-0', className)}
       aria-hidden="true"
     >
-      <rect width="64" height="64" rx="14" fill="#10131B" stroke="#1B2432" />
-      <g stroke="#3B82F6" strokeWidth="4.5" strokeLinecap="round" fill="none">
+      <rect width="64" height="64" rx="14" fill="#0B0C0E" stroke="#22252B" />
+      <g stroke="#D4B483" strokeWidth="4.5" strokeLinecap="round" fill="none">
         <path d="M14 23 V17 a3 3 0 0 1 3 -3 h6" />
         <path d="M41 14 h6 a3 3 0 0 1 3 3 v6" />
         <path d="M50 41 v6 a3 3 0 0 1 -3 3 h-6" />
@@ -1053,10 +1053,10 @@ export function LogoMark({ size = 34, className }: { size?: number; className?: 
         height="14"
         rx="2.5"
         fill="none"
-        stroke="#93C5FD"
+        stroke="#E3C896"
         strokeWidth="3"
       />
-      <path d="M35.5 27.5 l-5 4.5 h3.4 l-2.4 4.5 5.6 -5.2 h-3.4 z" fill="#FBBF24" />
+      <path d="M35.5 27.5 l-5 4.5 h3.4 l-2.4 4.5 5.6 -5.2 h-3.4 z" fill="#C9A45C" />
     </svg>
   );
 }

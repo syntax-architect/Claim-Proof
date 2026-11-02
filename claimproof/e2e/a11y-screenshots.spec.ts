@@ -5,14 +5,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const PAGES = [
-  { name: 'overview', hash: '#/overview' },
-  { name: 'labels', hash: '#/labels' },
-  { name: 'recorder', hash: '#/recorder' },
-  { name: 'claims', hash: '#/claims' },
-  { name: 'vault', hash: '#/vault' },
-  { name: 'pricing', hash: '#/pricing' },
-  { name: 'settings', hash: '#/settings' },
-  { name: '404', hash: '#/nonsense' },
+  { name: 'overview', hash: '/#overview' },
+  { name: 'labels', hash: '/#labels' },
+  { name: 'recorder', hash: '/#recorder' },
+  { name: 'claims', hash: '/#claims' },
+  { name: 'vault', hash: '/#vault' },
+  { name: 'pricing', hash: '/#pricing' },
+  { name: 'settings', hash: '/#settings' },
+  { name: '404', hash: '/#nonsense' },
 ] as const;
 
 const VIEWPORTS = [

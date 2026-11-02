@@ -444,7 +444,7 @@ export class RecordingPipeline {
       ctx.textBaseline = 'middle';
       ctx.fillText(`REC ${mm}:${ss}`, 38, BAR_H / 2 + 1);
     } else {
-      ctx.fillStyle = '#34d399';
+      ctx.fillStyle = '#6CC29A';
       ctx.beginPath();
       ctx.arc(22, BAR_H / 2, 5, 0, Math.PI * 2);
       ctx.fill();
@@ -464,7 +464,7 @@ export class RecordingPipeline {
       size -= 0.5;
       ctx.font = `bold ${size}px "JetBrains Mono", monospace`;
     }
-    ctx.fillStyle = recording ? '#ffffff' : 'rgba(226, 232, 240, 0.85)';
+    ctx.fillStyle = recording ? '#FFFFFF' : '#F2EFE8';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, textX, BAR_H / 2 + 1);
     ctx.restore();
@@ -490,15 +490,15 @@ export class RecordingPipeline {
     const awb = this.meta?.awb ?? 'DEMO-0000000000';
 
     const bg = ctx.createLinearGradient(0, 0, 0, HEIGHT);
-    bg.addColorStop(0, '#0b0f14');
-    bg.addColorStop(1, '#161d27');
+    bg.addColorStop(0, '#0B0C0E');
+    bg.addColorStop(1, '#121316');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
     /* Table. */
     const table = ctx.createLinearGradient(0, 470, 0, HEIGHT);
-    table.addColorStop(0, '#232b38');
-    table.addColorStop(1, '#10151d');
+    table.addColorStop(0, '#181A1F');
+    table.addColorStop(1, '#121316');
     ctx.fillStyle = table;
     ctx.fillRect(0, 470, WIDTH, HEIGHT - 470);
     ctx.fillStyle = 'rgba(148, 163, 184, 0.12)';
@@ -515,8 +515,8 @@ export class RecordingPipeline {
     ctx.rotate(Math.sin(t * 0.5) * 0.012);
     ctx.translate(-(boxX + boxW / 2), -(boxY + boxH / 2));
 
-    ctx.fillStyle = '#8a6a48';
-    ctx.strokeStyle = '#5f4730';
+    ctx.fillStyle = '#C9A45C';
+    ctx.strokeStyle = '#B8923F';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.roundRect(boxX, boxY, boxW, boxH, 8);
@@ -536,22 +536,22 @@ export class RecordingPipeline {
     /* AWB sticker. */
     const stX = boxX + 46;
     const stY = boxY + 92;
-    ctx.fillStyle = '#f8fafc';
+    ctx.fillStyle = '#FFFFFF';
     ctx.beginPath();
     ctx.roundRect(stX, stY, 200, 108, 6);
     ctx.fill();
-    ctx.fillStyle = '#0f172a';
+    ctx.fillStyle = '#0B0C0E';
     ctx.font = 'bold 15px "JetBrains Mono", monospace';
     ctx.fillText(awb.slice(0, 18), stX + 12, stY + 26);
     ctx.font = '10px "JetBrains Mono", monospace';
-    ctx.fillStyle = '#475569';
+    ctx.fillStyle = '#55504A';
     ctx.fillText(`VERIFIED DISPATCH · ${BRAND.domain}`, stX + 12, stY + 44);
     /* Fake barcode. */
     let bx = stX + 12;
     const seed = [...awb].reduce((s, ch) => s + ch.charCodeAt(0), 0);
     for (let i = 0; i < 34 && bx < stX + 186; i++) {
       const bw = ((seed * (i + 3)) % 5) + 2;
-      ctx.fillStyle = i % 2 === 0 ? '#0f172a' : 'transparent';
+      ctx.fillStyle = i % 2 === 0 ? '#0B0C0E' : 'transparent';
       ctx.fillRect(bx, stY + 58, bw, 36);
       bx += bw + 2;
     }
@@ -584,7 +584,7 @@ async function stitchCollage(photos: Blob[]): Promise<Blob> {
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Collage canvas unavailable');
 
-  ctx.fillStyle = '#05070b';
+  ctx.fillStyle = '#0B0C0E';
   ctx.fillRect(0, 0, W, H);
 
   for (let i = 0; i < 4; i++) {
@@ -606,13 +606,13 @@ async function stitchCollage(photos: Blob[]): Promise<Blob> {
       ctx.restore();
       bitmap.close();
     } catch {
-      ctx.fillStyle = '#111823';
+      ctx.fillStyle = '#121316';
       ctx.fillRect(x, y, cellW, cellH);
     }
 
     ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
     ctx.fillRect(x, y + cellH, cellW, captionH);
-    ctx.fillStyle = '#34d399';
+    ctx.fillStyle = '#6CC29A';
     ctx.font = 'bold 13px "JetBrains Mono", monospace';
     ctx.textBaseline = 'middle';
     ctx.fillText(PHOTO_CAPTIONS[i], x + 10, y + cellH + captionH / 2);

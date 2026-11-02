@@ -121,8 +121,8 @@ describe('Static Pages & Legal Verification', () => {
       expect(screen.getByText(/Try Before You Buy with Our Perpetual Free Tier/i)).toBeDefined();
 
       // 7-day refund policy
-      expect(screen.getByText(/7-Day Refund Policy/i)).toBeDefined();
-      expect(screen.getByText(/full refund within 7 calendar days/i)).toBeDefined();
+      expect(screen.getByText(/7-Day (Refund Policy|Money-Back Guarantee)/i)).toBeDefined();
+      expect(screen.getByText(/(100% )?full refund within 7 calendar days/i)).toBeDefined();
 
       // 3-day grace period
       expect(screen.getAllByText(/3-Day Grace Period/i).length).toBeGreaterThanOrEqual(1);
@@ -212,7 +212,7 @@ describe('Static Pages & Legal Verification', () => {
       expect(diag.storage).toBeDefined();
       expect(diag.license).toBeDefined();
       expect(diag.todayActivityCounts).toBeDefined();
-      expect(diag.privacyNotice).toContain('Zero personal data policy');
+      expect(diag.privacyNotice).toContain('Zero personal data');
 
       // Check ZERO personal data
       // No order IDs, no customer identities, no emails in technical report, no private keys

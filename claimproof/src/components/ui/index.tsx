@@ -1068,7 +1068,7 @@ export function Logo({ className }: { className?: string }) {
       <div className="leading-none">
         <div className="font-display text-[17px] font-bold tracking-tight text-white">
           {BRAND.shortName}
-          <span className="text-proof-600 dark:text-proof-400">.in</span>
+          <span className="text-proof-300">.in</span>
         </div>
         <div className="mt-1 font-mono text-[9px] font-medium uppercase tracking-[0.24em] text-slate-500">
           Proof Suite

@@ -43,10 +43,12 @@ test.describe('A11y, Contrast & Screenshot Tests', () => {
           await page.goto(pageInfo.hash);
           await skipOnboardingIfOpen(page);
 
-          // Apply theme explicitly to documentElement
+          // Apply theme explicitly to documentElement and media emulation
+          await page.emulateMedia({ colorScheme: theme });
           await page.evaluate((t) => {
             document.documentElement.classList.remove('light', 'dark');
             document.documentElement.classList.add(t);
+            localStorage.setItem('claimproof_theme', t);
             localStorage.setItem('saboot_theme', t);
           }, theme);
 

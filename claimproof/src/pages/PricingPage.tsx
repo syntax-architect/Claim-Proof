@@ -530,7 +530,7 @@ export default function PricingPage() {
                       className={cn(
                         'px-4 py-3 text-xs',
                         cell.includes('✓')
-                          ? 'text-proof-300'
+                          ? 'text-proof-700 dark:text-proof-400'
                           : cell === '—'
                             ? 'text-slate-600'
                             : 'text-slate-300'

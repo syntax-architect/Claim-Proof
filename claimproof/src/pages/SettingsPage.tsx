@@ -418,7 +418,7 @@ export default function SettingsPage() {
                             href={config.sourceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-proof-600 dark:text-proof-400 hover:underline"
+                            className="inline-flex items-center gap-1 text-proof-300 hover:text-proof-200 hover:underline"
                           >
                             Official seller help <ExternalLink className="h-3 w-3" />
                           </a>

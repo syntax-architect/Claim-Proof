@@ -319,7 +319,7 @@ export function OnboardingModal({ open, onClose, navigate }: OnboardingModalProp
                       className={cn(
                         'flex items-start gap-3 rounded-xl border p-3 text-left transition',
                         active
-                          ? 'border-proof-500/50 bg-proof-500/10 text-white shadow-[0_0_15px_-4px_rgba(59,130,246,0.3)]'
+                          ? 'border-proof-500/50 bg-proof-500/10 text-white shadow-[0_0_15px_-4px_color-mix(in_srgb,var(--cp-accentsolid)_35%,transparent)]'
                           : 'border-line bg-ink-900/60 text-slate-300 hover:border-line-bright hover:bg-ink-900'
                       )}
                     >
@@ -327,7 +327,7 @@ export function OnboardingModal({ open, onClose, navigate }: OnboardingModalProp
                         className={cn(
                           'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-xs',
                           active
-                            ? 'border-proof-400 bg-proof-500 text-white'
+                            ? 'border-proof-400 bg-proof-500 text-on-accent'
                             : 'border-line bg-ink-950 text-transparent'
                         )}
                       >

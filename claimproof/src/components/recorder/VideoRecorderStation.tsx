@@ -1117,7 +1117,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
 
             <Badge tone={isWebM ? 'warn' : 'proof'}>FORMAT: {containerFormat.toUpperCase()}</Badge>
             {isWebM && (
-              <span className="text-[11px] text-amber-400/80">
+              <span className="text-[11px] text-warn-400/80">
                 (WebM format used — browser has no native MP4 encoder)
               </span>
             )}

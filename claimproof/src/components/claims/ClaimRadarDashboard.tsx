@@ -275,19 +275,19 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
               <div className="font-semibold text-white">Marketplace dispute deadlines tracked:</div>
               <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 text-slate-400">
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-amber-400">72 hours:</span>
+                  <span className="font-bold text-warn-400">72 hours:</span>
                   <span>Meesho SAFE &amp; AJIO / Snapdeal claim window</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-blue-400">14 days:</span>
+                  <span className="font-bold text-info-400">14 days:</span>
                   <span>Flipkart Seller Protection Fund (SPF) window</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-emerald-400">30 days:</span>
+                  <span className="font-bold text-success-400">30 days:</span>
                   <span>Amazon SAFE-T claim reimbursement window</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="font-bold text-purple-400">Ready dossier:</span>
+                  <span className="font-bold text-proof-400">Ready dossier:</span>
                   <span>1-click evidence packaging with side-by-side videos</span>
                 </li>
               </ul>

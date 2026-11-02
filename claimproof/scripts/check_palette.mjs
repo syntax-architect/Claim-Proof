@@ -180,6 +180,7 @@ for (const file of allFiles) {
       // Status fills with alpha:
       if (/rgba\(\s*227\s*,\s*154\s*,\s*79\s*,\s*[^)]+\)/i.test(colorFn)) continue;
       if (/rgba\(\s*79\s*,\s*163\s*,\s*122\s*,\s*[^)]+\)/i.test(colorFn)) continue;
+      if (/rgba\(\s*108\s*,\s*194\s*,\s*154\s*,\s*[^)]+\)/i.test(colorFn)) continue;
       if (/rgba\(\s*127\s*,\s*150\s*,\s*173\s*,\s*[^)]+\)/i.test(colorFn)) continue;
 
       violations.push({

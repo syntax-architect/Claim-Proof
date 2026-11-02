@@ -94,9 +94,9 @@ describe('Static Pages & Legal Verification', () => {
 
       // Claim Outcomes & Dispute Disclaimers
       expect(
-        screen.getByText(/Marketplace Claims Outcomes (&|&amp;) (Dispute Disclaimers|No Payout Guarantee)/i)
+        screen.getByText(/Marketplace Claims Outcomes (&|&amp;) Dispute Disclaimers/i)
       ).toBeDefined();
-      expect(screen.getByText(/NO (ASSURANCE|GUARANTEE) OF CLAIM APPROVAL/i)).toBeDefined();
+      expect(screen.getByText(/NO ASSURANCE OF CLAIM APPROVAL/i)).toBeDefined();
 
       // Contains [NEEDS LEGAL REVIEW] placeholders
       const legalPlaceholders = screen.getAllByText(/\[NEEDS LEGAL REVIEW\]/i);
@@ -121,8 +121,8 @@ describe('Static Pages & Legal Verification', () => {
       expect(screen.getByText(/Try Before You Buy with Our Perpetual Free Tier/i)).toBeDefined();
 
       // 7-day refund policy
-      expect(screen.getByText(/7-Day (Refund Policy|Money-Back Guarantee)/i)).toBeDefined();
-      expect(screen.getByText(/(100% )?full refund within 7 calendar days/i)).toBeDefined();
+      expect(screen.getByText(/7-Day Refund Policy/i)).toBeDefined();
+      expect(screen.getByText(/full refund within 7 calendar days/i)).toBeDefined();
 
       // 3-day grace period
       expect(screen.getAllByText(/3-Day Grace Period/i).length).toBeGreaterThanOrEqual(1);

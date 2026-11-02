@@ -40,7 +40,7 @@ test.describe('A11y, Contrast & Screenshot Tests', () => {
           page.on('console', (msg) => console.log(`[BROWSER LOG] ${msg.type()}: ${msg.text()}`));
           page.on('pageerror', (err) => console.error(`[PAGE ERROR] ${err.message}`));
           await page.setViewportSize({ width: vp.width, height: vp.height });
-          await page.goto('/' + pageInfo.hash);
+          await page.goto(pageInfo.hash);
           await skipOnboardingIfOpen(page);
 
           // Apply theme explicitly to documentElement

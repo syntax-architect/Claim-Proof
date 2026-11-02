@@ -426,7 +426,7 @@ export class RecordingPipeline {
     ctx.save();
     ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
     ctx.fillRect(0, 0, WIDTH, BAR_H);
-    ctx.fillStyle = 'rgba(52, 211, 153, 0.9)';
+    ctx.fillStyle = 'rgba(108, 194, 154, 0.9)';
     ctx.fillRect(0, BAR_H - 2, WIDTH, 2);
 
     /* REC dot + elapsed on the left. */
@@ -501,7 +501,7 @@ export class RecordingPipeline {
     table.addColorStop(1, '#121316');
     ctx.fillStyle = table;
     ctx.fillRect(0, 470, WIDTH, HEIGHT - 470);
-    ctx.fillStyle = 'rgba(148, 163, 184, 0.12)';
+    ctx.fillStyle = 'rgba(232, 226, 212, 0.10)';
     ctx.fillRect(0, 468, WIDTH, 3);
 
     /* Cardboard box with a gentle "breathing" wobble. */
@@ -530,7 +530,7 @@ export class RecordingPipeline {
     ctx.moveTo(boxX, boxY + 60);
     ctx.lineTo(boxX + boxW, boxY + 60);
     ctx.stroke();
-    ctx.fillStyle = 'rgba(200, 190, 170, 0.75)';
+    ctx.fillStyle = 'rgba(212, 180, 131, 0.75)';
     ctx.fillRect(boxX + boxW / 2 - 26, boxY, 52, boxH);
 
     /* AWB sticker. */

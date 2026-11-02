@@ -39,7 +39,7 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
           </div>
           <div className="space-y-2">
             <div className="font-display text-lg font-bold text-white">
-              The {BRAND.name} Zero-Cloud Guarantee &amp; Local Storage Architecture
+              The {BRAND.name} Local Storage Architecture
             </div>
             <p className="text-sm leading-relaxed text-slate-300">
               {BRAND.name} is architected from the ground up as a strictly{' '}

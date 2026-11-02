@@ -24,6 +24,7 @@
     "build": "npm --prefix claimproof run build && npm --prefix site run build",
     "build:site": "npm --prefix site run build",
     "audit:seo": "npm --prefix claimproof run audit:seo",
+    "check:palette": "npm --prefix claimproof run check:palette",
     "check": "npm --prefix claimproof run check && npm --prefix site run check",
     "prepare": "husky"
   },

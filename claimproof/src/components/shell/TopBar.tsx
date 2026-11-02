@@ -19,6 +19,7 @@ import { cn } from '../../lib/utils';
 import { getVaultStatus } from '../../services/vaultWriter';
 import { useLicense } from '../../services/licenseService';
 import { currentTheme, toggleTheme, type Theme } from '../../lib/theme';
+import { BRAND } from '../../config/brand';
 import { Badge, Logo, StatusDot } from '../ui';
 
 function QuotaChip({
@@ -94,7 +95,7 @@ export default function TopBar({ route }: { route: Route }) {
           </div>
           <div className="hidden min-w-0 md:block">
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-proof-300">
-              ClaimProof.in
+              {BRAND.domain}
             </div>
             <div className="truncate font-display text-sm font-bold text-white">
               {ROUTE_LABELS[route]}

@@ -71,13 +71,9 @@ describe('ClaimRadarDashboard Component', () => {
 
     const { container } = renderDashboard();
 
-    expect(
-      screen.getByRole('heading', { name: /ClaimRadar Pro/i })
-    ).toBeDefined();
+    expect(screen.getByRole('heading', { name: /ClaimRadar Pro/i })).toBeDefined();
 
-    expect(
-      screen.getByText(/No return claims in your radar/i)
-    ).toBeDefined();
+    expect(screen.getByText(/No return claims in your radar/i)).toBeDefined();
 
     const openRecorderBtn = screen.getByRole('button', {
       name: /Open AWB Recorder/i
@@ -126,9 +122,7 @@ describe('ClaimRadarDashboard Component', () => {
     const { container } = renderDashboard();
 
     expect(screen.getByText('AWB-EKART-554433')).toBeDefined();
-    expect(
-      screen.getByText(/WINDOW EXPIRED — file manually with proof of delay/i)
-    ).toBeDefined();
+    expect(screen.getByText(/WINDOW EXPIRED — file manually with proof of delay/i)).toBeDefined();
     expect(screen.getByText('END')).toBeDefined();
 
     const results = await axe(container, {

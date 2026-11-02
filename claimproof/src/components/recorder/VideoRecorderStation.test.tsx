@@ -149,9 +149,7 @@ describe('VideoRecorderStation Component', () => {
     const { container } = renderRecorder();
 
     expect(screen.getByText(/WAITING FOR SCAN/i)).toBeDefined();
-    expect(
-      screen.getByLabelText(/Scan or type AWB barcode/i)
-    ).toBeDefined();
+    expect(screen.getByLabelText(/Scan or type AWB barcode/i)).toBeDefined();
     expect(screen.getByText(/USB Gun armed/i)).toBeDefined();
 
     const results = await axe(container, {
@@ -170,11 +168,12 @@ describe('VideoRecorderStation Component', () => {
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
     // 2. Assert in recording state
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: /Stop & Save/i })
-      ).toBeDefined();
-    }, { timeout: 8000 });
+    await waitFor(
+      () => {
+        expect(screen.getByRole('button', { name: /Stop & Save/i })).toBeDefined();
+      },
+      { timeout: 8000 }
+    );
 
     expect(screen.getAllByText('AWB99887766').length).toBeGreaterThan(0);
     expect(screen.getByText(/REC 00:00/i)).toBeDefined();

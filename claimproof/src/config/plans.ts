@@ -1,4 +1,4 @@
-/* ClaimProof Suite — Single source of truth for pricing and plans.
+/* SABOOT Suite — Single source of truth for pricing and plans.
  * All prices are in INR (₹). Consumed by PricingPage, PaywallModal, and tests.
  */
 
@@ -98,5 +98,5 @@ export function getPaymentUrl(planId?: PlanId, _interval?: BillingInterval): str
   if (planId === 'warehouse' && import.meta.env.VITE_RAZORPAY_PAYMENT_URL_WAREHOUSE) {
     return import.meta.env.VITE_RAZORPAY_PAYMENT_URL_WAREHOUSE;
   }
-  return import.meta.env.VITE_RAZORPAY_PAYMENT_URL || 'https://rzp.io/l/claimproof';
+  return import.meta.env.VITE_RAZORPAY_PAYMENT_URL || 'https://rzp.io/l/saboot';
 }

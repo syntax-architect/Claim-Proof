@@ -1,0 +1,195 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PLANS, getPaymentUrl } from '@claimproof/config/plans';
+
+const title = "Pricing & Plans — SABOOT Suite";
+const description = "Transparent, hardware-bound offline licensing for Indian marketplace sellers. Free tier available. Starter Station ₹2,499/yr, ClaimRadar Pro ₹4,499/yr.";
+
+const comparisonData = [
+  {
+    feature: 'Label cropping & sorting',
+    free: '40 / day',
+    starter: 'Unlimited',
+    pro: 'Unlimited',
+    warehouse: 'Unlimited'
+  },
+  {
+    feature: 'AWB proof videos',
+    free: '10 / day (watermarked)',
+    starter: 'Unlimited HD',
+    pro: 'Unlimited HD',
+    warehouse: 'Unlimited HD'
+  },
+  {
+    feature: 'Forensic IST timestamp overlay',
+    free: '✓ Standard',
+    starter: '✓ Burnt-in HD',
+    pro: '✓ Burnt-in HD',
+    warehouse: '✓ Burnt-in HD'
+  },
+  {
+    feature: 'Picklist & Courier handover manifests',
+    free: '✓ (SABOOT seal)',
+    starter: '✓ Clean / White-label',
+    pro: '✓ Clean / White-label',
+    warehouse: '✓ Clean / White-label'
+  },
+  {
+    feature: 'Auto 4-photo evidence collage',
+    free: '—',
+    starter: '—',
+    pro: '✓ (T+0.5, 3, 6, 9s)',
+    warehouse: '✓ (T+0.5, 3, 6, 9s)'
+  },
+  {
+    feature: 'Marketplace claim deadline radar',
+    free: '—',
+    starter: '—',
+    pro: '✓ (72h / 14d / 30d)',
+    warehouse: '✓ (72h / 14d / 30d)'
+  },
+  {
+    feature: 'Return matcher + dispute dossier generator',
+    free: '—',
+    starter: '—',
+    pro: '✓ Included',
+    warehouse: '✓ Included'
+  },
+  {
+    feature: 'Workstation licenses',
+    free: '1 PC',
+    starter: '1 PC',
+    pro: '1 PC',
+    warehouse: '3 simultaneous PCs'
+  },
+  {
+    feature: 'Phone-as-scanner companion seats',
+    free: '—',
+    starter: '—',
+    pro: '—',
+    warehouse: '✓ Included'
+  },
+  {
+    feature: 'Support channel',
+    free: 'Community Docs',
+    starter: 'Email Support',
+    pro: 'Priority Email',
+    warehouse: 'Dedicated 1-on-1 WhatsApp'
+  }
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container" style="padding: 4rem 1.25rem 2rem;">
+    <header class="section-head">
+      <span class="hero-pill">Transparent Offline Licensing</span>
+      <h1>Simple, Predictable Pricing for Indian Sellers</h1>
+      <p>
+        No per-gigabyte cloud video fees. Run 100% offline on your own workstations. Upgrade when your warehouse expands.
+      </p>
+    </header>
+
+    <!-- Pricing Cards Grid -->
+    <div class="grid-3" style="margin-bottom: 4rem;">
+      {PLANS.map((plan) => (
+        <div class={`plan-card ${plan.best ? 'popular' : ''}`}>
+          {plan.best && <div class="popular-tag">{plan.tag || 'MOST POPULAR'}</div>}
+          
+          <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.25rem;">
+            {plan.name}
+          </h2>
+          <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.4;">
+            {plan.tagline}
+          </p>
+
+          <div class="plan-price">
+            ₹{plan.annualPrice}
+            <span style="font-size: 0.9rem; font-weight: 500; color: var(--color-text-muted);">/ year</span>
+            <span class="plan-strike">₹{plan.annualStrike}</span>
+          </div>
+
+          <div class="plan-daily">
+            Just ₹{plan.dailyAnnualCost}/day ({plan.annualSavingsPercent}% annual savings)
+          </div>
+
+          <div style="font-size: 0.85rem; color: var(--color-text-subtle); margin-bottom: 1.25rem;">
+            Or ₹{plan.monthlyPrice}/month billed monthly
+          </div>
+
+          <ul class="plan-features">
+            {plan.features.map((f) => (
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href={getPaymentUrl(plan.id) || 'https://app.saboot.in/#pricing'}
+            class={`btn ${plan.best ? 'btn-primary' : 'btn-secondary'}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style="width: 100%; text-align: center;"
+          >
+            Get {plan.name}
+          </a>
+        </div>
+      ))}
+    </div>
+
+    <!-- Free Tier Callout -->
+    <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 1.75rem; text-align: center; max-width: 720px; margin: 0 auto 4rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Need to Test First? Use the Free Tier</h3>
+      <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 1.25rem;">
+        Process up to 40 cropped shipping labels and record up to 10 AWB videos per day without spending a single rupee. No credit card required.
+      </p>
+      <a href="https://app.saboot.in" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+        Launch Free Tier
+      </a>
+    </div>
+
+    <!-- Detailed Feature Comparison Table -->
+    <section class="comparison-wrap" aria-labelledby="comparison-heading">
+      <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--color-border); background: var(--color-surface-soft);">
+        <h2 id="comparison-heading" style="font-size: 1.2rem; font-weight: 700; color: var(--color-text-main);">
+          Complete Feature Comparison Matrix
+        </h2>
+      </div>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th scope="col">Feature Capability</th>
+            <th scope="col">Free Tier</th>
+            <th scope="col">Starter Station</th>
+            <th scope="col" style="color: #93c5fd;">ClaimRadar Pro ★</th>
+            <th scope="col">Warehouse 3-Pack</th>
+          </tr>
+        </thead>
+        <tbody>
+          {comparisonData.map((row) => (
+            <tr>
+              <td>{row.feature}</td>
+              <td>{row.free}</td>
+              <td>{row.starter}</td>
+              <td style="color: #93c5fd; font-weight: 500;">{row.pro}</td>
+              <td>{row.warehouse}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Pricing FAQ -->
+    <div style="margin-top: 4rem; text-align: center;">
+      <h2 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 0.75rem;">Frequently Asked Pricing Questions</h2>
+      <p style="color: var(--color-text-muted); max-width: 600px; margin: 0 auto 1.5rem;">
+        Have questions about device licenses, UPI payments, or moving your license to another computer?
+      </p>
+      <a href="/faq" class="btn btn-secondary">
+        Read Pricing FAQ
+      </a>
+    </div>
+  </div>
+</BaseLayout>

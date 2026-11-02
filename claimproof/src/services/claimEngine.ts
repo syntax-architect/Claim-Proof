@@ -1,6 +1,7 @@
 /* ClaimRadar Pro engine — evidence matching, deadline data, dispute text. */
 
 import { useLiveQuery } from 'dexie-react-hooks';
+import { BRAND } from '../config/brand';
 import { db } from '../db/schema';
 import { claimWindowLabel } from '../lib/claimRules';
 import { formatIST } from '../lib/dateUtils';
@@ -111,11 +112,11 @@ export function generateDisputeText(
   lines.push(`- Item: ${claim.sku} (Qty ${claim.qty})`);
   lines.push(`- Courier partner: ${claim.courier}`);
   lines.push('');
-  lines.push('VIDEO EVIDENCE (ClaimProof AWB station)');
+  lines.push(`VIDEO EVIDENCE (${BRAND.name} AWB station)`);
   lines.push(evidenceLine('Dispatch packing video', dispatch));
   lines.push(evidenceLine('Return unboxing video', returnRec));
   if (claim.returnRecordingId && !returnRec) {
-    lines.push('- Return unboxing video: recorded via ClaimProof AWB (metadata on file).');
+    lines.push(`- Return unboxing video: recorded via ${BRAND.name} AWB (metadata on file).`);
   }
   lines.push('');
   lines.push(
@@ -131,7 +132,7 @@ export function generateDisputeText(
   );
   lines.push('');
   lines.push('Regards,');
-  lines.push('Seller — via ClaimProof.in');
+  lines.push(`Seller — via ${BRAND.domain}`);
 
   return lines.join('\n');
 }

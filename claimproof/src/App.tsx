@@ -23,6 +23,7 @@ import Footer from './components/shell/Footer';
 import { PaywallModal } from './components/paywall/PaywallModal';
 import { PaywallProvider } from './providers/PaywallProvider';
 import { useHashRoute, type Route } from './lib/router';
+import { useRouteSeo } from './lib/seo';
 import { UpdatePrompt } from './components/pwa/UpdatePrompt';
 
 export function CurrentPage({ route, navigate }: { route: Route; navigate: (r: Route) => void }) {
@@ -58,6 +59,7 @@ export function CurrentPage({ route, navigate }: { route: Route; navigate: (r: R
 
 export default function App() {
   const [route, navigate] = useHashRoute();
+  useRouteSeo(route);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
 

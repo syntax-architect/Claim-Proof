@@ -1,3 +1,4 @@
+import { BRAND } from '../../config/brand';
 import { HardDrive, HelpCircle, Lock, ShieldCheck } from 'lucide-react';
 import { Logo, StatusDot } from '../ui';
 import { navigateTo, type Route } from '../../lib/router';
@@ -24,7 +25,8 @@ export default function Footer({ navigate }: { navigate?: (r: Route) => void }) 
               </span>
             </div>
             <p className="text-xs text-slate-400 max-w-md leading-relaxed">
-              Zero-cloud shipping label cropper &amp; barcode-verified packing proof studio for Indian e-commerce merchants. Videos and labels stay on your computer.
+              Zero-cloud shipping label cropper &amp; barcode-verified packing proof studio for
+              Indian e-commerce merchants. Videos and labels stay on your computer.
             </p>
             <div className="flex items-center gap-3 text-[11px] text-slate-500">
               <span className="flex items-center gap-1.5">
@@ -161,7 +163,8 @@ export default function Footer({ navigate }: { navigate?: (r: Route) => void }) 
 
         <div className="mt-8 border-t border-line/60 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-600">
           <div>
-            © {new Date().getFullYear()} ClaimProof.in · All rights reserved. Indian E-Commerce Packing Proof Suite.
+            © {new Date().getFullYear()} {BRAND.domain} · All rights reserved. Indian E-Commerce
+            Packing Proof Suite.
           </div>
           <div className="text-slate-500">
             Meesho, Flipkart, Amazon, Myntra &amp; AJIO are trademarks of their respective owners.

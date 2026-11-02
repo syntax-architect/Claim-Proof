@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// ClaimProof.in — Pure licensing & webhook utilities
+// SABOOT.in — Pure licensing & webhook utilities
 // Extracted pure functions for Razorpay webhook signature verification,
 // license expiry calculation (with 3-day grace period for subscriptions),
 // offline-verifiable ES256 JWT construction, and subscription event handling.
@@ -13,12 +13,12 @@
 // Compatible with both Deno (Supabase Edge Functions) and Node.js / Vitest.
 // ═══════════════════════════════════════════════════════════════════════
 
-export const LICENSE_ISSUER = 'https://claimproof.in';
+export const LICENSE_ISSUER = 'https://saboot.in';
 export const VALID_PLANS = new Set(['starter', 'claimradar', 'warehouse']);
 export const LICENSE_DAYS = 365;
 
 /**
- * Milestone Gate: Per ClaimProof Roadmap, recurring automated Razorpay Subscriptions
+ * Milestone Gate: Per SABOOT Roadmap, recurring automated Razorpay Subscriptions
  * are added only after achieving at least 20 manual sales in Phase 1.
  */
 export const MIN_MANUAL_SALES_FOR_SUBSCRIPTIONS = 20;
@@ -204,7 +204,7 @@ export function buildLicenseJwtParts(
 
 /**
  * Signs JWT signing input using ECDSA P-256 private key.
- * WebCrypto ES256 signatures are raw r||s — verified offline by the ClaimProof PWA.
+ * WebCrypto ES256 signatures are raw r||s — verified offline by the SABOOT PWA.
  */
 export async function signEs256Jwt(parts: JwtParts, privateJwk: JsonWebKey): Promise<string> {
   const key = await crypto.subtle.importKey(

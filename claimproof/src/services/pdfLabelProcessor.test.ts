@@ -18,6 +18,7 @@ import {
   parsePdfBuffer,
   processLabelFiles
 } from './pdfLabelProcessor';
+import { BRAND } from '../config/brand';
 
 describe('pdfLabelProcessor pure helpers & sample PDF parser', () => {
   beforeEach(() => {
@@ -87,14 +88,10 @@ describe('pdfLabelProcessor pure helpers & sample PDF parser', () => {
 
     it('extractOrderId extracts order numbers from various formats', () => {
       // Flipkart format OD...
-      expect(extractOrderId('Order ID: OD123456789012345000').orderId).toBe(
-        'OD123456789012345000'
-      );
+      expect(extractOrderId('Order ID: OD123456789012345000').orderId).toBe('OD123456789012345000');
 
       // Amazon format 3-7-7 digits
-      expect(extractOrderId('Order # 404-1234567-7654321').orderId).toBe(
-        '404-1234567-7654321'
-      );
+      expect(extractOrderId('Order # 404-1234567-7654321').orderId).toBe('404-1234567-7654321');
 
       // Meesho format
       expect(extractOrderId('Sub-Order No: 987654321_1').orderId).toBe('987654321_1');
@@ -228,7 +225,8 @@ describe('pdfLabelProcessor pure helpers & sample PDF parser', () => {
       const buffer = readFileSync(filePath);
       const fileInput = {
         name: 'sample_labels_meesho.pdf',
-        arrayBuffer: async () => buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
+        arrayBuffer: async () =>
+          buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
       };
 
       const result = await processLabelFiles([fileInput], {
@@ -243,7 +241,7 @@ describe('pdfLabelProcessor pure helpers & sample PDF parser', () => {
       expect(result.pdfBytes).toBeDefined();
       expect(result.pdfBytes.length).toBeGreaterThan(100);
       expect(result.labels.length).toBeGreaterThan(0);
-      expect(result.fileName).toContain('ClaimProof_Labels');
+      expect(result.fileName).toContain(`${BRAND.name}_Labels`);
     });
   });
 });

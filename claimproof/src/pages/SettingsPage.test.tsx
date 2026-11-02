@@ -33,9 +33,7 @@ describe('SettingsPage - Telemetry & Privacy Controls', () => {
     const { container } = renderSettingsPage();
 
     // Section title
-    expect(
-      screen.getByText(/Anonymous product analytics & error reporting/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Anonymous product analytics & error reporting/i)).toBeInTheDocument();
 
     // Toggle description
     expect(
@@ -44,15 +42,13 @@ describe('SettingsPage - Telemetry & Privacy Controls', () => {
 
     // What is collected list
     expect(screen.getByText(/What is collected \(only when enabled\):/i)).toBeInTheDocument();
+    expect(screen.getByText(/Only 5 milestone events:/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Only 5 milestone events:/i)
+      screen.getByText(
+        /Onboarding completed, first label export, first recording saved, paywall viewed, purchase started\./i
+      )
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Onboarding completed, first label export, first recording saved, paywall viewed, purchase started\./i)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Scrubbed error reports:/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Scrubbed error reports:/i)).toBeInTheDocument();
 
     // What is NEVER collected list
     expect(screen.getByText(/What is NEVER collected or uploaded:/i)).toBeInTheDocument();
@@ -60,7 +56,9 @@ describe('SettingsPage - Telemetry & Privacy Controls', () => {
       screen.getByText(/No shipping labels, PDFs, or customer addresses\./i)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/No packing or unboxing videos or photos \(files write strictly to your hard drive\)\./i)
+      screen.getByText(
+        /No packing or unboxing videos or photos \(files write strictly to your hard drive\)\./i
+      )
     ).toBeInTheDocument();
 
     // Accessibility check

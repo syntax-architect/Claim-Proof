@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "About SABOOT — Protecting Indian Marketplace Sellers";
+const description = "Learn why we built SABOOT: a local-first, zero-cloud software suite giving Indian e-commerce sellers tamper-evident shipping proof.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-narrow" style="padding: 4rem 1.25rem 3rem;">
+    <header class="section-head">
+      <span class="hero-pill">Our Mission</span>
+      <h1>About SABOOT</h1>
+      <p>
+        Building resilient, local-first software tools for the backbone of Indian commerce.
+      </p>
+    </header>
+
+    <div class="card" style="padding: 2.5rem; line-height: 1.7; color: #cbd5e1; margin-bottom: 2rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem;">
+        The Real Problem Facing Indian Sellers
+      </h2>
+      <p style="margin-bottom: 1.25rem;">
+        Indian online sellers operating on marketplaces like Meesho, Flipkart, and Amazon India face persistent revenue leakage caused by fraudulent returns, customer item swaps, transit pilferage, and rejected Seller Protection Fund (SPF) claims.
+      </p>
+      <p style="margin-bottom: 1.25rem;">
+        When disputes arise, marketplace compliance teams routinely demand continuous, uncut video evidence proving that the correct item was packed or that a return was received damaged. Yet recording and archiving hundreds of videos daily using smartphones is slow, unreliable, and eats up gigabytes of personal storage.
+      </p>
+
+      <h2 style="font-size: 1.5rem; font-weight: 700; color: #ffffff; margin: 2rem 0 1rem;">
+        Why We Chose a Local-First Architecture
+      </h2>
+      <p style="margin-bottom: 1.25rem;">
+        Most modern SaaS companies force users to upload all data to expensive cloud servers, charging steep recurring subscriptions and creating privacy liabilities with sensitive customer shipping information.
+      </p>
+      <p style="margin-bottom: 1.25rem;">
+        SABOOT took the opposite approach: <strong>Zero-Cloud, 100% Local-First</strong>.
+      </p>
+      <ul style="margin: 0.5rem 0 1.5rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+        <li><strong>Privacy by Default:</strong> Shipping labels and videos never leave your warehouse PC.</li>
+        <li><strong>Sub-Millisecond Speed:</strong> No buffering, no cloud upload lag, no internet connection required during packaging.</li>
+        <li><strong>Zero Video Storage Costs:</strong> Store terabytes of video proof on your own hard drive without paying monthly cloud hosting fees.</li>
+      </ul>
+
+      <h2 style="font-size: 1.5rem; font-weight: 700; color: #ffffff; margin: 2rem 0 1rem;">
+        The Principles We Live By
+      </h2>
+      <p style="margin-bottom: 1.25rem;">
+        [TODO real copy - founder background and warehouse engineering story]
+      </p>
+      <p>
+        We believe that software should be fast, offline-capable, and respectful of business privacy. SABOOT will remain an offline-first tool dedicated to keeping Indian sellers profitable.
+      </p>
+    </div>
+
+    <div style="text-align: center; margin-top: 2.5rem;">
+      <a href="/features" class="btn btn-secondary">Explore the Features</a>
+      <a href="https://app.saboot.in" class="btn btn-primary" style="margin-left: 0.75rem;" target="_blank" rel="noopener noreferrer">Try SABOOT Free</a>
+    </div>
+  </div>
+</BaseLayout>

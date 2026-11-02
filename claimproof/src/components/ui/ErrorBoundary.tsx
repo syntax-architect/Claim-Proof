@@ -1,4 +1,5 @@
 import React, { Component, type ReactNode } from 'react';
+import { BRAND } from '../../config/brand';
 import { CheckCircle2, Copy, RotateCcw, ShieldCheck } from 'lucide-react';
 import { triggerEmergencySave } from '../../services/recorderCrashGuard';
 import { reportError } from '../../services/telemetry';
@@ -72,7 +73,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     const error = this.state.error;
     const errorInfo = this.state.errorInfo;
     const details = [
-      '=== ClaimProof Error Report ===',
+      `=== ${BRAND.name} Error Report ===`,
       `Timestamp: ${new Date().toISOString()}`,
       `URL: ${typeof window !== 'undefined' ? window.location.href : 'unknown'}`,
       `Boundary Level: ${this.props.level || 'page'}`,
@@ -148,7 +149,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               Something went wrong
             </h2>
             <p className="text-sm leading-relaxed text-slate-300">
-              ClaimProof encountered an unexpected issue while{' '}
+              {BRAND.name} encountered an unexpected issue while{' '}
               {isTop ? 'running the application' : 'loading this section'}.
             </p>
           </div>

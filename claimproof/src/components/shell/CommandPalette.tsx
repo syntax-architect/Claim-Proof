@@ -1,5 +1,6 @@
 /* Command palette — ⌘K / Ctrl+K universal control. Linear-grade polish. */
 
+import { BRAND } from '../../config/brand';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   CornerDownLeft,
@@ -119,13 +120,13 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     if (window.__cpInstallAvailable && window.__cpInstall) {
       actions.push({
         id: 'install',
-        label: 'Install ClaimProof as a desktop app',
+        label: `Install ${BRAND.name} as a desktop app`,
         icon: MonitorDown,
         group: 'Actions',
         available: true,
         run: () => {
           window.__cpInstall?.();
-          toast.info('Install started', 'ClaimProof will open in its own window.');
+          toast.info('Install started', `${BRAND.name} will open in its own window.`);
         }
       });
     }
@@ -295,7 +296,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
               <span className="flex items-center gap-1.5">
                 <Kbd>↑</Kbd> <Kbd>↓</Kbd> navigate · <Kbd>enter</Kbd> run
               </span>
-              <span>ClaimProof Command</span>
+              <span>{BRAND.name} Command</span>
             </div>
           </motion.div>
         </motion.div>

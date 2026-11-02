@@ -1,4 +1,4 @@
-/* PaywallModal — Simplified launch checkout surface for the ClaimProof Suite.
+/* PaywallModal — Simplified launch checkout surface for the SABOOT Suite.
  * Flow:
  * 1. Pick interval & plan (single source of truth: src/config/plans.ts).
  * 2. "Buy" button opens Razorpay Payment Link in a new tab.
@@ -7,6 +7,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { BRAND } from '../../config/brand';
 import {
   AlertTriangle,
   Check,
@@ -126,7 +127,7 @@ export function PaywallModal(): JSX.Element {
       open={ctx.open}
       onClose={ctx.closePaywall}
       icon={ShieldCheck}
-      title="Unlock ClaimProof Suite"
+      title={`Unlock ${BRAND.name} Suite`}
       subtitle="Designed for Indian marketplace sellers · Direct Razorpay checkout · Verified offline with zero server downtime"
       width="xl"
       footer={
@@ -207,7 +208,7 @@ export function PaywallModal(): JSX.Element {
         <div className="flex-1">
           <strong className="text-white">One recovered return covers your entire cost:</strong>{' '}
           Recovering just one ₹500–₹1,200 wrongful return on Meesho, Flipkart, or Amazon pays for
-          months of ClaimProof!
+          months of {BRAND.name}!
         </div>
         <Badge tone="proof" className="shrink-0 text-[10px]">
           18% GST ITC Available
@@ -235,7 +236,7 @@ export function PaywallModal(): JSX.Element {
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-proof-500/60',
                 'hover:-translate-y-0.5',
                 plan.best &&
-                  'md:-translate-y-1.5 md:shadow-[0_18px_44px_-22px_rgba(37,99,235,0.6)]',
+                  'md:-translate-y-1.5 md:shadow-[0_18px_44px_-22px_color-mix(in_srgb,var(--cp-accentsolid)_55%,transparent)]',
                 isSelected
                   ? 'ring-2 ring-proof-400/80 bg-ink-850/90'
                   : plan.best

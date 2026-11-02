@@ -1,4 +1,4 @@
-/* ClaimProof Suite — First-run onboarding state service.
+/* SABOOT Suite — First-run onboarding state service.
  * Persists walkthrough progress, marketplace selections, vault status,
  * and scanner verification into IndexedDB (Dexie settings store).
  */

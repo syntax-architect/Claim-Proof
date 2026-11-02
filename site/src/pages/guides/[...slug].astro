@@ -1,0 +1,105 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((guide) => ({
+    params: { slug: guide.id },
+    props: { guide }
+  }));
+}
+
+const { guide } = Astro.props;
+const { Content } = await render(guide);
+
+const title = guide.data.title;
+const description = guide.data.description;
+const canonicalUrl = new URL(`/guides/${guide.id}`, Astro.site).href;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: guide.data.title,
+  description: guide.data.description,
+  datePublished: guide.data.pubDate.toISOString(),
+  author: {
+    '@type': 'Organization',
+    name: guide.data.author
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SABOOT',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://saboot.in/logo.svg'
+    }
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonicalUrl
+  }
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+  jsonLd={articleSchema}
+>
+  <div class="container-narrow" style="padding: 2.5rem 1.25rem 4rem;">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="Breadcrumb" style="margin-bottom: 2rem; font-size: 0.85rem; color: var(--color-text-subtle);">
+      <ol style="display: flex; gap: 0.5rem; list-style: none; flex-wrap: wrap;">
+        <li><a href="/" style="color: var(--color-text-muted);">Home</a></li>
+        <li><span>/</span></li>
+        <li><a href="/guides" style="color: var(--color-text-muted);">Guides</a></li>
+        <li><span>/</span></li>
+        <li aria-current="page" style="color: var(--color-text-main);">{guide.data.title}</li>
+      </ol>
+    </nav>
+
+    <!-- Article Header -->
+    <header class="article-header">
+      <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+        <span class="guide-badge">{guide.data.category}</span>
+        <span style="color: var(--color-text-subtle);">·</span>
+        <span style="color: var(--color-text-muted); font-size: 0.85rem;">{guide.data.readTime}</span>
+      </div>
+
+      <h1 id="article-title">{guide.data.title}</h1>
+
+      <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; color: var(--color-text-subtle); font-size: 0.85rem; margin-top: 1rem;">
+        <span>Published by {guide.data.author}</span>
+        <span>·</span>
+        <time datetime={guide.data.pubDate.toISOString()}>
+          {guide.data.pubDate.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </time>
+      </div>
+    </header>
+
+    <!-- Article Body -->
+    <article class="article-content" aria-labelledby="article-title">
+      <Content />
+    </article>
+
+    <!-- Guide Footer CTA -->
+    <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 2rem; text-align: center; margin-top: 3rem;">
+      <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;">
+        Ready to Implement this SOP in Your Warehouse?
+      </h3>
+      <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        Launch SABOOT on any Chromium browser. No installations or cloud subscriptions required.
+      </p>
+      <a href="https://app.saboot.in" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+        Start Free Proof Station
+      </a>
+    </div>
+  </div>
+</BaseLayout>

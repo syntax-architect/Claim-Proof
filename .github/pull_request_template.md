@@ -14,7 +14,7 @@
 
 ## Offline-First & Privacy Verification
 > [!IMPORTANT]
-> **ClaimProof Zero-Server-Cost Guarantee**: User videos, labels, and customer details must NEVER leave the user's workstation.
+> **SABOOT Zero-Server-Cost Guarantee**: User videos, labels, and customer details must NEVER leave the user's workstation.
 - [ ] **Zero Telemetry**: Confirmed via DevTools Network tab that no video chunks, label images, or customer data are uploaded.
 - [ ] **Local Storage**: Files remain in IndexedDB / Origin Private File System / local File System Access directory.
 - [ ] **Offline Execution**: Verified core features function with network disabled (`offline` mode).

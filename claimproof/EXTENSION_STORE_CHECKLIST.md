@@ -1,6 +1,6 @@
 # Chrome Web Store Submission & Store Listing Checklist
 
-This checklist documents the exact Chrome Web Store Developer Dashboard entries, privacy certifications, screenshot requirements, and copy guidelines for the **ClaimProof** Manifest V3 extension.
+This checklist documents the exact Chrome Web Store Developer Dashboard entries, privacy certifications, screenshot requirements, and copy guidelines for the **SABOOT** Manifest V3 extension.
 
 ---
 
@@ -9,8 +9,8 @@ This checklist documents the exact Chrome Web Store Developer Dashboard entries,
 > [!IMPORTANT]
 > **Trademark Safeguard Rule:** Under Chrome Web Store Intellectual Property and Impersonation policies, extension names must never include third-party brand names as the extension title or imply endorsement.
 
-* **Extension Title:** `ClaimProof — Shipping Label & Packing Evidence Studio`
-* **Short Name:** `ClaimProof`
+* **Extension Title:** `SABOOT: Shipping Label & Packing Proof Studio`
+* **Short Name:** `SABOOT`
 * **Extension Version:** `1.0.0`
 * **Category:** Productivity / Workflow & Planning
 * **Default Language:** English
@@ -26,7 +26,7 @@ Local-first thermal shipping label organizer, barcode packing video proof record
 
 ### 2.2 Detailed Description
 ```text
-ClaimProof is a local-first workstation studio designed for Indian e-commerce sellers shipping orders across major marketplaces. It combines high-speed shipping label preparation with tamper-evident, uncut barcode-verified packing and unboxing video evidence.
+SABOOT is a local-first workstation studio designed for Indian e-commerce sellers shipping orders across major marketplaces. It combines high-speed shipping label preparation with tamper-evident, uncut barcode-verified packing and unboxing video evidence.
 
 KEY CAPABILITIES:
 
@@ -37,7 +37,7 @@ KEY CAPABILITIES:
 • Multi-quantity guard highlights orders with Qty > 1 to prevent packing omissions.
 • Generates warehouse picklists and carrier handover manifests.
 
-2. ClaimProof AWB Recorder (Forensic Packing Station)
+2. SABOOT AWB Recorder (Forensic Packing Station)
 • Hands-free parcel chaining triggered by physical USB/Bluetooth barcode scanner guns or webcams.
 • Records uncut MP4/WebM video proof with an indelible live IST forensic timestamp banner burned into the video.
 • Automatically captures and stitches 4 timed still frames into a 2×2 forensic photo collage mid-recording.
@@ -66,7 +66,7 @@ TRANSPARENT PRICING & PRIVACY:
 
 ### 3.1 Single Purpose Declaration
 * **Single Purpose Statement:**
-  > "ClaimProof provides a local-first packing proof video recorder and shipping label organizer that operates completely on the seller's computer without transmitting order data or videos to remote servers."
+  > "SABOOT provides a local-first packing proof video recorder and shipping label organizer that operates completely on the seller's computer without transmitting order data or videos to remote servers."
 
 ### 3.2 Host Permissions & Permissions Review
 * **Host Permissions:** **NONE** (`host_permissions: []`). The extension does not read, modify, or inject content into any marketplace or external website.
@@ -118,7 +118,7 @@ Chrome Web Store requires 1280×800 px or 640×400 px JPEG/PNG screenshots with 
 * [ ] **Store Icon (128×128 px PNG):**
   - Located at `public/icons/icon-128.png`.
 * [ ] **Small Promo Tile (440×280 px PNG):**
-  - Clean ClaimProof mark on dark navy background (`#0B0E14`).
+  - Clean SABOOT mark on dark navy background (`#0B0E14`).
 
 ---
 
@@ -135,7 +135,7 @@ npm run build:extension
 ```
 
 The resulting package will be generated at:
-`dist-extension/claimproof-extension.zip`
+`dist-extension/saboot-extension.zip`
 
 Upload this ZIP file directly to the **Chrome Web Store Developer Dashboard** under **Package > Upload new package**.
 

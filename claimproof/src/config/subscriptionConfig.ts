@@ -1,4 +1,4 @@
-/* ClaimProof Suite — Razorpay Subscriptions & Lifecycle Configuration
+/* SABOOT Suite — Razorpay Subscriptions & Lifecycle Configuration
  *
  * Roadmap Milestone:
  * Only after at least 20 manual sales are completed and validated in Phase 1,
@@ -26,4 +26,3 @@ export const RAZORPAY_DOC_CITATIONS = {
 export function isSubscriptionsUnlocked(manualSalesCount: number): boolean {
   return manualSalesCount >= MIN_MANUAL_SALES_FOR_SUBSCRIPTIONS;
 }
-

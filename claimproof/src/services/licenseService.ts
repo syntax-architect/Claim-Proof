@@ -1,4 +1,4 @@
-/* ClaimProof licensing engine — offline-verifiable ES256 license JWTs.
+/* SABOOT licensing engine — offline-verifiable ES256 license JWTs.
  *
  * Verification is 100% on-device: the payment webhook or admin script
  * signs a compact JWT with the issuer's P-256 private key; the app only ships
@@ -11,6 +11,7 @@
  */
 
 import { useLiveQuery } from 'dexie-react-hooks';
+import { BRAND } from '../config/brand';
 import { db } from '../db/schema';
 import { LICENSE_ISSUER, LICENSE_JWT_KID, LICENSE_JWT_PUBLIC_JWK } from '../lib/licenseKeys';
 import type {
@@ -32,10 +33,11 @@ const FALLBACK: LicenseState = {
 };
 
 /* Boot cache — avoids a 'Free' flash on remounts and after reloads. */
-const PLAN_CACHE_KEY = 'claimproof_last_plan';
+const PLAN_CACHE_KEY = BRAND.storageKeys.lastPlan;
+const LEGACY_PLAN_CACHE_KEY = BRAND.storageKeys.legacyLastPlan;
 let lastKnown: LicenseState | null = (() => {
   try {
-    const raw = localStorage.getItem(PLAN_CACHE_KEY);
+    const raw = localStorage.getItem(PLAN_CACHE_KEY) ?? localStorage.getItem(LEGACY_PLAN_CACHE_KEY);
     return raw ? (JSON.parse(raw) as LicenseState) : null;
   } catch {
     return null;
@@ -217,7 +219,7 @@ export async function verifyAndActivateToken(
     if (header.alg !== 'ES256' || header.kid !== LICENSE_JWT_KID) {
       return { ok: false, error: 'Invalid license token', code: 'INVALID_TOKEN' };
     }
-    if (payload.iss !== LICENSE_ISSUER) {
+    if (payload.iss !== LICENSE_ISSUER && payload.iss !== BRAND.legacyLicenseIssuer) {
       return {
         ok: false,
         error: 'Invalid license token: wrong issuer',

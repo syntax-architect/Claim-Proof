@@ -43,7 +43,7 @@ export async function connectVault(): Promise<'fs-api' | 'downloads'> {
     await setSetting('vault_mode', 'downloads');
     return 'downloads';
   }
-  const handle = await window.showDirectoryPicker({ id: 'claimproof-vault', mode: 'readwrite' });
+  const handle = await window.showDirectoryPicker({ id: 'saboot-vault', mode: 'readwrite' });
   await setSetting(VAULT_KEY, handle);
   await setSetting('vault_mode', 'fs-api');
   return 'fs-api';
@@ -147,7 +147,7 @@ export async function revealAwbFolder(
     }
     if (window.showDirectoryPicker) {
       void window
-        .showDirectoryPicker({ id: 'claimproof-vault', mode: 'readwrite', startIn: dir })
+        .showDirectoryPicker({ id: 'saboot-vault', mode: 'readwrite', startIn: dir })
         .catch(() => undefined);
     }
     return true;

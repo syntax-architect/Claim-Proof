@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { RefreshCw, X } from 'lucide-react';
+import { BRAND } from '../../config/brand';
 import { Button } from '../ui';
 
 export function UpdatePrompt() {
@@ -25,14 +26,17 @@ export function UpdatePrompt() {
 
     // Also check registration directly if serviceWorker is available
     if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistration().then((reg) => {
-        if (reg?.waiting && navigator.serviceWorker.controller) {
-          workerRef.current = reg.waiting;
-          setShow(true);
-        }
-      }).catch(() => {
-        /* best-effort */
-      });
+      navigator.serviceWorker
+        .getRegistration()
+        .then((reg) => {
+          if (reg?.waiting && navigator.serviceWorker.controller) {
+            workerRef.current = reg.waiting;
+            setShow(true);
+          }
+        })
+        .catch(() => {
+          /* best-effort */
+        });
     }
 
     return () => {
@@ -41,7 +45,8 @@ export function UpdatePrompt() {
   }, []);
 
   const handleReload = () => {
-    const worker = workerRef.current || (typeof window !== 'undefined' ? window.__cpWaitingWorker : null);
+    const worker =
+      workerRef.current || (typeof window !== 'undefined' ? window.__cpWaitingWorker : null);
     if (worker) {
       worker.postMessage({ type: 'SKIP_WAITING' });
     }
@@ -69,8 +74,12 @@ export function UpdatePrompt() {
             <RefreshCw className="h-4 w-4 animate-spin text-proof-400" />
           </div>
           <div>
-            <p className="font-display text-sm font-semibold text-slate-100">Update available, reload</p>
-            <p className="text-xs text-slate-400">A new version of ClaimProof is ready to install.</p>
+            <p className="font-display text-sm font-semibold text-slate-100">
+              Update available, reload
+            </p>
+            <p className="text-xs text-slate-400">
+              A new version of {BRAND.name} is ready to install.
+            </p>
           </div>
         </div>
         <button
@@ -95,4 +104,3 @@ export function UpdatePrompt() {
     </div>
   );
 }
-

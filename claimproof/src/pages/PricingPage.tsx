@@ -22,6 +22,7 @@ import {
   useLicense,
   verifyAndActivateToken
 } from '../services/licenseService';
+import { BRAND } from '../config/brand';
 import { getPaymentUrl, PLANS } from '../config/plans';
 import { trackEvent } from '../services/telemetry';
 import { formatISTShort } from '../lib/dateUtils';
@@ -59,7 +60,7 @@ const COMPARISON: {
   },
   {
     feature: 'Picklist & Courier handover manifests',
-    free: '✓ (ClaimProof seal)',
+    free: `✓ (${BRAND.name} seal)`,
     starter: '✓ White-label (Clean)',
     pro: '✓ White-label (Clean)',
     warehouse: '✓ White-label (Clean)'
@@ -221,15 +222,16 @@ export default function PricingPage() {
                   <Badge tone="danger">payment failed, update your payment method</Badge>
                 )}
 
-                {isExpired && (
-                  <Badge tone="danger">expired, features limited</Badge>
-                )}
+                {isExpired && <Badge tone="danger">expired, features limited</Badge>}
 
-                {!isExpired && !isPaymentFailed && isRenewing && (license.renewsAt || license.expiresAt) && (
-                  <Badge tone="proof">
-                    renews on {formatISTShort(license.renewsAt ?? license.expiresAt!)}
-                  </Badge>
-                )}
+                {!isExpired &&
+                  !isPaymentFailed &&
+                  isRenewing &&
+                  (license.renewsAt || license.expiresAt) && (
+                    <Badge tone="proof">
+                      renews on {formatISTShort(license.renewsAt ?? license.expiresAt!)}
+                    </Badge>
+                  )}
 
                 {!isExpired && !isPaymentFailed && !isRenewing && license.expiresAt && (
                   <Badge tone="outline">expires {formatISTShort(license.expiresAt)}</Badge>
@@ -240,7 +242,9 @@ export default function PricingPage() {
                 <div className="mt-2 flex items-center gap-2 rounded-lg border border-danger-500/40 bg-danger-500/10 px-3 py-2 text-xs text-danger-300">
                   <AlertTriangle className="h-4 w-4 shrink-0 text-danger-400" />
                   <span>
-                    <strong>payment failed, update your payment method:</strong> Your recurring subscription charge could not be processed. Please update your UPI Autopay / Card details to avoid cancellation.
+                    <strong>payment failed, update your payment method:</strong> Your recurring
+                    subscription charge could not be processed. Please update your UPI Autopay /
+                    Card details to avoid cancellation.
                   </span>
                 </div>
               )}
@@ -249,7 +253,9 @@ export default function PricingPage() {
                 <div className="mt-2 flex items-center gap-2 rounded-lg border border-warn-500/40 bg-warn-500/10 px-3 py-2 text-xs text-warn-300">
                   <AlertTriangle className="h-4 w-4 shrink-0 text-warn-400" />
                   <span>
-                    <strong>expired, features limited:</strong> Your paid license and 3-day grace period have expired. Daily quotas have reverted to the Free tier (40 labels & 10 watermarked videos/day). Pro tools remain locked until renewed.
+                    <strong>expired, features limited:</strong> Your paid license and 3-day grace
+                    period have expired. Daily quotas have reverted to the Free tier (40 labels & 10
+                    watermarked videos/day). Pro tools remain locked until renewed.
                   </span>
                 </div>
               )}
@@ -301,7 +307,7 @@ export default function PricingPage() {
           </div>
           <div className="min-w-0 flex-1">
             <div className="font-display text-sm font-bold text-white">
-              The Math: How ClaimProof Pays for Itself on Day 1
+              The Math: How {BRAND.name} Pays for Itself on Day 1
             </div>
             <div className="mt-1 text-xs text-slate-300 leading-relaxed">
               In Indian e-commerce, a single rejected return on Meesho SAFE, Flipkart SPF, or Amazon
@@ -468,8 +474,6 @@ export default function PricingPage() {
           Complete Feature Comparison
         </div>
         <div
-          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-          tabIndex={0}
           className="overflow-x-auto focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-proof-500"
           role="region"
           aria-label="Complete Feature Comparison"

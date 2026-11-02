@@ -1,15 +1,23 @@
 {
-  "name": "claimproof-root",
+  "name": "saboot-root",
   "private": true,
   "scripts": {
-    "typecheck": "npm --prefix claimproof run typecheck",
+    "typecheck": "npm --prefix claimproof run typecheck && npm --prefix site run typecheck",
     "lint": "npm --prefix claimproof run lint",
     "format": "npm --prefix claimproof run format",
-    "test": "npm --prefix claimproof test",
+    "test": "npm --prefix claimproof test && npm --prefix site test",
     "test:e2e": "npm --prefix claimproof run test:e2e",
     "test:supabase": "npm --prefix claimproof run test:supabase",
-    "build": "npm --prefix claimproof run build",
-    "check": "npm --prefix claimproof run check",
+    "test:site": "npm --prefix site test",
+    "stress": "npm --prefix claimproof run stress",
+    "stress:ci": "npm --prefix claimproof run stress:ci",
+    "stress:labels": "npm --prefix claimproof run stress:labels",
+    "stress:scans": "npm --prefix claimproof run stress:scans",
+    "stress:video": "npm --prefix claimproof run stress:video",
+    "build": "npm --prefix claimproof run build && npm --prefix site run build",
+    "build:site": "npm --prefix site run build",
+    "audit:seo": "npm --prefix claimproof run audit:seo",
+    "check": "npm --prefix claimproof run check && npm --prefix site run check",
     "prepare": "husky"
   },
   "devDependencies": {

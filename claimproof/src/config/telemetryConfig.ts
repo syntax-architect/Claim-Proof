@@ -1,5 +1,5 @@
 /**
- * ClaimProof Privacy-Friendly Analytics & Error Monitoring Configuration.
+ * SABOOT Privacy-Friendly Analytics & Error Monitoring Configuration.
  *
  * NOTE: Telemetry endpoints are marked "needs verification" per project policy
  * until self-hosted analytics or Sentry/GlitchTip ingest relays are finalized.
@@ -11,9 +11,7 @@ export const TELEMETRY_CONFIG = {
 
   // Sentry / GlitchTip compatible error reporting endpoint (needs verification)
   errorMonitoringEndpoint:
-    import.meta.env.VITE_ERROR_MONITORING_ENDPOINT ||
-    import.meta.env.VITE_SENTRY_DSN ||
-    '',
+    import.meta.env.VITE_ERROR_MONITORING_ENDPOINT || import.meta.env.VITE_SENTRY_DSN || '',
 
   // Telemetry is strictly opt-in (default is false)
   defaultOptIn: false

@@ -1,10 +1,12 @@
+import { BRAND } from '../config/brand';
+
 /* Phone-as-Scanner Companion — pairs a smartphone camera scanner to the PC
  * packing station over a Supabase Realtime broadcast channel keyed by a 6-digit
  * room code (shown as a QR). Zero custom server: the free Supabase tier carries it.
  *
  * Requires VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to be set at build time.
  * The companion page (hosted PWA route /pair) scans barcodes and broadcasts
- * `{ event: 'scan', payload: { code } }` on channel `claimproof-room-<code>`. */
+ * `{ event: 'scan', payload: { code } }` on channel `saboot-room-<code>`. */
 
 export function getSupabaseConfig(): { url?: string; key?: string } {
   const url = (import.meta.env.VITE_SUPABASE_URL ||
@@ -30,7 +32,7 @@ export function newRoomCode(): string {
 }
 
 export function pairingQrPayload(code: string): string {
-  return `https://app.claimproof.in/pair?room=${code}`;
+  return `https://app.${BRAND.domain}/pair?room=${code}`;
 }
 
 export interface PhonePairingSession {
@@ -50,7 +52,7 @@ export async function startPhonePairing(
   const { createClient } = await import('@supabase/supabase-js');
   const client = createClient(url, key);
   const code = newRoomCode();
-  const channel = client.channel(`claimproof-room-${code}`, {
+  const channel = client.channel(`saboot-room-${code}`, {
     config: { broadcast: { self: false } }
   });
   channel.on('broadcast', { event: 'scan' }, (message: { payload?: { code?: string } }) => {

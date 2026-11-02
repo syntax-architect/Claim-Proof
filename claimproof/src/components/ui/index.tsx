@@ -1,6 +1,7 @@
-/* ClaimProof UI kit — dark control-room primitives.
+/* SABOOT UI kit — dark control-room primitives.
  * Every module builds on these; do not hand-roll variants elsewhere. */
 
+import { BRAND } from '../../config/brand';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   AlertTriangle,
@@ -644,7 +645,13 @@ export function Modal({
                     </div>
                   )}
                   <div className="min-w-0">
-                    <div role="heading" aria-level={2} className="font-display text-lg font-bold text-white">{title}</div>
+                    <div
+                      role="heading"
+                      aria-level={2}
+                      className="font-display text-lg font-bold text-white"
+                    >
+                      {title}
+                    </div>
                     {subtitle && <div className="mt-0.5 text-xs text-slate-400">{subtitle}</div>}
                   </div>
                 </div>
@@ -722,7 +729,9 @@ export function EmptyState({
       <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-dashed border-line-bright bg-ink-850 text-slate-400 shadow-inner">
         <Icon className="h-6 w-6" aria-hidden="true" />
       </div>
-      <HeadingTag className="mt-4 font-display text-base font-semibold text-white">{title}</HeadingTag>
+      <HeadingTag className="mt-4 font-display text-base font-semibold text-white">
+        {title}
+      </HeadingTag>
       {body && <div className="mt-2 max-w-md text-sm leading-relaxed text-slate-400">{body}</div>}
       {children && <div className="mt-4 w-full max-w-lg">{children}</div>}
       {(primary || secondaryLink) && (
@@ -1004,7 +1013,8 @@ export function Logo({ className }: { className?: string }) {
       <LogoMark size={32} />
       <div className="leading-none">
         <div className="font-display text-[17px] font-bold tracking-tight text-white">
-          ClaimProof<span className="text-proof-400">.in</span>
+          {BRAND.shortName}
+          <span className="text-proof-400">.in</span>
         </div>
         <div className="mt-1 font-mono text-[9px] font-medium uppercase tracking-[0.24em] text-slate-500">
           Proof Suite

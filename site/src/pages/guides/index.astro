@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const title = "Warehouse SOP & Marketplace Claim Guides — SABOOT";
+const description = "Practical standard operating procedures, thermal printer setup tips, and marketplace SAFE / SPF dispute guides for Indian online sellers.";
+
+const allGuides = await getCollection('guides');
+allGuides.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container" style="padding: 4rem 1.25rem 3rem;">
+    <header class="section-head">
+      <span class="hero-pill">Operations Knowledgebase</span>
+      <h1>Warehouse SOPs &amp; Marketplace Guides</h1>
+      <p>
+        Battle-tested dispute recovery playbooks and packaging guides for Meesho, Flipkart, and Amazon India sellers.
+      </p>
+    </header>
+
+    <div class="grid-2">
+      {allGuides.map((guide) => (
+        <a href={`/guides/${guide.id}`} class="guide-card">
+          <div class="guide-meta">
+            <span class="guide-badge">{guide.data.category}</span>
+            <span>·</span>
+            <span>{guide.data.readTime}</span>
+            <span>·</span>
+            <time datetime={guide.data.pubDate.toISOString()}>
+              {guide.data.pubDate.toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </time>
+          </div>
+
+          <h2>{guide.data.title}</h2>
+          <p>{guide.data.description}</p>
+
+          <div style="margin-top: 1rem; color: var(--color-primary); font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
+            <span>Read Guide</span>
+            <span>→</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Practical Advisory Notice -->
+    <div style="margin-top: 4rem; padding: 1.5rem; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 10px; font-size: 0.85rem; color: var(--color-text-muted);">
+      <p>
+        <strong>Compliance Notice:</strong> Marketplace return policies, claim deadlines, and dispute terms change periodically. Sellers should always verify their specific supplier tier and contractual SLA directly with marketplace seller support [needs verification].
+      </p>
+    </div>
+  </div>
+</BaseLayout>

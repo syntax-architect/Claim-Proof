@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════
--- ClaimProof.in — licensing, devices, payments & webhook idempotency
+-- SABOOT.in — licensing, devices, payments & webhook idempotency
 -- Supabase PostgreSQL migration 001
 --
 -- Model:

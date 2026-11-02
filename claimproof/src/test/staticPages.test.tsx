@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
@@ -8,6 +9,7 @@ import SupportPage from '../pages/SupportPage';
 import Footer from '../components/shell/Footer';
 import { getDiagnosticInfo, getFormattedDiagnosticString } from '../lib/diagnostics';
 import { ToastProvider } from '../components/ui';
+import { BRAND } from '../config/brand';
 import { parseHash, ROUTES, ROUTE_LABELS, type Route } from '../lib/router';
 import { CurrentPage } from '../App';
 import { PaywallProvider } from '../providers/PaywallProvider';
@@ -36,7 +38,9 @@ describe('Static Pages & Legal Verification', () => {
       );
 
       // Explicitly: videos and labels stay on the user's device
-      expect(screen.getByText(/The ClaimProof Zero-Cloud Guarantee/i)).toBeDefined();
+      expect(
+        screen.getByText(new RegExp(`The ${BRAND.name} Zero-Cloud Guarantee`, 'i'))
+      ).toBeDefined();
       expect(screen.getByText(/Your Videos & Labels Never Leave Your Device/i)).toBeDefined();
       expect(
         screen.getByText(
@@ -81,7 +85,7 @@ describe('Static Pages & Legal Verification', () => {
       // Scope of service
       expect(screen.getByText(/Scope of the Software & Local Execution/i)).toBeDefined();
       expect(screen.getByText(/SmartLabel Studio/i)).toBeDefined();
-      expect(screen.getByText(/ClaimProof AWB Recorder/i)).toBeDefined();
+      expect(screen.getByText(new RegExp(`${BRAND.name} AWB Recorder`, 'i'))).toBeDefined();
       expect(screen.getAllByText(/ClaimRadar/i).length).toBeGreaterThanOrEqual(1);
 
       // Marketplace Independence
@@ -165,7 +169,7 @@ describe('Static Pages & Legal Verification', () => {
       const emailBtn = screen.getByRole('button', { name: /Send Support Email/i });
       expect(emailBtn).toBeDefined();
       const emailAnchor = emailBtn.closest('a');
-      expect(emailAnchor?.href).toContain('mailto:support@claimproof.in');
+      expect(emailAnchor?.href).toContain(`mailto:${BRAND.supportEmail}`);
 
       // Copy diagnostic info
       const copyBtn = screen.getByRole('button', { name: /Copy diagnostic info/i });
@@ -187,7 +191,7 @@ describe('Static Pages & Legal Verification', () => {
       expect(screen.getByText(/Barcode Scanner Gun Not Triggering Recording/i)).toBeDefined();
 
       // Contains [NEEDS LEGAL REVIEW] placeholder
-      expect(screen.getByText(/\[NEEDS LEGAL REVIEW\]/i)).toBeDefined();
+      expect(screen.getAllByText(/\[NEEDS LEGAL REVIEW\]/i).length).toBeGreaterThan(0);
 
       // Accessibility audit
       const results = await axe(container, axeOptions);
@@ -201,7 +205,7 @@ describe('Static Pages & Legal Verification', () => {
       const jsonStr = await getFormattedDiagnosticString();
 
       // Check structure
-      expect(diag.app.name).toBe('ClaimProof Suite');
+      expect(diag.app.name).toBe(BRAND.legalName);
       expect(diag.app.version).toBe('1.0.0');
       expect(diag.system).toBeDefined();
       expect(diag.capabilities).toBeDefined();

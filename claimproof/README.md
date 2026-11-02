@@ -1,4 +1,4 @@
-# ClaimProof Suite — SmartLabel SKU+ & ClaimProof AWB
+# SABOOT Suite — SmartLabel SKU+ & SABOOT AWB
 
 **A local-first, zero-server-cost PWA for Indian e-commerce sellers** (Meesho, Flipkart, Amazon India, Myntra, AJIO). Crop shipping labels, record barcode-verified uncut packing videos, and win return disputes before the 72-hour / 14-day / 30-day windows close.
 
@@ -11,7 +11,7 @@
 | Module | What it does | Price |
 |---|---|---|
 | **SmartLabel SKU+** (Module A) | Drag-and-drop up to 15 label PDFs → extracts AWB / Order ID / SKU / Size / Qty / courier → vector-crops to 4×6, 4×4 or 4-per-A4 → stamps `SKU \| Size \| Qty \| date` → multi-qty guard (red border + badge) → sorts by Courier → SKU → Qty → prepends a Warehouse Picklist & Courier Handover manifest. | Free (40 labels/day) |
-| **ClaimProof AWB** (Module B) | Scan a barcode (USB gun, webcam `BarcodeDetector`/ZXing, or phone companion) → uncut video starts instantly with a burnt-in forensic bar (`VERIFIED UNCUT PROOF | AWB | ORDER | SKU (Qty) | live IST timestamp`) → 4 timed JPEG stills (T+0.5/3/6/9 s) stitched into a 2×2 evidence collage → scan the next parcel and the clip chains in <100 ms. Files land in `<vault>/<date>/<Dispatch|Return>/<AWB>/`. | Free 10/day (watermarked) · unlimited from ₹2,499/yr (₹349/mo) |
+| **SABOOT AWB** (Module B) | Scan a barcode (USB gun, webcam `BarcodeDetector`/ZXing, or phone companion) → uncut video starts instantly with a burnt-in forensic bar (`VERIFIED UNCUT PROOF | AWB | ORDER | SKU (Qty) | live IST timestamp`) → 4 timed JPEG stills (T+0.5/3/6/9 s) stitched into a 2×2 evidence collage → scan the next parcel and the clip chains in <100 ms. Files land in `<vault>/<date>/<Dispatch|Return>/<AWB>/`. | Free 10/day (watermarked) · unlimited from ₹2,499/yr (₹349/mo) |
 | **ClaimRadar Pro** (Module C) | Flag bad returns with `F2` during Return Unboxing Mode → live deadline radar per marketplace rubric (Meesho SAFE / AJIO / Snapdeal 72 h · Flipkart SPF 14 d · Amazon SAFE-T 30 d) → side-by-side dispatch-vs-return matcher → auto-generated dispute text → 1-click evidence packaging. | ₹4,499/yr (₹599/mo) · ₹7,188 value |
 | **Monetization** (Module D) | Freemium quota engine, UPI QR checkout modal, ES256 offline-verifiable license JWTs bound to a device fingerprint, Supabase SQL schema + Razorpay webhook Edge Function. | — |
 
@@ -85,13 +85,13 @@ src/
 2. `supabase secrets set RAZORPAY_WEBHOOK_SECRET=… LICENSE_SIGNING_KEY_JWK_B64=$(base64 -w0 scripts/.license-dev-keys.json) LICENSE_JWT_KID=cp-dev-1`
 3. `supabase functions deploy razorpay-webhook --no-verify-jwt`
 4. Point the Razorpay dashboard webhook (`payment.captured`) at the function URL. It verifies the HMAC signature, de-duplicates via `cp_webhook_events`, registers the device, stores the license and returns the signed ES256 token the app verifies fully offline. Each captured payment mints a 365-day license — for monthly UPI Autopay mandates (the paywall's recurring copy), wire Razorpay Subscriptions and extend the function to honour `subscription.*` events before going live.
-5. Replace the placeholder VPA `claimproof@upi` in `src/lib/upi.ts` with your Razorpay/Cashfree dynamic-QR flow.
+5. Replace the placeholder VPA `saboot@upi` in `src/lib/upi.ts` with your Razorpay/Cashfree dynamic-QR flow.
 
 > Rotate keys with `npm run gen:keys` — the private JWK must only ever live in the Edge Function secret store.
 
 ## PWA & Chrome Extension
 
-- **PWA:** `dist/` is installable (manifest + service worker, offline after first load). Chrome → ⋮ → *Install ClaimProof*.
+- **PWA:** `dist/` is installable (manifest + service worker, offline after first load). Chrome → ⋮ → *Install SABOOT*.
 - **Extension (MV3):** the bundle has no server dependencies; build and load `dist/` as an unpacked extension with an MV3 `manifest.json` pointing at `index.html` for the packing-station tab.
 
 ## Test matrix verified
@@ -106,7 +106,7 @@ src/
 ## Notes
 
 - The recorder needs `https://` or `localhost` for camera APIs; the vault picker needs a Chromium browser. Everything degrades gracefully otherwise.
-- Free-tier recordings carry the `Recorded via ClaimProof.in — Free Tier` watermark; photo collages, ClaimRadar and the matcher are Pro features.
+- Free-tier recordings carry the `Recorded via SABOOT.in — Free Tier` watermark; photo collages, ClaimRadar and the matcher are Pro features.
 - Phone companion requires `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` at build time; USB guns and the webcam scanner need no configuration.
 
 — Built as a complete, production-ready codebase. No TODOs, no placeholders.

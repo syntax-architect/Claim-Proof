@@ -1,7 +1,9 @@
 # Workspace & temp files
 .zwork/
+.astro/
 *.zip
 *.mp4
+*.webm
 /package-lock.json
 .github/workflows/
 
@@ -16,6 +18,7 @@ coverage/
 !.env.example
 scripts/.license-dev-keys.json
 test-results/
+test-fixtures/
 playwright-report/
 e2e/screenshots/
 lighthouse*.json

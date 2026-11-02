@@ -3,10 +3,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 let broadcastHandler: ((msg: { payload: { code: string } }) => void) | undefined;
 
 const mockChannel = {
-  on: vi.fn((_type: string, _filter: unknown, handler: (msg: { payload: { code: string } }) => void) => {
-    broadcastHandler = handler;
-    return mockChannel;
-  }),
+  on: vi.fn(
+    (_type: string, _filter: unknown, handler: (msg: { payload: { code: string } }) => void) => {
+      broadcastHandler = handler;
+      return mockChannel;
+    }
+  ),
   subscribe: vi.fn((cb: (status: string) => void) => {
     setTimeout(() => cb('SUBSCRIBED'), 10);
     return mockChannel;
@@ -47,7 +49,7 @@ describe('Phone Pairing Service & Supabase Realtime', () => {
   it('generates valid pairing QR payload URL', () => {
     const code = '582910';
     const payload = pairingQrPayload(code);
-    expect(payload).toBe('https://app.claimproof.in/pair?room=582910');
+    expect(payload).toBe('https://app.saboot.in/pair?room=582910');
   });
 
   it('detects Supabase configuration from environment', () => {

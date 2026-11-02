@@ -1,12 +1,15 @@
+import { BRAND } from '../config/brand';
+
 /* Light/dark theme store — persisted, system-aware, FOUC-free (init in index.html). */
 
 export type Theme = 'light' | 'dark';
 
-const KEY = 'claimproof_theme';
+const KEY = BRAND.storageKeys.theme;
+const LEGACY_KEY = BRAND.storageKeys.legacyTheme;
 
 export function storedTheme(): Theme | null {
   try {
-    const t = localStorage.getItem(KEY);
+    const t = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY);
     return t === 'light' || t === 'dark' ? t : null;
   } catch {
     return null;

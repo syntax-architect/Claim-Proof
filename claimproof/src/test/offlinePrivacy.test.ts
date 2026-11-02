@@ -81,7 +81,8 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
     // 1. Intercept fetch
     originalFetch = globalThis.fetch;
     globalThis.fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+      const url =
+        typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
       const bodyStr = init?.body ? String(init.body) : undefined;
       interceptedCalls.push({ type: 'fetch', url, method: init?.method ?? 'GET', body: bodyStr });
 
@@ -107,7 +108,8 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
         const bodyStr = body ? String(body) : undefined;
         interceptedCalls.push({ type: 'xhr', url: this.url, method: this.method, body: bodyStr });
 
-        const leak = inspectPayloadForSensitiveData(this.url) || inspectPayloadForSensitiveData(bodyStr);
+        const leak =
+          inspectPayloadForSensitiveData(this.url) || inspectPayloadForSensitiveData(bodyStr);
         if (leak) leakViolations.push(leak);
 
         if (!isHostAllowed(this.url)) {
@@ -129,7 +131,9 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
         const leak = inspectPayloadForSensitiveData(url);
         if (leak) leakViolations.push(leak);
         if (!isHostAllowed(url)) {
-          throw new Error(`[OFFLINE SECURITY VIOLATION] Unauthorized WebSocket connection to: ${url}`);
+          throw new Error(
+            `[OFFLINE SECURITY VIOLATION] Unauthorized WebSocket connection to: ${url}`
+          );
         }
       }
       send(data: string | ArrayBufferLike | Blob | ArrayBufferView) {
@@ -148,7 +152,8 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
         const urlStr = url.toString();
         const bodyStr = data ? String(data) : undefined;
         interceptedCalls.push({ type: 'beacon', url: urlStr, body: bodyStr });
-        const leak = inspectPayloadForSensitiveData(urlStr) || inspectPayloadForSensitiveData(bodyStr);
+        const leak =
+          inspectPayloadForSensitiveData(urlStr) || inspectPayloadForSensitiveData(bodyStr);
         if (leak) leakViolations.push(leak);
         if (!isHostAllowed(urlStr)) {
           throw new Error(`[OFFLINE SECURITY VIOLATION] Unauthorized sendBeacon to: ${urlStr}`);
@@ -172,8 +177,20 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const page = pdfDoc.addPage([288, 432]); // 4x6 inches
-    page.drawText(`AWB No: ${SENSITIVE_AWB}`, { x: 20, y: 390, size: 10, font, color: rgb(0, 0, 0) });
-    page.drawText(`Order ID: ${SENSITIVE_ORDER_ID}`, { x: 20, y: 370, size: 10, font, color: rgb(0, 0, 0) });
+    page.drawText(`AWB No: ${SENSITIVE_AWB}`, {
+      x: 20,
+      y: 390,
+      size: 10,
+      font,
+      color: rgb(0, 0, 0)
+    });
+    page.drawText(`Order ID: ${SENSITIVE_ORDER_ID}`, {
+      x: 20,
+      y: 370,
+      size: 10,
+      font,
+      color: rgb(0, 0, 0)
+    });
     page.drawText(`SKU: ${SENSITIVE_SKU}`, { x: 20, y: 350, size: 10, font, color: rgb(0, 0, 0) });
     page.drawText(`Courier: Valmo`, { x: 20, y: 330, size: 10, font, color: rgb(0, 0, 0) });
     page.drawText(`Qty: 2`, { x: 20, y: 310, size: 10, font, color: rgb(0, 0, 0) });
@@ -189,7 +206,8 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
     // 2. Run full label cropping and manifest processing
     const fileInput = {
       name: 'sensitive_shipping_label.pdf',
-      arrayBuffer: async () => pdfBytes.buffer.slice(pdfBytes.byteOffset, pdfBytes.byteOffset + pdfBytes.byteLength)
+      arrayBuffer: async () =>
+        pdfBytes.buffer.slice(pdfBytes.byteOffset, pdfBytes.byteOffset + pdfBytes.byteLength)
     };
 
     const processResult = await processLabelFiles([fileInput], {
@@ -353,7 +371,9 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
 
     expect(headersContent).toContain('Content-Security-Policy:');
     expect(headersContent).toContain("script-src 'self' 'unsafe-inline' blob:");
-    expect(headersContent).toContain("connect-src 'self' blob: data: https://*.supabase.co wss://*.supabase.co https://api.razorpay.com");
+    expect(headersContent).toContain(
+      "connect-src 'self' blob: data: https://*.supabase.co wss://*.supabase.co https://api.razorpay.com"
+    );
     expect(headersContent).toContain('X-Content-Type-Options: nosniff');
     expect(headersContent).toContain('Referrer-Policy: strict-origin-when-cross-origin');
     expect(headersContent).toContain('Permissions-Policy: camera=(self)');
@@ -365,10 +385,14 @@ describe('Offline-First Privacy Guarantee: Zero Network Telemetry & Data Leakage
     const vercelContent = JSON.parse(readFileSync(vercelPath, 'utf8'));
 
     const headerList = vercelContent.headers[0].headers;
-    const headerMap = Object.fromEntries(headerList.map((h: { key: string; value: string }) => [h.key, h.value]));
+    const headerMap = Object.fromEntries(
+      headerList.map((h: { key: string; value: string }) => [h.key, h.value])
+    );
 
     expect(headerMap['Content-Security-Policy']).toBeDefined();
-    expect(headerMap['Content-Security-Policy']).toContain("connect-src 'self' blob: data: https://*.supabase.co wss://*.supabase.co https://api.razorpay.com");
+    expect(headerMap['Content-Security-Policy']).toContain(
+      "connect-src 'self' blob: data: https://*.supabase.co wss://*.supabase.co https://api.razorpay.com"
+    );
     expect(headerMap['X-Content-Type-Options']).toBe('nosniff');
     expect(headerMap['Referrer-Policy']).toBe('strict-origin-when-cross-origin');
     expect(headerMap['Permissions-Policy']).toContain('camera=(self)');

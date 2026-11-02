@@ -1,11 +1,12 @@
 /**
- * Zero-PII Diagnostic Info Collector for ClaimProof Support.
+ * Zero-PII Diagnostic Info Collector for SABOOT Support.
  *
  * Collects ONLY technical capabilities, storage metrics, and browser specifications.
  * Strictly guarantees that ZERO personal data (no customer details, order IDs,
  * AWBs, video paths, or label contents) is included in the diagnostic payload.
  */
 
+import { BRAND } from '../config/brand';
 import { getTodayUsage } from './quota';
 import { getVaultStatus } from '../services/vaultWriter';
 import { formatIST } from './dateUtils';
@@ -66,7 +67,14 @@ export async function getDiagnosticInfo(): Promise<WorkstationDiagnostics> {
   let vaultMode: 'fs-api' | 'downloads' | 'permission' | 'unconfigured' = 'unconfigured';
   try {
     const status = await getVaultStatus();
-    vaultMode = status === 'connected' ? 'fs-api' : status === 'downloads' ? 'downloads' : status === 'permission' ? 'permission' : 'unconfigured';
+    vaultMode =
+      status === 'connected'
+        ? 'fs-api'
+        : status === 'downloads'
+          ? 'downloads'
+          : status === 'permission'
+            ? 'permission'
+            : 'unconfigured';
   } catch {
     vaultMode = 'unconfigured';
   }
@@ -110,7 +118,7 @@ export async function getDiagnosticInfo(): Promise<WorkstationDiagnostics> {
 
   return {
     app: {
-      name: 'ClaimProof Suite',
+      name: `${BRAND.name} Suite`,
       version: '1.0.0',
       timestampIST: formatIST(Date.now()),
       environment: 'Local-First Desktop PWA'
@@ -119,7 +127,9 @@ export async function getDiagnosticInfo(): Promise<WorkstationDiagnostics> {
       userAgent: nav?.userAgent || 'Headless / Automated Test',
       platform: nav?.platform || 'Unknown',
       language: nav?.language || 'en-IN',
-      screenResolution: isBrowser ? `${window.screen?.width || window.innerWidth || 0}x${window.screen?.height || window.innerHeight || 0}` : 'Headless',
+      screenResolution: isBrowser
+        ? `${window.screen?.width || window.innerWidth || 0}x${window.screen?.height || window.innerHeight || 0}`
+        : 'Headless',
       devicePixelRatio: isBrowser ? window.devicePixelRatio || 1 : 1,
       online: nav ? nav.onLine : true
     },
@@ -149,7 +159,8 @@ export async function getDiagnosticInfo(): Promise<WorkstationDiagnostics> {
       labelsCroppedToday,
       awbsRecordedToday
     },
-    privacyNotice: 'Zero personal data guarantee: No order IDs, AWBs, customer identities, video frames, or label contents are included.'
+    privacyNotice:
+      'Zero personal data guarantee: No order IDs, AWBs, customer identities, video frames, or label contents are included.'
   };
 }
 

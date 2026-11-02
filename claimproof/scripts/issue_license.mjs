@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* ClaimProof Suite — Offline ES256 License Key Generator (Admin CLI)
+/* SABOOT Suite — Offline ES256 License Key Generator (Admin CLI)
  *
  * Reads the P-256 private key from environment variable:
  *   - LICENSE_SIGNING_KEY_JWK_B64 (Base64-encoded JWK) OR
@@ -88,7 +88,7 @@ async function main() {
 
   if (args.help || args.h) {
     console.log(`
-ClaimProof License Key Generator
+SABOOT License Key Generator
 Usage:
   node scripts/issue_license.mjs --cid <customerId> [options]
 
@@ -140,7 +140,7 @@ Options:
   };
 
   const payload = {
-    iss: 'https://claimproof.in',
+    iss: 'https://saboot.in',
     sub: String(customerId),
     cid: String(customerId),
     plan,

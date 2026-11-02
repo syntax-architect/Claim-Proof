@@ -1,4 +1,4 @@
-/* ClaimProof Suite — Privacy-Friendly Product Analytics & Scrubbed Error Monitoring.
+/* SABOOT Suite — Privacy-Friendly Product Analytics & Scrubbed Error Monitoring.
  *
  * Strictly opt-in. Zero personal data, zero customer identifiers.
  * Never collects or transmits AWBs, order IDs, SKUs, or file names.
@@ -10,6 +10,7 @@
  *   5. purchase_started
  */
 
+import { BRAND } from '../config/brand';
 import { getSetting, setSetting } from '../db/schema';
 import {
   TELEMETRY_CONFIG,
@@ -93,7 +94,8 @@ const SENSITIVE_PATTERNS = [
   },
   // 3. Full Windows file paths with filename (e.g. C:\Users\Admin\Desktop\file.pdf or \\?\C:\...)
   {
-    regex: /(?:[a-zA-Z]:\\|\\\\)(?:[^"'\n\r\t<>|:*?\s\\]+\\)*[^"'\n\r\t<>|:*?\s\\]+\.[a-zA-Z0-9]{2,5}\b/g,
+    regex:
+      /(?:[a-zA-Z]:\\|\\\\)(?:[^"'\n\r\t<>|:*?\s\\]+\\)*[^"'\n\r\t<>|:*?\s\\]+\.[a-zA-Z0-9]{2,5}\b/g,
     replacement: '[REDACTED_PATH]'
   },
   // 4. Windows directory paths
@@ -103,7 +105,8 @@ const SENSITIVE_PATTERNS = [
   },
   // 5. Full Unix / Posix file paths (e.g. /home/user/... or /Users/...)
   {
-    regex: /\/(?:home|Users|var|tmp|app|src|dist|root|vault|Desktop|Downloads)\/[^\s"'\n\r\t<>|]+\b/g,
+    regex:
+      /\/(?:home|Users|var|tmp|app|src|dist|root|vault|Desktop|Downloads)\/[^\s"'\n\r\t<>|]+\b/g,
     replacement: '[REDACTED_PATH]'
   },
   // 6. User document, video, or label filenames with extensions
@@ -283,7 +286,7 @@ export async function trackEvent(
   const payload: AnalyticsPayload = {
     name,
     url: typeof window !== 'undefined' ? window.location.pathname || '/' : '/',
-    domain: 'claimproof.in',
+    domain: BRAND.domain,
     props: cleanProps,
     timestamp: Date.now()
   };
@@ -420,7 +423,7 @@ export async function reportError(
       ]
     },
     tags: {
-      app: 'claimproof',
+      app: BRAND.shortName.toLowerCase(),
       environment: import.meta.env.MODE || 'production'
     },
     extra: scrubbedContext

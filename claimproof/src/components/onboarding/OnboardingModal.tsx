@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { BRAND } from '../../config/brand';
 import {
   ArrowLeft,
   ArrowRight,
@@ -221,7 +222,7 @@ export function OnboardingModal({ open, onClose, navigate }: OnboardingModalProp
 
   const handleFinishAndOpenLabels = async () => {
     await completeOnboarding();
-    toast.success('Setup complete', 'Welcome to ClaimProof! SmartLabel Studio is ready.');
+    toast.success('Setup complete', `Welcome to ${BRAND.name}! SmartLabel Studio is ready.`);
     onClose();
     navigate('labels');
   };
@@ -239,7 +240,9 @@ export function OnboardingModal({ open, onClose, navigate }: OnboardingModalProp
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-display text-sm font-bold text-white">ClaimProof Quickstart</div>
+              <div className="font-display text-sm font-bold text-white">
+                {BRAND.name} Quickstart
+              </div>
               <div className="text-[11px] text-slate-400">
                 Step {step} of 3:{' '}
                 {step === 1 ? 'Marketplaces' : step === 2 ? 'Evidence Vault' : 'Scanner Check'}
@@ -299,7 +302,7 @@ export function OnboardingModal({ open, onClose, navigate }: OnboardingModalProp
                   Choose your marketplace(s)
                 </h3>
                 <p className="mt-1 text-xs text-slate-400">
-                  Select where you sell. ClaimProof tailors PDF label cropping, multi-quantity
+                  Select where you sell. {BRAND.name} tailors PDF label cropping, multi-quantity
                   guards, and return dispute rubrics to your stores.
                 </p>
               </div>
@@ -356,7 +359,7 @@ export function OnboardingModal({ open, onClose, navigate }: OnboardingModalProp
                   Pick your Evidence Vault folder
                 </h3>
                 <p className="mt-1 text-xs text-slate-400">
-                  ClaimProof writes barcode-verified videos and 4-photo evidence collages directly
+                  {BRAND.name} writes barcode-verified videos and 4-photo evidence collages directly
                   to your computer.
                 </p>
               </div>

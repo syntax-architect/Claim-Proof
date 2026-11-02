@@ -1,4 +1,4 @@
-/* ClaimProof AWB — In-progress recording crash guard.
+/* SABOOT AWB — In-progress recording crash guard.
  * Ensures that if a crash occurs in the app (React ErrorBoundary,
  * window.onerror, unhandledrejection, or component unmount), the active
  * MediaRecorder is cleanly stopped and captured footage is saved without loss.

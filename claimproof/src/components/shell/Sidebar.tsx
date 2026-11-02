@@ -14,6 +14,7 @@ import type { LucideIcon } from 'lucide-react';
 import { db } from '../../db/schema';
 import { cn } from '../../lib/utils';
 import { ROUTE_LABELS, type Route } from '../../lib/router';
+import { BRAND } from '../../config/brand';
 import { Badge, Logo } from '../ui';
 
 interface NavEntry {
@@ -149,7 +150,7 @@ export default function Sidebar({
             <div className="text-[10px] text-slate-500">₹0 server · files stay on this PC</div>
           </div>
         </div>
-        <div className="px-3 font-mono text-[10px] text-slate-600">ClaimProof Suite v1.0.0</div>
+        <div className="px-3 font-mono text-[10px] text-slate-600">{BRAND.legalName} v1.0.0</div>
       </div>
     </aside>
   );

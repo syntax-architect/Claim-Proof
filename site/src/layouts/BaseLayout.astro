@@ -1,0 +1,43 @@
+---
+import SeoHead from '../components/SeoHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
+}
+
+const {
+  title,
+  description,
+  canonicalUrl,
+  ogImage,
+  ogType = 'website',
+  jsonLd
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <SeoHead
+    title={title}
+    description={description}
+    canonicalUrl={canonicalUrl}
+    ogImage={ogImage}
+    ogType={ogType}
+    jsonLd={jsonLd}
+  />
+  <body>
+    <Header />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,5 +1,7 @@
+import { BRAND } from './brand';
+
 /**
- * ClaimProof Support Configuration.
+ * SABOOT Support Configuration.
  *
  * NOTE: Values marked "needs verification" per project policy until
  * official domain support channels and endpoints are finalized.
@@ -7,16 +9,15 @@
 
 export const SUPPORT_CONFIG = {
   // Support email address (needs verification)
-  email: 'support@claimproof.in',
+  email: BRAND.supportEmail,
   // Direct mailto link (needs verification)
-  url: 'mailto:support@claimproof.in?subject=ClaimProof%20Support%20Request',
+  url: `mailto:${BRAND.supportEmail}?subject=${encodeURIComponent(`${BRAND.name} Support Request`)}`,
   // Support label
   label: 'Contact Support',
   // Dedicated WhatsApp support number (needs verification)
   whatsappNumber: '+919876543210',
   // WhatsApp click-to-chat URL with pre-filled message (needs verification)
-  whatsappUrl:
-    'https://wa.me/919876543210?text=Hi%20ClaimProof%20Support%2C%20I%20need%20assistance%20with%20my%20workstation%3A',
+  whatsappUrl: `https://wa.me/919876543210?text=${encodeURIComponent(`Hi ${BRAND.name} Support, I need assistance with my workstation:`)}`,
   // Operating hours (needs verification)
   hours: 'Monday – Saturday, 9:30 AM – 7:30 PM IST',
   // Typical response time estimate (needs verification)

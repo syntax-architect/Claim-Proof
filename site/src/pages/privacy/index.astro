@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "Privacy Policy — SABOOT Local-First Software";
+const description = "SABOOT's local-first privacy commitment: we never upload your shipping labels, packing videos, customer names, or order information to any server.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-narrow legal-page">
+    <header class="section-head">
+      <span class="hero-pill">Zero-Cloud Commitment</span>
+      <h1>Privacy Policy</h1>
+      <p>Last updated: January 2026 · Effective Date: January 1, 2026</p>
+    </header>
+
+    <div class="legal-card">
+      <p>
+        SABOOT.in ("SABOOT", "we", "our", or "us") provides a desktop Progressive Web App designed to operate on a <strong>local-first</strong> basis. We believe your business operational data and your customers' Personal Identifiable Information (PII) belong solely to you.
+      </p>
+
+      <h2>1. The Core Principle: Zero Cloud Uploads</h2>
+      <p>
+        Unlike conventional cloud software, SABOOT runs entirely within your computer's browser sandbox and direct file system:
+      </p>
+      <ul>
+        <li><strong>Shipping Label PDFs:</strong> Parsed and cropped strictly in your local browser memory via <code>pdfjs-dist</code> and <code>pdf-lib</code>. Never transmitted to our servers.</li>
+        <li><strong>Packing &amp; Unboxing Videos:</strong> Recorded via <code>MediaRecorder</code> and saved directly to your selected local PC directory using the Chromium File System Access API. Never uploaded to our servers.</li>
+        <li><strong>Customer PII:</strong> Buyer names, phone numbers, delivery addresses, and Order IDs extracted from shipping labels remain exclusively on your computer.</li>
+      </ul>
+
+      <h2>2. Information We Collect</h2>
+      <p>
+        [TODO real copy - full legal privacy terms for payment processor processing]
+      </p>
+      <ul>
+        <li><strong>License Verification Data:</strong> When activating a paid license, our cryptographic engine verifies the signed token offline against your machine fingerprint.</li>
+        <li><strong>Payment Details:</strong> Online payments are processed directly by authorized third-party gateways (Razorpay). We do not collect or store credit card numbers, UPI PINs, or banking credentials.</li>
+        <li><strong>Optional Anonymous Telemetry:</strong> An explicit opt-in toggle in the application Settings lets users contribute anonymized error logs. All AWBs, Order IDs, and file paths are strictly redacted prior to transmission.</li>
+      </ul>
+
+      <h2>3. Third-Party Marketplace Services</h2>
+      <p>
+        SABOOT is an independent software tool. We are not affiliated with, endorsed by, or integrated with Meesho, Flipkart, Amazon India, Myntra, or AJIO. Any claim evidence you choose to submit to marketplaces is transmitted directly by you through their respective seller portals.
+      </p>
+
+      <h2>4. Data Retention and Deletion</h2>
+      <p>
+        Because all videos, collages, and label archives are stored on your local hard drive, you have complete control over data retention. Deleting a file from your local Vault directory permanently removes it.
+      </p>
+
+      <h2>5. Contact Us</h2>
+      <p>
+        If you have questions about our local-first privacy architecture, contact our Data Protection desk at <a href="mailto:support@saboot.in">support@saboot.in</a>.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,176 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "Features & Modules — SABOOT Studio";
+const description = "Explore SABOOT features: SmartLabel 4x6 cropper, hands-free AWB video recorder with live IST timestamps, and ClaimRadar return dispute tracker.";
+
+const modules = [
+  {
+    id: "smartlabel",
+    badge: "Module A",
+    title: "SmartLabel Studio: Vector Shipping Label Processor",
+    lead: "A high-throughput browser-based shipping label parser, vector cropper, and warehouse organizer designed specifically for Meesho, Flipkart, Amazon India, Myntra, and AJIO.",
+    points: [
+      {
+        title: "Batch PDF Drag-and-Drop",
+        desc: "Upload up to 15 marketplace shipping-label PDFs at once. Directly processes vector layers using pdfjs-dist without blurry raster conversions."
+      },
+      {
+        title: "Instant 4×6 & 4×4 Thermal Presets",
+        desc: "Crops irregular multi-label sheets and invoices to standard 4×6 inch (100×150 mm) or 4×4 inch thermal labels in sub-seconds."
+      },
+      {
+        title: "Automatic SKU & Attribute Margins",
+        desc: "Stamps an indelible SKU strip (SKU | Size | Color | Qty) along the bottom margin so pickers pack accurately without separate paper picklists."
+      },
+      {
+        title: "Multi-Quantity Guard",
+        desc: "Detects orders where Qty > 1 and stamps a prominent high-visibility red border and MULTI-QTY: X UNITS warning to prevent partial shipments."
+      },
+      {
+        title: "Warehouse Picklists & Courier Manifests",
+        desc: "Automatically aggregates parcel counts, total units, and courier partner groups (Delhivery, Ekart, Shadowfax, Xpressbees, Valmo, etc.) into clean handover sheets."
+      }
+    ],
+    image: "/images/smartlabel-preview",
+    alt: "SmartLabel Studio interface showing 4x6 vector cropped shipping labels"
+  },
+  {
+    id: "recorder",
+    badge: "Module B",
+    title: "SABOOT AWB Video Recorder Station",
+    lead: "Hands-free video recording packing station operated entirely by your physical barcode scanner gun or camera.",
+    points: [
+      {
+        title: "Barcode Gun & Webcam Triggering",
+        desc: "Scan any AWB barcode via standard USB/Bluetooth barcode scanner (<80ms burst) or native web camera barcode detector to immediately start recording."
+      },
+      {
+        title: "Forensic Burnt-In IST Timestamp",
+        desc: "Dynamically composites an indelible evidence banner into video frames: VERIFIED UNCUT PROOF | AWB | ORDER ID | LIVE IST TIMESTAMP (DD-MMM-YYYY HH:mm:ss.SSS)."
+      },
+      {
+        title: "Automated 4-Photo Evidence Collage",
+        desc: "Automatically captures 4 timed high-resolution still frames during the recording (at T+0.5s, T+3s, T+6s, and T+9s) and stitches them into a 2×2 photo collage."
+      },
+      {
+        title: "Sub-100ms Parcel Chaining",
+        desc: "Packing the next order? Simply scan the next AWB barcode. The station finalizes the previous video and starts the next clip with zero mouse or keyboard clicks."
+      },
+      {
+        title: "Dual Dispatch & Return Unboxing Modes",
+        desc: "Supports both Outbound Dispatch packing and Inbound Return Unboxing inspection. Press F2 to instantly flag defective, swapped, or empty returns."
+      }
+    ],
+    image: "/images/hero-packing-station",
+    alt: "SABOOT AWB Video Recorder Station with live IST forensic watermark"
+  },
+  {
+    id: "claimradar",
+    badge: "Module C",
+    title: "ClaimRadar: Dispute Radar & Recovery Studio",
+    lead: "Real-time marketplace deadline tracker and dispute dossier builder to overturn wrongful SPF and SAFE claim rejections.",
+    points: [
+      {
+        title: "Marketplace Deadline Timers",
+        desc: "Countdown clocks tuned to marketplace filing windows: Meesho SAFE (72h) [needs verification], Flipkart SPF (14 days) [needs verification], Amazon SAFE-T (30 days) [needs verification]."
+      },
+      {
+        title: "Side-by-Side Parcel Matcher",
+        desc: "Instantly cross-references the original outbound dispatch video and stills against the inbound return unboxing footage for the identical AWB."
+      },
+      {
+        title: "1-Click Dispute Description Generator",
+        desc: "Formats formal, auditor-ready claim text detailing item SKU, original dispatch proof, and photographic return condition with exact timestamps."
+      },
+      {
+        title: "Defect & Fraud Categorization",
+        desc: "Tag returns as Damaged in Transit, Used/Worn, Wrong/Swapped Item, Missing Contents, or Empty Package for historical dispute metrics."
+      }
+    ],
+    image: "/images/claimradar-preview",
+    alt: "ClaimRadar dispute dossier preparation interface"
+  }
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container" style="padding: 4rem 1.25rem 2rem;">
+    <header class="section-head">
+      <span class="hero-pill">Module Deep Dive</span>
+      <h1>Features &amp; Architecture Built for Indian Warehouses</h1>
+      <p>
+        SABOOT eliminates the friction between high-speed order fulfillment and the forensic evidence required to protect seller capital.
+      </p>
+    </header>
+
+    <!-- Deep Dive Modules -->
+    {modules.map((mod, index) => (
+      <section id={mod.id} class="feature-row" style={index % 2 === 1 ? 'flex-direction: row-reverse;' : ''}>
+        <div class="feature-text">
+          <span style="font-size: 0.85rem; font-weight: 700; color: #60a5fa; text-transform: uppercase;">
+            {mod.badge}
+          </span>
+          <h2>{mod.title}</h2>
+          <p>{mod.lead}</p>
+
+          <div style="display: grid; gap: 1rem; margin-top: 1.5rem;">
+            {mod.points.map((pt) => (
+              <div style="background: var(--color-surface); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--color-border);">
+                <h3 style="font-size: 1.05rem; font-weight: 600; color: var(--color-text-main); margin-bottom: 0.35rem;">
+                  {pt.title}
+                </h3>
+                <p style="font-size: 0.9rem; color: var(--color-text-muted); margin: 0;">
+                  {pt.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="feature-media" style="align-self: flex-start;">
+          <picture>
+            <source srcset={`${mod.image}.avif`} type="image/avif" />
+            <source srcset={`${mod.image}.webp`} type="image/webp" />
+            <img
+              src={`${mod.image}.webp`}
+              alt={mod.alt}
+              width="600"
+              height="400"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        </div>
+      </section>
+    ))}
+
+    <!-- Evidence Vault Architecture Section -->
+    <section style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 14px; padding: 2.5rem; margin: 4rem 0;">
+      <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+        <span style="font-size: 0.8rem; font-weight: 700; color: #34d399; text-transform: uppercase;">
+          Zero-Cloud Security
+        </span>
+        <h2 style="font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0 1rem;">
+          Evidence Vault: 100% Local Hard Drive Storage
+        </h2>
+        <p style="color: var(--color-text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem;">
+          Unlike traditional software that uploads massive video files to proprietary cloud servers (charging steep storage subscriptions and compromising customer data privacy), SABOOT uses the Chromium File System Access API. Videos and photo collages are saved directly to a designated folder on your PC or local NAS.
+        </p>
+
+        <div style="background: #020617; padding: 1.2rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.85rem; color: #94a3b8; text-align: left; max-width: 500px; margin: 0 auto 2rem; border: 1px solid var(--color-border);">
+          <div>&lt;Vault_Root&gt;/</div>
+          <div style="padding-left: 1.25rem;">└── &lt;YYYY-MM-DD&gt;/</div>
+          <div style="padding-left: 2.5rem;">├── Dispatch/ &lt;AWB&gt;/</div>
+          <div style="padding-left: 3.75rem;">├── &lt;AWB&gt;_Video.mp4</div>
+          <div style="padding-left: 3.75rem;">└── &lt;AWB&gt;_Photo_Collage.jpg</div>
+          <div style="padding-left: 2.5rem;">└── Return/ &lt;AWB&gt;/</div>
+        </div>
+
+        <a href="https://app.saboot.in" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+          Experience Local Vault in SABOOT Free
+        </a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

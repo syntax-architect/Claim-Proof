@@ -151,7 +151,7 @@ describe('Pure License & Webhook Utilities', () => {
     });
 
     it('correctly encodes and decodes ASCII strings', () => {
-      const input = 'Hello World from ClaimProof!';
+      const input = 'Hello World from SABOOT!';
       const encoded = b64url(new TextEncoder().encode(input));
       const decodedBytes = base64UrlToBytes(encoded);
       const decoded = new TextDecoder().decode(decodedBytes);
@@ -266,7 +266,7 @@ describe('Pure License & Webhook Utilities', () => {
 
     it('has standard 365 days license period and issuer domain', () => {
       expect(LICENSE_DAYS).toBe(365);
-      expect(LICENSE_ISSUER).toBe('https://claimproof.in');
+      expect(LICENSE_ISSUER).toBe('https://saboot.in');
     });
   });
 

@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "Refund & Cancellation Policy — SABOOT";
+const description = "SABOOT's transparent 7-day money-back guarantee policy for Indian marketplace sellers.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-narrow legal-page">
+    <header class="section-head">
+      <span class="hero-pill">Satisfaction Guarantee</span>
+      <h1>Refund &amp; Cancellation Policy</h1>
+      <p>Last updated: January 2026</p>
+    </header>
+
+    <div class="legal-card">
+      <p>
+        At SABOOT, we want every Indian seller to feel completely confident in their purchase. We understand that warehouse hardware setups differ across thermal printer models and USB barcode scanners.
+      </p>
+
+      <h2>1. 7-Day Unconditional Money-Back Guarantee</h2>
+      <p>
+        We offer a <strong>100% money-back guarantee within 7 days of purchase</strong> for all first-time annual license orders (Starter Station, ClaimRadar Pro, and Warehouse 3-Table Pack).
+      </p>
+      <p>
+        If SABOOT does not seamlessly integrate with your packing workflow or your thermal printing setup, simply contact us within 7 calendar days of your transaction.
+      </p>
+
+      <h2>2. How to Request a Refund</h2>
+      <ol style="margin: 0.75rem 0 1.5rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+        <li>Email our billing desk at <a href="mailto:support@saboot.in">support@saboot.in</a> using the email address associated with your payment.</li>
+        <li>Include your Razorpay Payment ID or Order Reference number.</li>
+        <li>Tell us briefly why SABOOT was not a fit (optional, but helps us improve).</li>
+      </ol>
+
+      <h2>3. Refund Processing Timeline</h2>
+      <p>
+        Once initiated, refunds are processed via our payment gateway (Razorpay) to your original payment method (UPI, Netbanking, or Debit/Credit Card) within <strong>5 to 7 business days</strong> depending on your issuing bank.
+      </p>
+
+      <h2>4. License Deactivation Upon Refund</h2>
+      <p>
+        Upon issuance of a refund, the cryptographic activation token associated with your license will be revoked, and your workstation license will revert to the standard Free Tier.
+      </p>
+
+      <h2>5. Subscription Cancellations</h2>
+      <p>
+        [TODO real copy - recurring subscription cancellation policies once automated recurring billing is activated]
+      </p>
+      <p>
+        For recurring subscription plans, you may cancel renewal at any time through the in-app license manager. Access will continue until the end of the paid billing interval plus the standard 3-day grace period.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

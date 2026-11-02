@@ -43,7 +43,7 @@ describe('Production build verification', () => {
 
     const swContent = readFileSync(swPath, 'utf8');
     expect(swContent).not.toContain('__SW_VERSION__');
-    expect(swContent).toMatch(/CACHE = 'claimproof-v\d+'/);
+    expect(swContent).toMatch(/CACHE = 'saboot-v\d+'/);
     expect(swContent).toContain('/assets/index-');
     expect(swContent).toContain('SKIP_WAITING');
   });

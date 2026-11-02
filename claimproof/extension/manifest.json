@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "ClaimProof — Shipping Label & Packing Evidence Studio",
-  "short_name": "ClaimProof",
+  "name": "SABOOT: Shipping Label & Packing Proof Studio",
+  "short_name": "SABOOT",
   "version": "1.0.0",
   "description": "Local-first shipping label thermal organizer, barcode-verified packing proof recorder, and dispute evidence studio.",
   "icons": {
@@ -11,7 +11,7 @@
     "128": "icons/icon-128.png"
   },
   "action": {
-    "default_title": "Open ClaimProof Studio",
+    "default_title": "Open SABOOT Studio",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",

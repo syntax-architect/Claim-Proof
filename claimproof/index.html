@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>ClaimProof Suite — SmartLabel SKU+ & AWB Proof Studio</title>
+    <title>SABOOT Suite — SmartLabel SKU+ & AWB Proof Studio</title>
     <meta name="description" content="Local-first label cropper, barcode-verified packing video recorder and claim-deadline radar for Indian e-commerce sellers. ₹0 server cost." />
+    <link rel="canonical" href="https://saboot.in/" />
     <meta name="theme-color" content="#0a0c12" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)" />
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -33,7 +34,7 @@
       /* Theme boot — resolves stored → system and sets the class before first paint. */
       (function () {
         try {
-          var t = localStorage.getItem('claimproof_theme');
+          var t = localStorage.getItem('saboot_theme') || localStorage.getItem('claimproof_theme');
           if (t !== 'light' && t !== 'dark') {
             t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
           }
@@ -53,6 +54,10 @@
     </style>
   </head>
   <body>
+    <noscript>
+      <h1>SABOOT Suite — SmartLabel SKU+ &amp; AWB Proof Studio</h1>
+      <p>Local-first shipping label studio and AWB packing video recorder for Indian marketplace sellers.</p>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { ROUTES, ROUTE_LABELS, parseHash, navigateTo, getRawPath, type Route } from './router';
+import { BRAND } from '../config/brand';
 import NotFoundPage from '../pages/NotFoundPage';
 import { CurrentPage } from '../App';
 import { PaywallProvider } from '../providers/PaywallProvider';
@@ -75,7 +76,7 @@ describe('Router & Navigation Tests', () => {
 
       // Support link
       expect(html).toContain('Contact Support');
-      expect(html).toContain('mailto:support@claimproof.in');
+      expect(html).toContain(`mailto:${BRAND.supportEmail}`);
     });
 
     it('renders NotFoundPage when CurrentPage is given not-found route', () => {

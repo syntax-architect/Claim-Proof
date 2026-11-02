@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useEffect } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
+import { BRAND } from '../../config/brand';
 import { PaywallModal } from './PaywallModal';
 import { PaywallProvider, usePaywall } from '../../providers/PaywallProvider';
 import { ToastProvider } from '../ui';
@@ -9,11 +10,7 @@ import * as licenseService from '../../services/licenseService';
 
 expect.extend(toHaveNoViolations);
 
-function TestHarness({
-  reason = 'Free plan limit reached'
-}: {
-  reason?: string;
-}) {
+function TestHarness({ reason = 'Free plan limit reached' }: { reason?: string }) {
   const { openPaywall } = usePaywall();
 
   useEffect(() => {
@@ -22,10 +19,7 @@ function TestHarness({
 
   return (
     <main>
-      <button
-        type="button"
-        onClick={() => openPaywall({ plan: 'claimradar', reason })}
-      >
+      <button type="button" onClick={() => openPaywall({ plan: 'claimradar', reason })}>
         Trigger Paywall
       </button>
       <PaywallModal />
@@ -65,11 +59,9 @@ describe('PaywallModal Component', () => {
     expect(dialog).toBeDefined();
 
     expect(
-      screen.getByRole('heading', { name: /Unlock ClaimProof Suite/i })
+      screen.getByRole('heading', { name: new RegExp(`Unlock ${BRAND.name} Suite`, 'i') })
     ).toBeDefined();
-    expect(
-      screen.getByText(/Free plan daily recording limit reached/i)
-    ).toBeDefined();
+    expect(screen.getByText(/Free plan daily recording limit reached/i)).toBeDefined();
 
     const results = await axe(container, {
       rules: { region: { enabled: false } }
@@ -125,11 +117,9 @@ describe('PaywallModal Component', () => {
   });
 
   it('handles license key entry and successful activation', async () => {
-    const activateSpy = vi
-      .spyOn(licenseService, 'verifyAndActivateToken')
-      .mockResolvedValue({
-        ok: true
-      });
+    const activateSpy = vi.spyOn(licenseService, 'verifyAndActivateToken').mockResolvedValue({
+      ok: true
+    });
 
     const { container } = renderPaywall();
 
@@ -181,10 +171,7 @@ describe('PaywallModal Component', () => {
     fireEvent.click(activateBtn);
 
     await waitFor(() => {
-      expect(activateSpy).toHaveBeenCalledWith(
-        'invalid.token.payload',
-        undefined
-      );
+      expect(activateSpy).toHaveBeenCalledWith('invalid.token.payload', undefined);
     });
 
     // 3. Submit token with soft device binding limit exceeded

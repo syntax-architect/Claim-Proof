@@ -1,4 +1,4 @@
-/* ClaimProof Suite — Global error & unhandled rejection handlers.
+/* SABOOT Suite — Global error & unhandled rejection handlers.
  * Intercepts uncaught errors, triggers emergency saving of any in-progress
  * recorder session, and displays a non-blocking toast notification.
  */

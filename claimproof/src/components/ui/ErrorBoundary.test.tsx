@@ -2,6 +2,7 @@ import React, { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ErrorBoundary } from './ErrorBoundary';
+import { BRAND } from '../../config/brand';
 
 function CrashingPage({ shouldThrow }: { shouldThrow: boolean }) {
   if (shouldThrow) {
@@ -14,10 +15,10 @@ function MockAppShell({ shouldThrow, route }: { shouldThrow: boolean; route: str
   return (
     <div data-testid="app-shell" className="app-shell-container">
       <aside data-testid="sidebar-shell">
-        <div data-testid="sidebar-brand">ClaimProof.in</div>
+        <div data-testid="sidebar-brand">SABOOT.in</div>
         <nav data-testid="sidebar-nav">
           <a href="#labels">SmartLabel SKU+</a>
-          <a href="#recorder">ClaimProof AWB</a>
+          <a href="#recorder">SABOOT AWB</a>
           <a href="#claims">ClaimRadar Pro</a>
         </nav>
       </aside>
@@ -154,7 +155,7 @@ describe('ErrorBoundary', () => {
     expect(writeTextSpy).toHaveBeenCalledTimes(1);
     const copiedText = writeTextSpy.mock.calls[0][0];
 
-    expect(copiedText).toContain('=== ClaimProof Error Report ===');
+    expect(copiedText).toContain(`=== ${BRAND.name} Error Report ===`);
     expect(copiedText).toContain('Simulated critical crash in parcel table');
     expect(copiedText).toContain('=== Stack Trace ===');
 

@@ -68,7 +68,7 @@ test.describe('Keyboard-Only Full Daily Loop & Focus Management', () => {
     // Open Paywall via keyboard Enter
     await page.keyboard.press('Enter');
 
-    const paywallDialog = page.getByRole('dialog', { name: /Unlock ClaimProof/i });
+    const paywallDialog = page.getByRole('dialog', { name: /Unlock SABOOT/i });
     await expect(paywallDialog).toBeVisible({ timeout: 5000 });
 
     // Press Escape to close modal

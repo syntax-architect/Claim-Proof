@@ -1,8 +1,9 @@
-/* ClaimProof AWB — canvas video compositor + MediaRecorder pipeline.
+/* SABOOT AWB — canvas video compositor + MediaRecorder pipeline.
  * Draws the camera (or a synthetic demo scene) onto a 1280×720 canvas with a
  * burnt-in forensic bar, records at 1.2 Mbps (≈ under 4.5 MB for 30 s), and
  * extracts four timed JPEG stills stitched into a 2×2 evidence collage. */
 
+import { BRAND } from '../config/brand';
 import { formatIST } from '../lib/dateUtils';
 import { triggerEmergencySave } from './recorderCrashGuard';
 import type { RecordingType } from '../types';
@@ -162,7 +163,10 @@ export class RecordingPipeline {
         this.attachTrackListeners(this.stream);
       } catch (err: unknown) {
         const errName =
-          typeof err === 'object' && err !== null && 'name' in err && typeof (err as { name: unknown }).name === 'string'
+          typeof err === 'object' &&
+          err !== null &&
+          'name' in err &&
+          typeof (err as { name: unknown }).name === 'string'
             ? (err as { name: string }).name
             : err instanceof Error
               ? err.name
@@ -449,8 +453,8 @@ export class RecordingPipeline {
      * Uses real-time wall-clock IST timestamp Date.now(). */
     const text =
       recording && meta
-        ? `VERIFIED UNCUT PROOF | AWB: ${meta.awb} | ORDER: ${meta.orderId} | SKU: ${meta.sku} (Qty: ${meta.qty}) | ${formatIST(Date.now())} | ClaimProof.in`
-        : `ClaimProof.in — PACKING STATION LIVE · ${formatIST(Date.now())}`;
+        ? `${BRAND.videoWatermarkHeader} | AWB: ${meta.awb} | ORDER: ${meta.orderId} | SKU: ${meta.sku} (Qty: ${meta.qty}) | ${formatIST(Date.now())} | ${BRAND.domain}`
+        : `${BRAND.domain} — PACKING STATION LIVE · ${formatIST(Date.now())}`;
     const textX = recording ? 150 : 38;
     const maxTextW = WIDTH - textX - 16;
     let size = 15;
@@ -467,7 +471,7 @@ export class RecordingPipeline {
 
   private drawFreeWatermark(ctx: CanvasRenderingContext2D): void {
     ctx.save();
-    const text = 'Recorded via ClaimProof.in — Free Tier';
+    const text = `Recorded via ${BRAND.domain} — Free Tier`;
     ctx.font = 'bold 14px "JetBrains Mono", monospace';
     const w = ctx.measureText(text).width + 20;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
@@ -540,7 +544,7 @@ export class RecordingPipeline {
     ctx.fillText(awb.slice(0, 18), stX + 12, stY + 26);
     ctx.font = '10px "JetBrains Mono", monospace';
     ctx.fillStyle = '#475569';
-    ctx.fillText('VERIFIED DISPATCH · ClaimProof.in', stX + 12, stY + 44);
+    ctx.fillText(`VERIFIED DISPATCH · ${BRAND.domain}`, stX + 12, stY + 44);
     /* Fake barcode. */
     let bx = stX + 12;
     const seed = [...awb].reduce((s, ch) => s + ch.charCodeAt(0), 0);

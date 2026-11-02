@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* ClaimProof Suite — Chrome Extension (MV3) Build & Packager Script.
+/* SABOOT Suite — Chrome Extension (MV3) Build & Packager Script.
  * Prepares and packages an MV3 extension zip ready for upload to the Chrome Web Store.
  *
  * Rules:
@@ -30,7 +30,7 @@ const ROOT_DIR = resolve(__dirname, '..');
 const EXT_SRC_DIR = join(ROOT_DIR, 'extension');
 const DIST_WEB_DIR = join(ROOT_DIR, 'dist');
 const STAGING_DIR = join(ROOT_DIR, 'dist-extension');
-const OUTPUT_ZIP = join(STAGING_DIR, 'claimproof-extension.zip');
+const OUTPUT_ZIP = join(STAGING_DIR, 'saboot-extension.zip');
 
 const BANNED_BRAND_PATTERNS = [
   /\bmeesho\b/i,
@@ -41,7 +41,7 @@ const BANNED_BRAND_PATTERNS = [
   /\bsnapdeal\b/i
 ];
 
-console.log('🚀 [ClaimProof] Building Chrome Web Store MV3 Extension...');
+console.log('🚀 [SABOOT] Building Chrome Web Store MV3 Extension...');
 
 // 1. Ensure Vite production build exists
 if (!existsSync(DIST_WEB_DIR) || !existsSync(join(DIST_WEB_DIR, 'index.html'))) {

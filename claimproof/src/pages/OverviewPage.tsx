@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { BRAND } from '../config/brand';
 import {
   AlertTriangle,
   ArrowRight,
@@ -359,7 +360,7 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
             <EmptyState
               icon={ScanBarcode}
               title="Start Here: The 3-Step Daily Loop"
-              description="Welcome to ClaimProof. You haven't cropped any labels or recorded any parcels yet. Protect your business from marketplace return disputes in three simple steps:"
+              description={`Welcome to ${BRAND.name}. You haven't cropped any labels or recorded any parcels yet. Protect your business from marketplace return disputes in three simple steps:`}
               primaryAction={{
                 label: 'Crop your first labels',
                 onClick: () => navigate('labels'),
@@ -485,7 +486,7 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
             <PipelineCard
               icon={Video}
               step="STEP 2"
-              title="ClaimProof AWB"
+              title={`${BRAND.name} AWB`}
               body="Scan a barcode — the uncut video starts itself with a burnt-in forensic bar. Scan the next parcel and it chains in under 100 ms."
               stat={`${totalRecordings ?? 0} proof clips in the vault`}
               cta="Open the Recorder"

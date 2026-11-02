@@ -1,4 +1,4 @@
-/* ClaimProof Suite — shared domain types.
+/* SABOOT Suite — shared domain types.
  * This file is the CONTRACT between every module. Keep it stable. */
 
 export type Marketplace =
@@ -135,13 +135,7 @@ export type ProFeature =
   'unlimitedLabels' | 'unlimitedRecording' | 'collage' | 'claimRadar' | 'matcher';
 
 export type SubscriptionStatus =
-  | 'active'
-  | 'authenticated'
-  | 'payment_failed'
-  | 'halted'
-  | 'cancelled'
-  | 'expired'
-  | 'revoked';
+  'active' | 'authenticated' | 'payment_failed' | 'halted' | 'cancelled' | 'expired' | 'revoked';
 
 export interface LicenseState {
   plan: LicensePlan;

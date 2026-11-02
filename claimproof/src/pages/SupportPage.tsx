@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Terminal
 } from 'lucide-react';
+import { BRAND } from '../config/brand';
 import { Card, PageHeader, Button, Badge, useToast } from '../components/ui';
 import type { Route } from '../lib/router';
 import { SUPPORT_CONFIG } from '../config/support';
@@ -57,12 +58,7 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="sm"
-          icon={ArrowLeft}
-          onClick={() => navigate('settings')}
-        >
+        <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => navigate('settings')}>
           Back to Settings
         </Button>
         <Badge tone="proof">Support Desk: Active</Badge>
@@ -86,20 +82,32 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
               </div>
               <div>
                 <div className="text-base font-bold text-white">WhatsApp Support</div>
-                <div className="text-xs text-slate-400">Direct message for urgent workstation help</div>
+                <div className="text-xs text-slate-400">
+                  Direct message for urgent workstation help
+                </div>
               </div>
             </div>
             <Badge tone="proof">Fastest</Badge>
           </div>
 
           <p className="text-xs text-slate-300 leading-relaxed">
-            Connect directly with our technical team on WhatsApp. Share questions about USB scanner setup, webcam mounting, or thermal printer vector scaling.
+            Connect directly with our technical team on WhatsApp. Share questions about USB scanner
+            setup, webcam mounting, or thermal printer vector scaling.
           </p>
 
           <div className="space-y-1 text-xs text-slate-400 font-mono">
-            <div>Number: <span className="text-white">{SUPPORT_CONFIG.whatsappNumber}</span> <span className="text-[10px] text-warn-400 font-sans">[needs verification]</span></div>
-            <div>Hours: <span className="text-slate-300">{SUPPORT_CONFIG.hours}</span> <span className="text-[10px] text-warn-400 font-sans">[needs verification]</span></div>
-            <div>Response: <span className="text-slate-300">{SUPPORT_CONFIG.responseTime}</span> <span className="text-[10px] text-warn-400 font-sans">[needs verification]</span></div>
+            <div>
+              Number: <span className="text-white">{SUPPORT_CONFIG.whatsappNumber}</span>{' '}
+              <span className="text-[10px] text-warn-400 font-sans">[needs verification]</span>
+            </div>
+            <div>
+              Hours: <span className="text-slate-300">{SUPPORT_CONFIG.hours}</span>{' '}
+              <span className="text-[10px] text-warn-400 font-sans">[needs verification]</span>
+            </div>
+            <div>
+              Response: <span className="text-slate-300">{SUPPORT_CONFIG.responseTime}</span>{' '}
+              <span className="text-[10px] text-warn-400 font-sans">[needs verification]</span>
+            </div>
           </div>
 
           <a
@@ -129,32 +137,33 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
               </div>
               <div>
                 <div className="text-base font-bold text-white">Email Helpdesk</div>
-                <div className="text-xs text-slate-400">Invoices, enterprise licenses &amp; general inquiries</div>
+                <div className="text-xs text-slate-400">
+                  Invoices, enterprise licenses &amp; general inquiries
+                </div>
               </div>
             </div>
             <Badge tone="neutral">Standard</Badge>
           </div>
 
           <p className="text-xs text-slate-300 leading-relaxed">
-            For invoicing, GST billing queries, custom warehouse deployments, license key transfers, or refund requests, reach out via our official support inbox.
+            For invoicing, GST billing queries, custom warehouse deployments, license key transfers,
+            or refund requests, reach out via our official support inbox.
           </p>
 
           <div className="space-y-1 text-xs text-slate-400 font-mono">
-            <div>Email: <span className="text-white">{SUPPORT_CONFIG.email}</span></div>
-            <div>Subject: <span className="text-slate-300">ClaimProof Support Request</span></div>
-            <div>Response: <span className="text-slate-300">Within 1 business day</span></div>
+            <div>
+              Email: <span className="text-white">{SUPPORT_CONFIG.email}</span>
+            </div>
+            <div>
+              Subject: <span className="text-slate-300">{BRAND.name} Support Request</span>
+            </div>
+            <div>
+              Response: <span className="text-slate-300">Within 1 business day</span>
+            </div>
           </div>
 
-          <a
-            href={SUPPORT_CONFIG.url}
-            className="inline-flex w-full"
-          >
-            <Button
-              variant="secondary"
-              size="md"
-              icon={Mail}
-              className="w-full"
-            >
+          <a href={SUPPORT_CONFIG.url} className="inline-flex w-full">
+            <Button variant="secondary" size="md" icon={Mail} className="w-full">
               Send Support Email
             </Button>
           </a>
@@ -170,7 +179,9 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
             </div>
             <div>
               <div className="text-base font-bold text-white">Workstation Diagnostic Info</div>
-              <div className="text-xs text-slate-400">Zero personal data · Technical hardware &amp; browser capabilities only</div>
+              <div className="text-xs text-slate-400">
+                Zero personal data · Technical hardware &amp; browser capabilities only
+              </div>
             </div>
           </div>
 
@@ -194,9 +205,17 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
             Privacy Protection Guarantee
           </div>
           <p>
-            When seeking assistance with a webcam, scanner, or printer issue, pasting this technical summary helps our team resolve your issue quickly.
-            This report strictly contains <strong className="text-white">hardware capabilities, screen dimensions, browser APIs, and storage quotas</strong>.
-            It <strong className="text-white">NEVER contains customer names, shipping labels, order IDs, video filenames, or phone numbers</strong>.
+            When seeking assistance with a webcam, scanner, or printer issue, pasting this technical
+            summary helps our team resolve your issue quickly. This report strictly contains{' '}
+            <strong className="text-white">
+              hardware capabilities, screen dimensions, browser APIs, and storage quotas
+            </strong>
+            . It{' '}
+            <strong className="text-white">
+              NEVER contains customer names, shipping labels, order IDs, video filenames, or phone
+              numbers
+            </strong>
+            .
           </p>
         </div>
 
@@ -225,7 +244,10 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
               Webcam Not Detected / Black Screen
             </div>
             <p className="text-slate-300">
-              Ensure camera permissions are allowed in Chrome: open <span className="font-mono text-slate-400">chrome://settings/content/camera</span> and select "Allow". Verify no other application (e.g. Zoom, OBS, or another browser tab) is locking the webcam.
+              Ensure camera permissions are allowed in Chrome: open{' '}
+              <span className="font-mono text-slate-400">chrome://settings/content/camera</span> and
+              select "Allow". Verify no other application (e.g. Zoom, OBS, or another browser tab)
+              is locking the webcam.
             </p>
           </div>
 
@@ -235,7 +257,10 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
               Barcode Scanner Gun Not Triggering Recording
             </div>
             <p className="text-slate-300">
-              ClaimProof detects physical USB/Bluetooth guns via keyboard burst listeners. Ensure your scanner gun is configured in "Keyboard HID Mode" with a trailing <span className="font-mono text-slate-400">Enter / Carriage Return [CR]</span> suffix enabled in its manual barcode programming guide.
+              {BRAND.name} detects physical USB/Bluetooth guns via keyboard burst listeners. Ensure
+              your scanner gun is configured in "Keyboard HID Mode" with a trailing{' '}
+              <span className="font-mono text-slate-400">Enter / Carriage Return [CR]</span> suffix
+              enabled in its manual barcode programming guide.
             </p>
           </div>
 
@@ -245,7 +270,10 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
               Thermal Label Printer Margins &amp; Scaling
             </div>
             <p className="text-slate-300">
-              When printing cropped 4×6 inch (100×150 mm) labels, set your browser print dialog paper size to <strong className="text-white">4×6 in</strong>, scale to <strong className="text-white">Actual size / 100%</strong>, and margins to <strong className="text-white">None</strong> to prevent thermal cutoffs.
+              When printing cropped 4×6 inch (100×150 mm) labels, set your browser print dialog
+              paper size to <strong className="text-white">4×6 in</strong>, scale to{' '}
+              <strong className="text-white">Actual size / 100%</strong>, and margins to{' '}
+              <strong className="text-white">None</strong> to prevent thermal cutoffs.
             </p>
           </div>
 
@@ -255,7 +283,10 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
               Browser "Save Changes to Folder" Prompt
             </div>
             <p className="text-slate-300">
-              Chromium browsers periodically prompt "Save changes to ClaimProof_Vault?" for security. Click <strong className="text-white">Allow</strong> so video clips and JPEG photo collages can continue writing straight to your computer hard drive without interruptions.
+              Chromium browsers periodically prompt "Save changes to {BRAND.defaultVaultFolder}?"
+              for security. Click <strong className="text-white">Allow</strong> so video clips and
+              JPEG photo collages can continue writing straight to your computer hard drive without
+              interruptions.
             </p>
           </div>
         </div>
@@ -265,8 +296,11 @@ export default function SupportPage({ navigate }: { navigate: (r: Route) => void
       <Card className="p-5 text-xs text-slate-400 space-y-1">
         <div className="font-semibold text-slate-300">Support Terms &amp; Scope of Service</div>
         <p>
-          Support covers ClaimProof software installation, PWA updates, barcode scanning configuration, and label cropping settings.
-          ClaimProof support does not represent marketplace customer care and cannot directly modify or resolve seller panel disputes on Meesho, Flipkart, Amazon, Myntra, or AJIO <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.
+          Support covers {BRAND.name} software installation, PWA updates, barcode scanning
+          configuration, and label cropping settings. {BRAND.name} support does not represent
+          marketplace customer care and cannot directly modify or resolve seller panel disputes on
+          Meesho, Flipkart, Amazon, Myntra, or AJIO{' '}
+          <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.
         </p>
       </Card>
     </div>

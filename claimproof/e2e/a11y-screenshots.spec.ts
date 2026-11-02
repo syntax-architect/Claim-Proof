@@ -47,7 +47,7 @@ test.describe('A11y, Contrast & Screenshot Tests', () => {
           await page.evaluate((t) => {
             document.documentElement.classList.remove('light', 'dark');
             document.documentElement.classList.add(t);
-            localStorage.setItem('claimproof_theme', t);
+            localStorage.setItem('saboot_theme', t);
           }, theme);
 
           // Wait a tick for transitions and layout

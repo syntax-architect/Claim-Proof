@@ -1,0 +1,95 @@
+---
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = Astro.url.pathname } = Astro.props;
+
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/features', label: 'Features' },
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/guides', label: 'Guides' },
+  { href: '/faq', label: 'FAQ' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' }
+];
+
+function isActive(href: string) {
+  if (href === '/') return currentPath === '/' || currentPath === '';
+  return currentPath.startsWith(href);
+}
+---
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container">
+    <nav class="nav-wrap" aria-label="Main Navigation">
+      <a href="/" class="site-logo" aria-label="SABOOT Home">
+        <img
+          src="/logo.svg"
+          alt="SABOOT Logo"
+          width="180"
+          height="38"
+          loading="eager"
+          decoding="async"
+        />
+      </a>
+
+      <!-- Desktop Nav -->
+      <ul class="nav-links">
+        {navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a
+            href="https://app.saboot.in"
+            class="nav-cta"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Launch App
+          </a>
+        </li>
+      </ul>
+
+      <!-- Mobile Accessible Nav -->
+      <details class="mobile-nav-details">
+        <summary class="mobile-nav-summary" aria-label="Toggle navigation menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </summary>
+        <div class="mobile-nav-menu">
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
+          <a
+            href="https://app.saboot.in"
+            class="nav-cta"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="text-align: center; margin-top: 0.5rem;"
+          >
+            Launch App
+          </a>
+        </div>
+      </details>
+    </nav>
+  </div>
+</header>

@@ -6,7 +6,7 @@ import {
   skipOnboardingIfOpen
 } from './test-helpers';
 
-test.describe('ClaimProof Suite E2E Flows', () => {
+test.describe('SABOOT Suite E2E Flows', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 768 });
   });
@@ -72,7 +72,7 @@ test.describe('ClaimProof Suite E2E Flows', () => {
     // Seed the today's quota counter to 40 labels (the daily free limit)
     await page.evaluate(async () => {
       return new Promise<void>((resolve, reject) => {
-        const req = indexedDB.open('claimproof');
+        const req = indexedDB.open('saboot');
         req.onsuccess = () => {
           const db = req.result;
           const tx = db.transaction('usage_counters', 'readwrite');
@@ -91,7 +91,7 @@ test.describe('ClaimProof Suite E2E Flows', () => {
     // Attempting to crop when at quota limit triggers the Paywall modal
     await page.getByRole('button', { name: /Crop & export 3 labels/i }).click();
 
-    await expect(page.getByText('Unlock ClaimProof Suite')).toBeVisible({ timeout: 8000 });
+    await expect(page.getByText('Unlock SABOOT Suite')).toBeVisible({ timeout: 8000 });
     await expect(page.getByText(/Free plan allows 40 cropped labels per day/i)).toBeVisible();
   });
 
@@ -101,7 +101,7 @@ test.describe('ClaimProof Suite E2E Flows', () => {
     await page.goto('/#recorder');
     await skipOnboardingIfOpen(page);
 
-    await expect(page.getByText('ClaimProof AWB Recorder')).toBeVisible();
+    await expect(page.getByText('SABOOT AWB Recorder')).toBeVisible();
     await expect(page.getByText('WAITING FOR SCAN')).toBeVisible({ timeout: 10000 });
     await expect(page.getByPlaceholder(/Scan \/ type AWB then Enter/i)).toBeVisible({
       timeout: 10000
@@ -150,7 +150,7 @@ test.describe('ClaimProof Suite E2E Flows', () => {
 
     // 2. Navigate to Recorder and enable Return Unboxing Mode
     await page.goto('/#recorder');
-    await expect(page.getByText('ClaimProof AWB Recorder')).toBeVisible();
+    await expect(page.getByText('SABOOT AWB Recorder')).toBeVisible();
 
     const returnSwitch = page.getByRole('switch', { name: /Return Unboxing Mode/i });
     await returnSwitch.click();
@@ -237,7 +237,7 @@ test.describe('ClaimProof Suite E2E Flows', () => {
 
       // 1. Navigate to Recorder offline via sidebar button
       await page.locator('aside button', { hasText: 'AWB Recorder' }).click();
-      await expect(page.getByText('ClaimProof AWB Recorder')).toBeVisible();
+      await expect(page.getByText('SABOOT AWB Recorder')).toBeVisible();
 
       // 2. Navigate to Vault offline
       await page.locator('aside button', { hasText: 'Vault' }).click();

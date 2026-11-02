@@ -1,0 +1,113 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
+  lang?: string;
+}
+
+const {
+  title,
+  description,
+  canonicalUrl,
+  ogImage = new URL('/images/og-image.webp', Astro.site).href,
+  ogType = 'website',
+  jsonLd
+} = Astro.props;
+
+const siteUrl = Astro.site ? Astro.site.href.replace(/\/$/, '') : 'https://saboot.in';
+const cleanPath = Astro.url.pathname.replace(/\/index\.html$/, '').replace(/\.html$/, '').replace(/\/$/, '');
+const cleanCanonical = canonicalUrl || `${siteUrl}${cleanPath || ''}`;
+const pageTitle = title.includes('SABOOT') ? title : `${title} | SABOOT`;
+
+// Structured Data: Organization
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'SABOOT',
+  url: siteUrl,
+  logo: `${siteUrl}/logo.svg`,
+  description: 'Local-first desktop proof studio & shipping label cropper for Indian marketplace sellers.',
+  sameAs: [],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'support@saboot.in',
+    contactType: 'customer support',
+    areaServed: 'IN',
+    availableLanguage: ['en-IN', 'hi-IN']
+  }
+};
+
+// Structured Data: SoftwareApplication
+const softwareSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'SABOOT Suite',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Windows 10, Windows 11, macOS, Linux (via Chromium browser / PWA)',
+  offers: {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'INR',
+    lowPrice: '0',
+    highPrice: '8999'
+  },
+  featureList: [
+    'Vector 4x6 / 4x4 shipping label cropper',
+    'Barcode scanner gun & webcam recording trigger',
+    'Indelible burnt-in IST timestamp watermark banner',
+    'Automated 4-photo forensic collage (T+0.5, 3, 6, 9s)',
+    'Meesho SAFE, Flipkart SPF, Amazon SAFE-T claim deadline radar',
+    '100% offline local file system vault storage'
+  ]
+};
+
+const schemas = [
+  orgSchema,
+  softwareSchema,
+  ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [])
+];
+---
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{pageTitle}</title>
+  <meta name="description" content={description} />
+  
+  <!-- Canonical & Alternate Hreflang for en-IN and hi-IN -->
+  <link rel="canonical" href={cleanCanonical} />
+  <link rel="alternate" hreflang="en-IN" href={cleanCanonical} />
+  <link rel="alternate" hreflang="hi-IN" href={cleanCanonical} />
+  <link rel="alternate" hreflang="x-default" href={cleanCanonical} />
+
+  <!-- Icons & Theme -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="theme-color" content="#090d16" />
+
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="SABOOT" />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={cleanCanonical} />
+  <meta property="og:type" content={ogType} />
+  <meta property="og:locale" content="en_IN" />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="SABOOT — Local-First Shipping Proof Studio for Indian Sellers" />
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+  <meta name="twitter:image:alt" content="SABOOT — Local-First Shipping Proof Studio for Indian Sellers" />
+
+  <!-- JSON-LD Structured Data -->
+  {schemas.map((schema) => (
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  ))}
+</head>

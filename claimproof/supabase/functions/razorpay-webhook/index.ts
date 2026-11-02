@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// ClaimProof.in — Razorpay webhook → license & subscription management
+// SABOOT.in — Razorpay webhook → license & subscription management
 // (Supabase Edge Function)
 //
 // Handles:

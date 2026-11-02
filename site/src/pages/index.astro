@@ -1,0 +1,292 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PLANS } from '@claimproof/config/plans';
+
+const title = "SABOOT — Shipping Proof Studio for Indian Sellers";
+const description = "Local-first shipping proof studio and 4x6 label cropper for Meesho, Flipkart, and Amazon India sellers with uncut barcode video proof.";
+
+const workflowSteps = [
+  {
+    step: "01",
+    title: "Batch Crop & Format 4×6 Labels",
+    desc: "Drop up to 15 marketplace PDFs into SmartLabel Studio. Instant vector cropping, SKU margin footers, and courier handover manifests."
+  },
+  {
+    step: "02",
+    title: "Scan & Record Hands-Free Proof",
+    desc: "Scan the AWB with a barcode gun or webcam. Records uncut video with burnt-in IST timestamp banner and 4-still forensic photo collage directly to your hard drive."
+  },
+  {
+    step: "03",
+    title: "Match Returns & Win Dispute Claims",
+    desc: "Track marketplace dispute deadlines (72h Meesho [needs verification], 14d Flipkart [needs verification]). Match outbound parcel against return unboxing in 1 click."
+  }
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- Hero Section -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="container">
+      <div class="hero-pill">
+        <span>🇮🇳 Built for Indian Marketplace Sellers · 100% Offline-First</span>
+      </div>
+
+      <h1 id="hero-heading">
+        Stop Return Fraud with <span class="gradient">Indelible Shipping Proof</span>
+      </h1>
+
+      <p class="lead">
+        Protect your Meesho, Flipkart, and Amazon India sales from wrongful claim rejections, courier pilferage, and customer swaps. Zero cloud subscriptions, 100% private local storage on your own PC.
+      </p>
+
+      <div class="hero-actions">
+        <a href="https://app.saboot.in" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+          Try SABOOT Free
+        </a>
+        <a href="/features" class="btn btn-secondary">
+          Explore Features
+        </a>
+      </div>
+
+      <!-- Demo Illustration with explicit width, height and picture formats -->
+      <div class="hero-media-wrap">
+        <picture>
+          <source srcset="/images/hero-packing-station.avif" type="image/avif" />
+          <source srcset="/images/hero-packing-station.webp" type="image/webp" />
+          <img
+            src="/images/hero-packing-station.webp"
+            alt="SABOOT AWB Barcode Packing Video Station UI with live IST timestamp overlay"
+            width="800"
+            height="450"
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works (3 Steps) -->
+  <section class="features-section" aria-labelledby="workflow-heading">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="workflow-heading">How It Works in 3 Simple Steps</h2>
+        <p>A seamless, high-speed warehouse packing flow designed for fast table operators.</p>
+      </div>
+
+      <div class="grid-3">
+        {workflowSteps.map((s) => (
+          <div class="card">
+            <div class="card-icon" style="font-weight: 800; font-size: 1.1rem;">
+              {s.step}
+            </div>
+            <h3>{s.title}</h3>
+            <p>{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Modules Detailed Overview -->
+  <section class="features-section" style="background: var(--color-surface-soft);" aria-labelledby="modules-heading">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="modules-heading">Complete 3-in-1 Packing Table Suite</h2>
+        <p>Everything you need to streamline label printing, record proof, and recover disputed payouts.</p>
+      </div>
+
+      <!-- Module A: SmartLabel Studio -->
+      <div class="feature-row">
+        <div class="feature-text">
+          <span style="font-size: 0.8rem; font-weight: 700; color: #60a5fa; text-transform: uppercase;">Module 01</span>
+          <h3>SmartLabel Studio: Vector 4×6 Cropper</h3>
+          <p>
+            Stop wasting time manually taking screenshots of shipping labels. SmartLabel Studio extracts vector text directly from Meesho, Flipkart, and Amazon India shipping PDFs.
+          </p>
+          <ul class="feature-list">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Batch upload up to 15 PDFs simultaneously</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Auto-injects SKU, Size, and Qty footers onto the label edge</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Prominent Multi-Quantity Warning badge for orders where Qty &gt; 1</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Generates Courier Handover Manifest &amp; Warehouse Picklist</span>
+            </li>
+          </ul>
+          <a href="/features#smartlabel" class="btn btn-secondary">Learn More</a>
+        </div>
+        <div class="feature-media">
+          <picture>
+            <source srcset="/images/smartlabel-preview.avif" type="image/avif" />
+            <source srcset="/images/smartlabel-preview.webp" type="image/webp" />
+            <img
+              src="/images/smartlabel-preview.webp"
+              alt="SmartLabel Studio 4x6 vector shipping label cropping preview"
+              width="600"
+              height="400"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        </div>
+      </div>
+
+      <!-- Module B: SABOOT AWB Recorder -->
+      <div class="feature-row reverse">
+        <div class="feature-text">
+          <span style="font-size: 0.8rem; font-weight: 700; color: #34d399; text-transform: uppercase;">Module 02</span>
+          <h3>SABOOT AWB Video Recorder Station</h3>
+          <p>
+            Hands-free video recording operated solely with your USB barcode gun. Scanning an AWB instantly starts an uncut recording with an unalterable forensic banner.
+          </p>
+          <ul class="feature-list">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Burnt-in live IST timestamp watermark down to milliseconds</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Captures 4-photo forensic collage (T+0.5s, 3s, 6s, 9s)</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Sub-100ms rapid chaining: scanning the next AWB finalizes the last</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Dual Modes: Outbound Dispatch and Inbound Return Unboxing</span>
+            </li>
+          </ul>
+          <a href="/features#recorder" class="btn btn-secondary">Learn More</a>
+        </div>
+        <div class="feature-media">
+          <picture>
+            <source srcset="/images/hero-packing-station.avif" type="image/avif" />
+            <source srcset="/images/hero-packing-station.webp" type="image/webp" />
+            <img
+              src="/images/hero-packing-station.webp"
+              alt="SABOOT AWB Video Recorder Station showing barcode scanning and timestamp watermark"
+              width="600"
+              height="400"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        </div>
+      </div>
+
+      <!-- Module C: ClaimRadar -->
+      <div class="feature-row">
+        <div class="feature-text">
+          <span style="font-size: 0.8rem; font-weight: 700; color: #f59e0b; text-transform: uppercase;">Module 03</span>
+          <h3>ClaimRadar: Dispute Preparation &amp; Recovery</h3>
+          <p>
+            Never miss a marketplace claim deadline again. Track dispute windows in real-time and prepare evidence dossiers that satisfy marketplace auditors.
+          </p>
+          <ul class="feature-list">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Live deadline countdowns (72h Meesho [needs verification], 14d Flipkart [needs verification])</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Side-by-side dispatcher vs. return unboxing evidence matcher</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>1-click dispute description generator tailored for each marketplace</span>
+            </li>
+          </ul>
+          <a href="/features#claimradar" class="btn btn-secondary">Learn More</a>
+        </div>
+        <div class="feature-media">
+          <picture>
+            <source srcset="/images/claimradar-preview.avif" type="image/avif" />
+            <source srcset="/images/claimradar-preview.webp" type="image/webp" />
+            <img
+              src="/images/claimradar-preview.webp"
+              alt="ClaimRadar dispute timeline countdown and evidence matcher interface"
+              width="600"
+              height="400"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Preview from config/plans.ts -->
+  <section class="pricing-section" aria-labelledby="pricing-preview-heading">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="pricing-preview-heading">Transparent Pricing for Indian Sellers</h2>
+        <p>Start free today. Upgrade when you need unlimited recording and multi-table seats.</p>
+      </div>
+
+      <div class="grid-3">
+        {PLANS.map((plan) => (
+          <div class={`plan-card ${plan.best ? 'popular' : ''}`}>
+            {plan.best && <div class="popular-tag">{plan.tag || 'MOST POPULAR'}</div>}
+            <h3>{plan.name}</h3>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.25rem;">
+              {plan.tagline}
+            </p>
+
+            <div class="plan-price">
+              ₹{plan.annualPrice}
+              <span style="font-size: 0.9rem; font-weight: 500; color: var(--color-text-muted);">/ year</span>
+              <span class="plan-strike">₹{plan.annualStrike}</span>
+            </div>
+            <div class="plan-daily">
+              Just ₹{plan.dailyAnnualCost}/day ({plan.annualSavingsPercent}% annual savings)
+            </div>
+
+            <ul class="plan-features">
+              {plan.features.map((f) => (
+                <li>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href="/pricing"
+              class={`btn ${plan.best ? 'btn-primary' : 'btn-secondary'}`}
+              style="width: 100%; text-align: center;"
+            >
+              View Plan Details
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section style="padding: 4rem 0 5rem; text-align: center; background: linear-gradient(180deg, transparent 0%, rgba(59, 130, 246, 0.08) 100%);">
+    <div class="container">
+      <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem;">
+        Ready to Protect Your Dispatch Pipeline?
+      </h2>
+      <p style="color: var(--color-text-muted); max-width: 600px; margin: 0 auto 2rem;">
+        No credit card required. Free tier includes up to 40 cropped labels and 10 video proofs daily.
+      </p>
+      <a href="https://app.saboot.in" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+        Launch SABOOT Station Free
+      </a>
+    </div>
+  </section>
+</BaseLayout>

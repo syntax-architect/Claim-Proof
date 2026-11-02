@@ -21,6 +21,7 @@ import {
   Volume2
 } from 'lucide-react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { BRAND } from '../config/brand';
 import { db, getSetting, setSetting } from '../db/schema';
 import { connectVault, getVaultStatus } from '../services/vaultWriter';
 import { isPhonePairingConfigured, pairingQrPayload } from '../services/phonePairing';
@@ -115,7 +116,7 @@ export default function SettingsPage() {
     };
     downloadBlob(
       new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }),
-      `claimproof_backup_${Date.now()}.json`
+      `${BRAND.shortName.toLowerCase()}_backup_${Date.now()}.json`
     );
     toast.success('Backup exported', 'All metadata (no media) as JSON.');
   }
@@ -169,8 +170,8 @@ export default function SettingsPage() {
               {'{AWB}_Video.mp4 · {AWB}_Photo_Collage.jpg'}
             </div>
             <div className="text-[11px] text-slate-500">
-              Pick your <span className="font-mono text-slate-400">ClaimProof_Vault</span> folder
-              once — files then write directly to disk with zero uploads.
+              Pick your <span className="font-mono text-slate-400">{BRAND.defaultVaultFolder}</span>{' '}
+              folder once — files then write directly to disk with zero uploads.
             </div>
           </div>
         </Section>
@@ -324,7 +325,7 @@ export default function SettingsPage() {
               onClick={() => {
                 if (
                   window.confirm(
-                    'Wipe ALL ClaimProof data on this PC (labels, recordings index, claims, license)? Media files on disk are kept.'
+                    `Wipe ALL ${BRAND.name} data on this PC (labels, recordings index, claims, license)? Media files on disk are kept.`
                   )
                 ) {
                   void db.delete().then(() => window.location.reload());
@@ -386,7 +387,7 @@ export default function SettingsPage() {
                 );
               }}
               label="Share anonymous milestone statistics & scrubbed error reports"
-              hint="Helps improve ClaimProof reliability. Disabled by default."
+              hint={`Helps improve ${BRAND.name} reliability. Disabled by default.`}
             />
 
             <div className="rounded-lg border border-line bg-ink-950/70 p-3.5 text-xs space-y-2.5">
@@ -465,12 +466,13 @@ export default function SettingsPage() {
               </Button>
             </div>
             <div className="text-[11px] text-slate-500">
-              Need urgent setup help or troubleshooting? Open Support for direct WhatsApp and zero-PII diagnostic reports.
+              Need urgent setup help or troubleshooting? Open Support for direct WhatsApp and
+              zero-PII diagnostic reports.
             </div>
           </div>
         </Section>
 
-        <Section icon={Info} title="About" sub="ClaimProof Suite v1.0.0">
+        <Section icon={Info} title="About" sub={`${BRAND.legalName} v1.0.0`}>
           <div className="space-y-2 text-[11px] leading-relaxed text-slate-500">
             <div>
               Local-first PWA + Chrome Extension (Manifest V3) for Indian e-commerce sellers. PDF
@@ -479,7 +481,7 @@ export default function SettingsPage() {
             </div>
             <div>
               Install as an app:{' '}
-              <span className="text-slate-400">Chrome → ⋮ → Install ClaimProof…</span> Works fully
+              <span className="text-slate-400">Chrome → ⋮ → Install {BRAND.name}…</span> Works fully
               offline after the first load.
             </div>
             <div className="flex items-center gap-1.5">

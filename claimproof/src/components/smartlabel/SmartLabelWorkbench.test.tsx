@@ -56,19 +56,11 @@ describe('SmartLabelWorkbench Component', () => {
   it('renders initial empty drop zone with accessible file controls and passes axe', async () => {
     const { container } = renderWorkbench();
 
-    expect(
-      screen.getByRole('heading', { name: /SmartLabel SKU\+ Studio/i })
-    ).toBeDefined();
-    expect(
-      screen.getByText(/Drop shipping label PDFs here/i)
-    ).toBeDefined();
+    expect(screen.getByRole('heading', { name: /SmartLabel SKU\+ Studio/i })).toBeDefined();
+    expect(screen.getByText(/Drop shipping label PDFs here/i)).toBeDefined();
 
-    expect(
-      screen.getByRole('button', { name: /Select PDF files/i })
-    ).toBeDefined();
-    expect(
-      screen.getByRole('button', { name: /Try with sample labels/i })
-    ).toBeDefined();
+    expect(screen.getByRole('button', { name: /Select PDF files/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /Try with sample labels/i })).toBeDefined();
 
     const results = await axe(container, {
       rules: { region: { enabled: false } }
@@ -80,7 +72,7 @@ describe('SmartLabelWorkbench Component', () => {
     vi.spyOn(pdfProcessor, 'processLabelFiles').mockResolvedValue({
       labels: [mockLabel],
       pdfBytes: new Uint8Array([1, 2, 3]),
-      fileName: 'ClaimProof_Labels_4x6.pdf'
+      fileName: 'SABOOT_Labels_4x6.pdf'
     });
 
     const { container } = renderWorkbench();
@@ -88,26 +80,18 @@ describe('SmartLabelWorkbench Component', () => {
     const file = new File(['%PDF-1.4 dummy'], 'labels.pdf', {
       type: 'application/pdf'
     });
-    const fileInput = container.querySelector(
-      'input[type="file"]'
-    ) as HTMLInputElement;
+    const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
     expect(fileInput).not.toBeNull();
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: /Crop & export/i })
-      ).toBeDefined();
+      expect(screen.getByRole('button', { name: /Crop & export/i })).toBeDefined();
     });
 
     expect(screen.getByText('AWB1234567890')).toBeDefined();
     expect(screen.getByText('TSHIRT-BLK-L')).toBeDefined();
-    expect(
-      screen.getByPlaceholderText(
-        /Filter AWB/i
-      )
-    ).toBeDefined();
+    expect(screen.getByPlaceholderText(/Filter AWB/i)).toBeDefined();
 
     const results = await axe(container, {
       rules: { region: { enabled: false } }
@@ -125,9 +109,7 @@ describe('SmartLabelWorkbench Component', () => {
     const file = new File(['invalid bytes'], 'corrupt.pdf', {
       type: 'application/pdf'
     });
-    const fileInput = container.querySelector(
-      'input[type="file"]'
-    ) as HTMLInputElement;
+    const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -136,9 +118,7 @@ describe('SmartLabelWorkbench Component', () => {
     });
     expect(retryBtn).toBeDefined();
 
-    expect(
-      screen.getByText(/Corrupt or password-protected PDF document/i)
-    ).toBeDefined();
+    expect(screen.getByText(/Corrupt or password-protected PDF document/i)).toBeDefined();
 
     // Verify retry button resets back to drop zone
     fireEvent.click(retryBtn);
@@ -155,25 +135,21 @@ describe('SmartLabelWorkbench Component', () => {
     vi.spyOn(pdfProcessor, 'processLabelFiles').mockResolvedValue({
       labels: [mockLabel],
       pdfBytes: new Uint8Array([1, 2, 3]),
-      fileName: 'ClaimProof_Labels_4x6.pdf'
+      fileName: 'SABOOT_Labels_4x6.pdf'
     });
 
-    const quotaSpy = vi
-      .spyOn(quotaModule, 'checkLabelQuota')
-      .mockResolvedValue({
-        allowed: false,
-        used: 40,
-        limit: 40
-      });
+    const quotaSpy = vi.spyOn(quotaModule, 'checkLabelQuota').mockResolvedValue({
+      allowed: false,
+      used: 40,
+      limit: 40
+    });
 
     const { container } = renderWorkbench();
 
     const file = new File(['%PDF-1.4 dummy'], 'labels.pdf', {
       type: 'application/pdf'
     });
-    const fileInput = container.querySelector(
-      'input[type="file"]'
-    ) as HTMLInputElement;
+    const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
 
     fireEvent.change(fileInput, { target: { files: [file] } });
 

@@ -1,6 +1,6 @@
 {
-  "name": "ClaimProof Suite — SmartLabel SKU+ & AWB Proof Studio",
-  "short_name": "ClaimProof",
+  "name": "SABOOT Suite — SmartLabel SKU+ & AWB Proof Studio",
+  "short_name": "SABOOT",
   "description": "Local-first label cropper, barcode-verified packing video recorder and claim-deadline radar for Indian e-commerce sellers.",
   "start_url": "/",
   "scope": "/",

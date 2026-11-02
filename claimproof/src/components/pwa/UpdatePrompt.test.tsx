@@ -25,9 +25,7 @@ describe('UpdatePrompt Component', () => {
     } as unknown as ServiceWorker;
 
     act(() => {
-      window.dispatchEvent(
-        new CustomEvent('cp-sw-update', { detail: { worker: mockWorker } })
-      );
+      window.dispatchEvent(new CustomEvent('cp-sw-update', { detail: { worker: mockWorker } }));
     });
 
     expect(screen.getByText('Update available, reload')).toBeInTheDocument();

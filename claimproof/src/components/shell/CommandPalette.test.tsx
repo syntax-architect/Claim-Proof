@@ -72,9 +72,12 @@ describe('CommandPalette Component', () => {
 
     // Press Escape to close
     fireEvent.keyDown(searchInput, { key: 'Escape' });
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog', { name: /Command palette/i })).toBeNull();
-    }, { timeout: 8000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByRole('dialog', { name: /Command palette/i })).toBeNull();
+      },
+      { timeout: 8000 }
+    );
 
     // Reopen with Ctrl+K
     fireEvent.keyDown(window, { key: 'k', ctrlKey: true });
@@ -83,9 +86,12 @@ describe('CommandPalette Component', () => {
     // Close using the backdrop button
     const backdropBtn = screen.getByRole('button', { name: /Close command palette/i });
     fireEvent.click(backdropBtn);
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog', { name: /Command palette/i })).toBeNull();
-    }, { timeout: 8000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByRole('dialog', { name: /Command palette/i })).toBeNull();
+      },
+      { timeout: 8000 }
+    );
   });
 
   it('filters command list by query and renders empty state with clear button', async () => {

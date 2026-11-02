@@ -1,8 +1,8 @@
-# ClaimProof Suite — Product & Architecture Specification (SPEC.md)
+# SABOOT Suite — Product & Architecture Specification (SPEC.md)
 
-**ClaimProof** is a local-first, zero-server-cost Desktop Progressive Web App (PWA) designed specifically for Indian e-commerce sellers shipping on **Meesho, Flipkart, Amazon India, Myntra, and AJIO**.
+**SABOOT** is a local-first, zero-server-cost Desktop Progressive Web App (PWA) designed specifically for Indian e-commerce sellers shipping on **Meesho, Flipkart, Amazon India, Myntra, and AJIO**.
 
-The core mission of ClaimProof is to stop return fraud, transit pilferage, and wrongful marketplace claim rejections by pairing daily high-speed shipping label workflow with tamper-evident, uncut barcode-verified packing and unboxing video evidence.
+The core mission of SABOOT is to stop return fraud, transit pilferage, and wrongful marketplace claim rejections by pairing daily high-speed shipping label workflow with tamper-evident, uncut barcode-verified packing and unboxing video evidence.
 
 ---
 
@@ -28,7 +28,7 @@ A high-throughput browser-based shipping label parser, vector cropper, and wareh
 * **Warehouse Manifests:** Automatically prepends an aggregate Warehouse Picklist and Courier Handover Manifest summarizing parcel counts and SKU units per carrier.
 * **IndexedDB Order Memory:** Automatically indexes extracted AWBs into Dexie IndexedDB so the video recorder can auto-match parcels in sub-milliseconds without manual data entry.
 
-### 1.2 ClaimProof AWB Recorder (Module B)
+### 1.2 SABOOT AWB Recorder (Module B)
 A rapid, hands-free video recording packing station designed for fast warehouse table operation.
 * **Hands-Free Triggering:**
   * Physical USB / Bluetooth HID barcode scanner gun (<80ms burst key listener with trailing Enter).
@@ -122,16 +122,16 @@ Designed strictly for sellers requesting a 1-click browser extension launcher.
 * **Architecture:** Manifest V3 (`extension/manifest.json`), opening the full web application in a browser tab upon clicking the extension action icon (`chrome.action.onClicked`).
 * **Zero Host Permissions:** `host_permissions: []`. Does not inject scripts, read cookies, or touch marketplace websites (Meesho, Flipkart, Amazon, Myntra, AJIO) in any way.
 * **Minimal Privileges:** `permissions: []`. Camera access is requested strictly at runtime via standard browser prompt (`navigator.mediaDevices.getUserMedia`) when opening the AWB Recorder.
-* **Trademark Compliance:** Extension title (`ClaimProof — Shipping Label & Packing Evidence Studio`) strictly avoids marketplace brand names.
-* **Packaging & Store Review:** Built via `npm run build:extension` (`scripts/build_extension.mjs`), outputting `dist-extension/claimproof-extension.zip`. Accompanied by the submission checklist in `EXTENSION_STORE_CHECKLIST.md`.
+* **Trademark Compliance:** Extension title (`**SABOOT** — Shipping Label & Packing Evidence Studio`) strictly avoids marketplace brand names.
+* **Packaging & Store Review:** Built via `npm run build:extension` (`scripts/build_extension.mjs`), outputting `dist-extension/saboot-extension.zip`. Accompanied by the submission checklist in `EXTENSION_STORE_CHECKLIST.md`.
 
 ---
 
 ## 2. Local Data Storage Specification
 
-ClaimProof is strictly **offline-first**. No customer videos, photos, or shipping label documents are ever uploaded to any cloud server.
+SABOOT is strictly **offline-first**. No customer videos, photos, or shipping label documents are ever uploaded to any cloud server.
 
-### 2.1 Dexie IndexedDB Schema (`claimproof`)
+### 2.1 Dexie IndexedDB Schema (`saboot`, with legacy migration from `claimproof`)
 Database version 1 defines 9 object stores:
 1. `orders`: Extracted shipping labels indexed by `++id, awb, orderId, sku, courier, marketplace, batchId, createdAt`.
 2. `batches`: Batch processing metadata indexed by `id, createdAt`.
@@ -144,7 +144,7 @@ Database version 1 defines 9 object stores:
 9. `media_cache`: Local temporary blob cache for in-app media playback indexed by `id, savedAt`.
 
 ### 2.2 Local Storage Keys
-* `claimproof_last_plan`: Cached plan identifier to prevent UI flashes during startup.
+* `saboot_last_plan (with legacy fallback to claimproof_last_plan)`: Cached plan identifier to prevent UI flashes during startup.
 
 ---
 
@@ -157,7 +157,7 @@ Database version 1 defines 9 object stores:
 | **Label Cropping & Sorting** | 40 labels / day | Unlimited | Unlimited | Unlimited |
 | **AWB Video Recording** | 10 videos / day | Unlimited | Unlimited | Unlimited |
 | **Forensic Watermark** | Standard | Burnt-in HD | Burnt-in HD | Burnt-in HD |
-| **Picklist & Manifests** | Included (ClaimProof seal) | Clean / White-label | Clean / White-label | Clean / White-label |
+| **Picklist & Manifests** | Included (SABOOT seal) | Clean / White-label | Clean / White-label | Clean / White-label |
 | **Viral Manifest Footer** | Yes *(Phase 3 loop)* | Removed | Removed | Removed |
 | **Auto 4-Photo Collage** | No | No | Yes (T+0.5, 3, 6, 9s) | Yes (T+0.5, 3, 6, 9s) |
 | **Claim Deadline Radar** | No | No | Yes (72h / 14d / 30d) | Yes (72h / 14d / 30d) |

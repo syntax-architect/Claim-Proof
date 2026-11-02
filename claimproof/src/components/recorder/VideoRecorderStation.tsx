@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { BRAND } from '../../config/brand';
 import {
   Camera,
   CameraOff,
@@ -108,8 +109,7 @@ function CameraDiagnostic({ errorType, onRetry }: CameraDiagnosticProps) {
   > = {
     permission_denied: {
       title: 'Camera Permission Denied',
-      message:
-        'Google Chrome or Windows is blocking camera access. ClaimProof requires camera permissions to record live proof videos.',
+      message: `Google Chrome or Windows is blocking camera access. ${BRAND.name} requires camera permissions to record live proof videos.`,
       retryLabel: 'Retry Camera Access',
       steps: [
         {
@@ -132,8 +132,7 @@ function CameraDiagnostic({ errorType, onRetry }: CameraDiagnosticProps) {
     },
     not_found: {
       title: 'No Camera Detected',
-      message:
-        'Windows and Google Chrome cannot detect a connected webcam. ClaimProof has loaded the synthetic demo scene so you can test all features.',
+      message: `Windows and Google Chrome cannot detect a connected webcam. ${BRAND.name} has loaded the synthetic demo scene so you can test all features.`,
       retryLabel: 'Retry Camera',
       steps: [
         {
@@ -829,8 +828,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
         notifyToast({
           tone: 'warn',
           title: 'Tab is in background',
-          message:
-            'ClaimProof is backgrounded. Keep this tab visible to ensure full 24fps video recording.'
+          message: `${BRAND.name} is backgrounded. Keep this tab visible to ensure full 24fps video recording.`
         });
       }
     };
@@ -912,7 +910,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
       <PageHeader
         icon={Video}
         kicker="MODULE B · THE PROOF ENGINE"
-        title="ClaimProof AWB Recorder"
+        title={`${BRAND.name} AWB Recorder`}
         subtitle="Scan → uncut video starts itself → scan the next parcel to chain instantly"
         actions={
           <div className="glass-soft flex items-center gap-3 px-3 py-2">

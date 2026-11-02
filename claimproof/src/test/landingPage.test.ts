@@ -2,9 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { PLANS } from '../config/plans';
+import { BRAND } from '../config/brand';
 
 describe('Static Landing Page & SEO Assets Verification', () => {
-  const publicDir = join(process.cwd(), 'public');
+  const publicDir = existsSync(join(process.cwd(), 'claimproof', 'public'))
+    ? join(process.cwd(), 'claimproof', 'public')
+    : join(process.cwd(), 'public');
   const landingHtmlPath = join(publicDir, 'landing.html');
   const sitemapPath = join(publicDir, 'sitemap.xml');
   const robotsPath = join(publicDir, 'robots.txt');
@@ -26,14 +29,14 @@ describe('Static Landing Page & SEO Assets Verification', () => {
       const robots = readFileSync(robotsPath, 'utf-8');
       expect(robots).toContain('User-agent: *');
       expect(robots).toContain('Allow: /');
-      expect(robots).toContain('Sitemap: https://claimproof.in/sitemap.xml');
+      expect(robots).toContain(`Sitemap: https://${BRAND.domain}/sitemap.xml`);
     });
 
     it('validates sitemap.xml URLs', () => {
       const sitemap = readFileSync(sitemapPath, 'utf-8');
       expect(sitemap).toContain('<urlset');
-      expect(sitemap).toContain('https://claimproof.in/');
-      expect(sitemap).toContain('https://claimproof.in/landing.html');
+      expect(sitemap).toContain(`https://${BRAND.domain}/`);
+      expect(sitemap).toContain(`https://${BRAND.domain}/landing.html`);
     });
   });
 
@@ -41,25 +44,29 @@ describe('Static Landing Page & SEO Assets Verification', () => {
     const html = readFileSync(landingHtmlPath, 'utf-8');
 
     it('contains comprehensive meta tags and Open Graph tags', () => {
-      expect(html).toContain('<title>ClaimProof —');
+      expect(html).toContain(`<title>${BRAND.name} —`);
       expect(html).toContain('<meta name="description"');
       expect(html).toContain('<meta name="viewport"');
-      expect(html).toContain('<link rel="canonical" href="https://claimproof.in/landing.html"');
+      expect(html).toContain(`<link rel="canonical" href="https://${BRAND.domain}/landing.html"`);
 
       // Open Graph
       expect(html).toContain('<meta property="og:type" content="website"');
       expect(html).toContain('<meta property="og:title"');
       expect(html).toContain('<meta property="og:description"');
-      expect(html).toContain('<meta property="og:image" content="https://claimproof.in/og-image.png"');
+      expect(html).toContain(
+        `<meta property="og:image" content="https://${BRAND.domain}/og-image.png"`
+      );
 
       // Twitter Card
       expect(html).toContain('<meta name="twitter:card" content="summary_large_image"');
-      expect(html).toContain('<meta name="twitter:image" content="https://claimproof.in/og-image.png"');
+      expect(html).toContain(
+        `<meta name="twitter:image" content="https://${BRAND.domain}/og-image.png"`
+      );
     });
 
     it('contains the exact one-sentence promise', () => {
       expect(html).toContain(
-        'ClaimProof pairs daily thermal shipping label printing with uncut barcode-verified packing and unboxing video evidence—saving Indian marketplace sellers from return fraud without cloud fees or data uploads.'
+        `${BRAND.name} pairs daily thermal shipping label printing with uncut barcode-verified packing and unboxing video evidence—saving Indian marketplace sellers from return fraud without cloud fees or data uploads.`
       );
     });
 
@@ -105,12 +112,16 @@ describe('Static Landing Page & SEO Assets Verification', () => {
     it('contains clear FAQ answers for data upload, PC changes, and refunds', () => {
       // FAQ 1: Is my data uploaded?
       expect(html).toContain('Is my data uploaded anywhere?');
-      expect(html).toContain('ClaimProof is strictly local-first');
-      expect(html).toContain('Zero customer data, tracking numbers, or video bytes are ever uploaded');
+      expect(html).toContain(`${BRAND.name} is strictly local-first`);
+      expect(html).toContain(
+        'Zero customer data, tracking numbers, or video bytes are ever uploaded'
+      );
 
       // FAQ 2: What if I change PC?
       expect(html).toContain('What if I change PC or format my workstation?');
-      expect(html).toContain('ClaimProof includes soft device binding. You are never locked out.');
+      expect(html).toContain(
+        `${BRAND.name} includes soft device binding. You are never locked out.`
+      );
       expect(html).toContain('Move license to this device');
 
       // FAQ 3: Refund policy

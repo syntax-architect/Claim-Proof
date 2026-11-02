@@ -6,7 +6,7 @@ import { execSync } from 'node:child_process';
 const ROOT_DIR = process.cwd();
 const MANIFEST_PATH = join(ROOT_DIR, 'extension', 'manifest.json');
 const BACKGROUND_PATH = join(ROOT_DIR, 'extension', 'background.js');
-const ZIP_PATH = join(ROOT_DIR, 'dist-extension', 'claimproof-extension.zip');
+const ZIP_PATH = join(ROOT_DIR, 'dist-extension', 'saboot-extension.zip');
 
 const BANNED_BRANDS = [
   /\bmeesho\b/i,
@@ -25,7 +25,8 @@ describe('Chrome Extension MV3 Specification & Build Verification', () => {
     // 1. Must be MV3
     expect(content.manifest_version).toBe(3);
 
-    // 2. Name must not contain marketplace brand names
+    // 2. Name must not contain marketplace brand names and must adhere to 45-character limit
+    expect(content.name.length).toBeLessThanOrEqual(45);
     for (const banned of BANNED_BRANDS) {
       expect(banned.test(content.name)).toBe(false);
       if (content.short_name) {
@@ -63,22 +64,18 @@ describe('Chrome Extension MV3 Specification & Build Verification', () => {
     expect(bgContent).toContain('index.html');
   });
 
-  it(
-    'build_extension script produces valid Chrome Web Store ZIP package',
-    () => {
-      // Run build script
-      execSync('node scripts/build_extension.mjs', { cwd: ROOT_DIR, stdio: 'pipe' });
+  it('build_extension script produces valid Chrome Web Store ZIP package', () => {
+    // Run build script
+    execSync('node scripts/build_extension.mjs', { cwd: ROOT_DIR, stdio: 'pipe' });
 
-      expect(existsSync(ZIP_PATH)).toBe(true);
-      const zipBytes = readFileSync(ZIP_PATH);
-      expect(zipBytes.length).toBeGreaterThan(10000);
+    expect(existsSync(ZIP_PATH)).toBe(true);
+    const zipBytes = readFileSync(ZIP_PATH);
+    expect(zipBytes.length).toBeGreaterThan(10000);
 
-      // Verify PKZIP magic bytes 0x50 0x4B 0x03 0x04 ('PK\x03\x04')
-      expect(zipBytes[0]).toBe(0x50);
-      expect(zipBytes[1]).toBe(0x4b);
-      expect(zipBytes[2]).toBe(0x03);
-      expect(zipBytes[3]).toBe(0x04);
-    },
-    60000
-  );
+    // Verify PKZIP magic bytes 0x50 0x4B 0x03 0x04 ('PK\x03\x04')
+    expect(zipBytes[0]).toBe(0x50);
+    expect(zipBytes[1]).toBe(0x4b);
+    expect(zipBytes[2]).toBe(0x03);
+    expect(zipBytes[3]).toBe(0x04);
+  }, 60000);
 });

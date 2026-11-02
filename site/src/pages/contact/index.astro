@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "Contact Seller Support — SABOOT";
+const description = "Get in touch with SABOOT support engineers. Reach us via email at support@saboot.in or direct WhatsApp assistance.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-narrow" style="padding: 4rem 1.25rem 3rem;">
+    <header class="section-head">
+      <span class="hero-pill">We Are Here to Help</span>
+      <h1>Contact SABOOT Support</h1>
+      <p>
+        Have a question about thermal printers, USB barcode scanners, or setting up your warehouse packing station?
+      </p>
+    </header>
+
+    <div class="grid-2" style="margin-bottom: 3rem;">
+      <div class="card">
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <h3>Email Support</h3>
+        <p style="margin-bottom: 1rem;">
+          For general inquiries, offline license troubleshooting, and billing requests.
+        </p>
+        <a href="mailto:support@saboot.in" style="font-weight: 700; font-size: 1.1rem; color: #60a5fa;">
+          support@saboot.in
+        </a>
+        <div style="font-size: 0.8rem; color: var(--color-text-subtle); margin-top: 0.5rem;">
+          Response window: within 24 business hours
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="color: #34d399; background: rgba(16, 185, 129, 0.12);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+        <h3>Warehouse Priority Desk</h3>
+        <p style="margin-bottom: 1rem;">
+          Direct WhatsApp support for active Warehouse 3-Table Pack subscribers.
+        </p>
+        <div style="font-weight: 700; font-size: 1.1rem; color: #34d399;">
+          Dedicated WhatsApp
+        </div>
+        <div style="font-size: 0.8rem; color: var(--color-text-subtle); margin-top: 0.5rem;">
+          Available Mon–Sat, 9:00 AM – 7:00 PM IST
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form with mailto / accessible form -->
+    <div class="card" style="padding: 2.5rem;">
+      <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem;">Send an Inquiry</h2>
+      <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        [TODO real copy - submit form connected to support ticket endpoint]
+      </p>
+
+      <form action="mailto:support@saboot.in" method="POST" enctype="text/plain" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div>
+          <label for="seller-name" style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem;">
+            Your Name / Business Name
+          </label>
+          <input
+            type="text"
+            id="seller-name"
+            name="name"
+            required
+            placeholder="e.g. Ramesh Enterprises"
+            style="width: 100%; padding: 0.75rem 1rem; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 8px; color: #ffffff; font-family: inherit; font-size: 0.95rem;"
+          />
+        </div>
+
+        <div>
+          <label for="seller-email" style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem;">
+            Email Address
+          </label>
+          <input
+            type="email"
+            id="seller-email"
+            name="email"
+            required
+            placeholder="seller@domain.com"
+            style="width: 100%; padding: 0.75rem 1rem; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 8px; color: #ffffff; font-family: inherit; font-size: 0.95rem;"
+          />
+        </div>
+
+        <div>
+          <label for="seller-message" style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem;">
+            How can we assist you?
+          </label>
+          <textarea
+            id="seller-message"
+            name="message"
+            rows="5"
+            required
+            placeholder="Describe your warehouse setup, printer model, or dispute question..."
+            style="width: 100%; padding: 0.75rem 1rem; background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 8px; color: #ffffff; font-family: inherit; font-size: 0.95rem;"
+          ></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="align-self: flex-start;">
+          Send Email Inquiry
+        </button>
+      </form>
+    </div>
+  </div>
+</BaseLayout>

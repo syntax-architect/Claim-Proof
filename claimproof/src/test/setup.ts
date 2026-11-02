@@ -11,14 +11,19 @@ expect.extend({
       'nodeType' in (received as Node);
     return {
       pass,
-      message: () => (pass ? 'expected element not to be in document' : 'expected element to be in document')
+      message: () =>
+        pass ? 'expected element not to be in document' : 'expected element to be in document'
     };
   },
   toHaveValue(received: unknown, expected: unknown) {
-    const pass = received !== null && received !== undefined && (received as HTMLInputElement).value === expected;
+    const pass =
+      received !== null &&
+      received !== undefined &&
+      (received as HTMLInputElement).value === expected;
     return {
       pass,
-      message: () => `expected element value to be "${expected}", got "${(received as HTMLInputElement)?.value}"`
+      message: () =>
+        `expected element value to be "${expected}", got "${(received as HTMLInputElement)?.value}"`
     };
   }
 });

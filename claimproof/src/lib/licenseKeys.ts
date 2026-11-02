@@ -1,3 +1,5 @@
+import { BRAND } from '../config/brand';
+
 /* ES256 public key for offline license JWT verification.
  * The matching PRIVATE key never ships in the app — it lives only in the Supabase
  * Edge Function secret store (production) or scripts/.license-dev-keys.json (local dev).
@@ -12,4 +14,4 @@ export const LICENSE_JWT_PUBLIC_JWK: JsonWebKey = {
   y: 'xMz_FMuwRLHBZG9rF3VuNvH2XUPSf6EbgTPz4L9tA3Q'
 };
 
-export const LICENSE_ISSUER = 'https://claimproof.in';
+export const LICENSE_ISSUER = BRAND.licenseIssuer;

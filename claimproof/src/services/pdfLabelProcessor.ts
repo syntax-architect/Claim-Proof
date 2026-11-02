@@ -3,6 +3,7 @@
  * them as lossless vector crops (pdf-lib): 4×6 / 4×4 / 4-per-A4, bold SKU
  * stamps, multi-quantity guards, courier sorting and a handover manifest. */
 
+import { BRAND } from '../config/brand';
 import type { CropPreset, CourierPartner, ExtractedLabel, Marketplace } from '../types';
 import { ddMmm, formatIST, istDateKey } from '../lib/dateUtils';
 
@@ -825,7 +826,7 @@ function drawManifest(
     font: helvBold,
     color: accent
   });
-  page.drawText(`Generated ${formatIST(now)}  ·  ClaimProof.in — SmartLabel SKU+`, {
+  page.drawText(`Generated ${formatIST(now)}  ·  ${BRAND.domain} — SmartLabel SKU+`, {
     x: margin,
     y: pageH - 72,
     size: 9,
@@ -920,7 +921,7 @@ function drawManifest(
   });
   y -= 18;
   page.drawText(
-    'Scan every AWB in ClaimProof before sealing — claim windows start at return scan.',
+    `Scan every AWB in ${BRAND.name} before sealing — claim windows start at return scan.`,
     {
       x: colX[0],
       y,
@@ -941,7 +942,7 @@ function drawManifest(
       borderColor: accent,
       borderWidth: 1
     });
-    page.drawText('VERIFIED DISPATCH · PACKED WITH CLAIMPROOF.IN PROOF STUDIO', {
+    page.drawText(`VERIFIED DISPATCH · PACKED WITH ${BRAND.domain.toUpperCase()} PROOF STUDIO`, {
       x: margin + 12,
       y: y - 16,
       size: 9,
@@ -973,14 +974,14 @@ function drawManifest(
         borderColor: rgb(0.04, 0.47, 0.36),
         borderWidth: 0.8
       });
-      p.drawText('Packed with ClaimProof.in — Barcode Verified Proof Studio', {
+      p.drawText(`Packed with ${BRAND.domain} — Barcode Verified Proof Studio`, {
         x: margin + 10,
         y: 21,
         size: 8.5,
         font: helvBold,
         color: accent
       });
-      const tagText = 'Free 4×6 Label Cropper & Return Dispute Proof · claimproof.in';
+      const tagText = `Free 4×6 Label Cropper & Return Dispute Proof · ${BRAND.domain}`;
       const tagW = helv.widthOfTextAtSize(tagText, 7.5);
       p.drawText(tagText, {
         x: pageW - margin - tagW - 10,
@@ -1030,7 +1031,7 @@ export async function processLabelFiles(
   const hhmm = new Date().toTimeString().slice(0, 5).replace(':', '');
   return {
     pdfBytes,
-    fileName: `ClaimProof_Labels_${istDateKey()}_${hhmm}.pdf`,
+    fileName: `${BRAND.name}_Labels_${istDateKey()}_${hhmm}.pdf`,
     labels: sorted.map((p) => ({
       ...p.label,
       courier:

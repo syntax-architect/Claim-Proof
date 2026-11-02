@@ -1,6 +1,6 @@
-/* ClaimProof Suite — offline-first service worker (PWA shell cache).
+/* SABOOT Suite — offline-first service worker (PWA shell cache).
  * Note: CACHE version and CORE assets are automatically populated at build time by Vite. */
-const CACHE = 'claimproof-__SW_VERSION__';
+const CACHE = 'saboot-__SW_VERSION__';
 const CORE = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg' /* __CORE_ASSETS__ */];
 
 self.addEventListener('install', (event) => {

@@ -32,7 +32,7 @@ async function mintToken(
   };
   const now = Math.floor(Date.now() / 1000);
   const payload = {
-    iss: 'https://claimproof.in',
+    iss: 'https://saboot.in',
     sub: 'cust_retail_001',
     cid: 'cust_retail_001',
     plan: 'claimradar',

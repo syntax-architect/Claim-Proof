@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState, type DragEvent, type ReactNode } from 'react';
+import { BRAND } from '../../config/brand';
 import {
   ArrowRight,
   CheckCircle2,
@@ -62,47 +63,47 @@ const PRESETS: {
   icon: typeof Ruler;
   art: ReactNode;
 }[] = [
-    {
-      value: '4x6',
-      title: '4×6 inch',
-      sub: '100×150 mm thermal · standard',
-      icon: Ruler,
-      art: (
-        <div className="flex h-12 w-10 flex-col justify-between rounded-sm border-2 border-proof-400/70 bg-proof-500/5 p-1">
-          <div className="h-3 rounded-sm bg-proof-500/25" />
-          <div className="space-y-0.5">
-            <div className="h-1 rounded-sm bg-proof-500/40" />
-            <div className="h-1 rounded-sm bg-proof-500/40" />
-          </div>
-        </div>
-      )
-    },
-    {
-      value: '4x4',
-      title: '4×4 inch',
-      sub: 'Square courier stickers',
-      icon: Square,
-      art: (
-        <div className="flex h-10 w-10 flex-col justify-between rounded-sm border-2 border-proof-400/70 bg-proof-500/5 p-1">
-          <div className="h-2.5 rounded-sm bg-proof-500/25" />
+  {
+    value: '4x6',
+    title: '4×6 inch',
+    sub: '100×150 mm thermal · standard',
+    icon: Ruler,
+    art: (
+      <div className="flex h-12 w-10 flex-col justify-between rounded-sm border-2 border-proof-400/70 bg-proof-500/5 p-1">
+        <div className="h-3 rounded-sm bg-proof-500/25" />
+        <div className="space-y-0.5">
+          <div className="h-1 rounded-sm bg-proof-500/40" />
           <div className="h-1 rounded-sm bg-proof-500/40" />
         </div>
-      )
-    },
-    {
-      value: 'grid4',
-      title: '4-per-A4',
-      sub: 'Cut grid from A4 sheets',
-      icon: Grid2x2,
-      art: (
-        <div className="grid h-11 w-11 grid-cols-2 gap-0.5">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="rounded-sm border border-proof-400/60 bg-proof-500/10" />
-          ))}
-        </div>
-      )
-    }
-  ];
+      </div>
+    )
+  },
+  {
+    value: '4x4',
+    title: '4×4 inch',
+    sub: 'Square courier stickers',
+    icon: Square,
+    art: (
+      <div className="flex h-10 w-10 flex-col justify-between rounded-sm border-2 border-proof-400/70 bg-proof-500/5 p-1">
+        <div className="h-2.5 rounded-sm bg-proof-500/25" />
+        <div className="h-1 rounded-sm bg-proof-500/40" />
+      </div>
+    )
+  },
+  {
+    value: 'grid4',
+    title: '4-per-A4',
+    sub: 'Cut grid from A4 sheets',
+    icon: Grid2x2,
+    art: (
+      <div className="grid h-11 w-11 grid-cols-2 gap-0.5">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="rounded-sm border border-proof-400/60 bg-proof-500/10" />
+        ))}
+      </div>
+    )
+  }
+];
 
 const COURIER_TONE: Partial<
   Record<CourierPartner, 'proof' | 'info' | 'warn' | 'neutral' | 'danger'>
@@ -253,7 +254,7 @@ export function SmartLabelWorkbench() {
 
   const handleReportPdf = useCallback(() => {
     const meta = {
-      reportType: 'ClaimProof Zero-Row PDF Diagnostics',
+      reportType: `${BRAND.name} Zero-Row PDF Diagnostics`,
       timestamp: new Date().toISOString(),
       fileCount: files.length,
       files: files.map((f) => ({
@@ -628,7 +629,7 @@ export function SmartLabelWorkbench() {
                   label="Picklist manifest page"
                   hint={
                     license.plan === 'free'
-                      ? 'Courier handover summary with ClaimProof verified seal'
+                      ? `Courier handover summary with ${BRAND.name} verified seal`
                       : 'Clean white-label courier handover summary'
                   }
                 />

@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "Frequently Asked Questions (FAQ) — SABOOT";
+const description = "Everything you need to know about SABOOT local-first privacy, offline hardware licenses, video storage, and marketplace dispute recovery.";
+
+const faqs = [
+  {
+    question: "Is my label or video data uploaded to any cloud server?",
+    answer: "No. SABOOT is built strictly offline-first. Your customer names, delivery addresses, phone numbers, shipping labels, and packing video recordings are processed directly in your browser and saved directly to your local computer hard drive. We never upload your video files or shipping labels anywhere."
+  },
+  {
+    question: "How does SABOOT save large video files directly to my PC?",
+    answer: "SABOOT utilizes the Chromium File System Access API (supported in Google Chrome, Microsoft Edge, and Brave). On your first setup, you select a local folder on your computer (e.g., C:\\SABOOT_Vault). Videos and photo collages are written directly to this directory organized by date and AWB."
+  },
+  {
+    question: "Does SABOOT work without an active internet connection?",
+    answer: "Yes. Once the Progressive Web App (PWA) is loaded or installed, core functions—including vector label cropping, barcode gun scanning, forensic timestamp burning, and local video saving—operate completely offline without internet connectivity."
+  },
+  {
+    question: "What marketplaces and couriers are supported?",
+    answer: "SABOOT is preconfigured for Meesho, Flipkart, Amazon India, Myntra, and AJIO labels, and supports major Indian logistics carriers including Valmo, ValmoPlus, Delhivery, Ekart, Shadowfax, Xpressbees, Ecom Express, and DTDC."
+  },
+  {
+    question: "What happens if I change my packing PC or reinstall Windows?",
+    answer: "Your offline license is bound to your workstation hardware. If you upgrade your PC or reinstall your operating system, you can easily migrate your license by pasting your license key on the new computer and confirming the device transfer in the app."
+  },
+  {
+    question: "What is your refund policy?",
+    answer: "We offer an unconditional 7-day money-back guarantee for all new annual license purchases. If SABOOT does not fit your warehouse workflow, email support@saboot.in within 7 days of purchase for a 100% refund [needs verification]."
+  },
+  {
+    question: "Why do marketplaces reject ordinary smartphone videos?",
+    answer: "Marketplace audit teams frequently reject smartphone recordings due to alleged tampering, pauses, lack of visible unbroken timestamps, or missing tracking barcodes. SABOOT burns an indelible Indian Standard Time (IST) timestamp banner with milliseconds directly into the video stream and auto-captures a 4-photo collage."
+  }
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.answer
+    }
+  }))
+};
+---
+
+<BaseLayout title={title} description={description} jsonLd={faqJsonLd}>
+  <div class="container" style="padding: 4rem 1.25rem 3rem;">
+    <header class="section-head">
+      <span class="hero-pill">Clear Answers</span>
+      <h1>Frequently Asked Questions</h1>
+      <p>
+        Got questions about local-first privacy, video storage, or offline hardware licenses? We have got you covered.
+      </p>
+    </header>
+
+    <div class="faq-list">
+      {faqs.map((faq) => (
+        <details class="faq-item">
+          <summary>
+            <span>{faq.question}</span>
+          </summary>
+          <p>{faq.answer}</p>
+        </details>
+      ))}
+    </div>
+
+    <!-- Need More Help Banner -->
+    <div style="text-align: center; margin-top: 4rem; padding: 2.5rem; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; max-width: 720px; margin-left: auto; margin-right: auto;">
+      <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem;">Still have questions?</h2>
+      <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        Reach out to our warehouse support engineers directly. We respond within 1 business day.
+      </p>
+      <a href="/contact" class="btn btn-secondary">
+        Contact Seller Support
+      </a>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,8 +1,8 @@
 /**
- * Recorder & Video Configuration for ClaimProof.
+ * Recorder & Video Configuration for SABOOT.
  *
  * NOTE: Marketplace video size limits or policies vary across platforms
- * and are NOT claimed by ClaimProof. Target video size and maximum duration
+ * and are NOT claimed by SABOOT. Target video size and maximum duration
  * are user-configurable settings. Values below are default operational safeguards
  * marked as "needs verification" per project policy.
  */

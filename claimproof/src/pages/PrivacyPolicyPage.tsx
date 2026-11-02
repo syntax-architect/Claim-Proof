@@ -1,4 +1,13 @@
-import { ArrowLeft, CheckCircle2, Database, HardDrive, Lock, ShieldCheck, XCircle } from 'lucide-react';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Database,
+  HardDrive,
+  Lock,
+  ShieldCheck,
+  XCircle
+} from 'lucide-react';
+import { BRAND } from '../config/brand';
 import { Card, PageHeader, Button, Badge } from '../components/ui';
 import type { Route } from '../lib/router';
 
@@ -6,12 +15,7 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          size="sm"
-          icon={ArrowLeft}
-          onClick={() => navigate('settings')}
-        >
+        <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => navigate('settings')}>
           Back to Settings
         </Button>
         <Badge tone="proof">Updated: November 2026</Badge>
@@ -25,20 +29,30 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
       />
 
       {/* Hero Guarantee Callout */}
-      <Card glow className="border-proof-500/40 bg-gradient-to-r from-proof-950/40 via-ink-900 to-ink-950 p-6">
+      <Card
+        glow
+        className="border-proof-500/40 bg-gradient-to-r from-proof-950/40 via-ink-900 to-ink-950 p-6"
+      >
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-proof-400/40 bg-proof-500/20 text-proof-300">
             <Lock className="h-6 w-6" />
           </div>
           <div className="space-y-2">
             <div className="font-display text-lg font-bold text-white">
-              The ClaimProof Zero-Cloud Guarantee
+              The {BRAND.name} Zero-Cloud Guarantee
             </div>
             <p className="text-sm leading-relaxed text-slate-300">
-              ClaimProof is architected from the ground up as a strictly <strong className="text-white">offline-first desktop progressive web application</strong>.
-              All video recordings, shipping label documents, unboxing clips, photographic evidence, and order manifests
-              are stored <strong className="text-white">exclusively on your physical workstation or computer hard drive</strong>.
-              Under no circumstances does ClaimProof stream, upload, or transmit your videos or label files to any remote server or cloud infrastructure.
+              {BRAND.name} is architected from the ground up as a strictly{' '}
+              <strong className="text-white">
+                offline-first desktop progressive web application
+              </strong>
+              . All video recordings, shipping label documents, unboxing clips, photographic
+              evidence, and order manifests are stored{' '}
+              <strong className="text-white">
+                exclusively on your physical workstation or computer hard drive
+              </strong>
+              . Under no circumstances does {BRAND.name} stream, upload, or transmit your videos or
+              label files to any remote server or cloud infrastructure.
             </p>
           </div>
         </div>
@@ -51,28 +65,42 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
           The Only Data We Collect
         </div>
         <p className="text-xs text-slate-400">
-          Because ClaimProof has no backend server storing user content, our data collection is strictly limited to transaction fulfillment and license validation:
+          Because {BRAND.name} has no backend server storing user content, our data collection is
+          strictly limited to transaction fulfillment and license validation:
         </p>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           <div className="glass-soft rounded-xl p-4 space-y-2 border border-line">
-            <div className="text-xs font-semibold text-proof-300 uppercase tracking-wider">1. License Key</div>
+            <div className="text-xs font-semibold text-proof-300 uppercase tracking-wider">
+              1. License Key
+            </div>
             <div className="text-xs text-slate-300 leading-relaxed">
-              When activating a paid plan, a digitally signed cryptographic token (ES256 JWT) containing your plan tier and expiration timestamp is saved locally in your browser's IndexedDB. Verification happens 100% on-device with zero network pings.
+              When activating a paid plan, a digitally signed cryptographic token (ES256 JWT)
+              containing your plan tier and expiration timestamp is saved locally in your browser's
+              IndexedDB. Verification happens 100% on-device with zero network pings.
             </div>
           </div>
 
           <div className="glass-soft rounded-xl p-4 space-y-2 border border-line">
-            <div className="text-xs font-semibold text-proof-300 uppercase tracking-wider">2. Email Address</div>
+            <div className="text-xs font-semibold text-proof-300 uppercase tracking-wider">
+              2. Email Address
+            </div>
             <div className="text-xs text-slate-300 leading-relaxed">
-              Provided voluntarily during checkout or license issuance. Used solely for delivering license tokens, tax invoices, essential security notices, and customer support communications.
+              Provided voluntarily during checkout or license issuance. Used solely for delivering
+              license tokens, tax invoices, essential security notices, and customer support
+              communications.
             </div>
           </div>
 
           <div className="glass-soft rounded-xl p-4 space-y-2 border border-line">
-            <div className="text-xs font-semibold text-proof-300 uppercase tracking-wider">3. Payment &amp; Transaction ID</div>
+            <div className="text-xs font-semibold text-proof-300 uppercase tracking-wider">
+              3. Payment &amp; Transaction ID
+            </div>
             <div className="text-xs text-slate-300 leading-relaxed">
-              Payment identifier generated by our payment processor (Razorpay, e.g. <span className="font-mono text-slate-400">pay_xxx</span> or <span className="font-mono text-slate-400">sub_xxx</span>) to verify subscription status, activate plans, and process refunds.
+              Payment identifier generated by our payment processor (Razorpay, e.g.{' '}
+              <span className="font-mono text-slate-400">pay_xxx</span> or{' '}
+              <span className="font-mono text-slate-400">sub_xxx</span>) to verify subscription
+              status, activate plans, and process refunds.
             </div>
           </div>
         </div>
@@ -88,27 +116,44 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 text-xs text-slate-300">
           <div className="flex items-center gap-2">
             <XCircle className="h-4 w-4 shrink-0 text-danger-400" />
-            <span><strong>No packing or unboxing videos</strong>: video recordings remain on your disk.</span>
+            <span>
+              <strong>No packing or unboxing videos</strong>: video recordings remain on your disk.
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <XCircle className="h-4 w-4 shrink-0 text-danger-400" />
-            <span><strong>No shipping labels or PDFs</strong>: documents are parsed in local WASM memory.</span>
+            <span>
+              <strong>No shipping labels or PDFs</strong>: documents are parsed in local WASM
+              memory.
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <XCircle className="h-4 w-4 shrink-0 text-danger-400" />
-            <span><strong>No customer identities or addresses</strong>: no marketplace buyer PII is ever sent off-device.</span>
+            <span>
+              <strong>No customer identities or addresses</strong>: no marketplace buyer PII is ever
+              sent off-device.
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <XCircle className="h-4 w-4 shrink-0 text-danger-400" />
-            <span><strong>No third-party trackers or telemetry</strong>: zero Google Analytics, Meta Pixel, or session replay scripts.</span>
+            <span>
+              <strong>No third-party trackers or telemetry</strong>: zero Google Analytics, Meta
+              Pixel, or session replay scripts.
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <XCircle className="h-4 w-4 shrink-0 text-danger-400" />
-            <span><strong>No order IDs, SKUs, or AWBs</strong>: parcel records are stored in browser IndexedDB only.</span>
+            <span>
+              <strong>No order IDs, SKUs, or AWBs</strong>: parcel records are stored in browser
+              IndexedDB only.
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <XCircle className="h-4 w-4 shrink-0 text-danger-400" />
-            <span><strong>No cloud storage fees</strong>: your computer's local disk is your private evidence vault.</span>
+            <span>
+              <strong>No cloud storage fees</strong>: your computer's local disk is your private
+              evidence vault.
+            </span>
           </div>
         </div>
       </Card>
@@ -122,13 +167,26 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
 
         <div className="space-y-3 text-xs leading-relaxed text-slate-300">
           <div>
-            <strong className="text-white">Camera Access (<span className="font-mono text-slate-400">getUserMedia</span>):</strong> Requested solely to capture live packing video and scan barcodes at your workstation. The video stream is composited in local memory on an HTML5 canvas and encoded directly via <span className="font-mono text-slate-400">MediaRecorder</span> into your local storage. It is never streamed externally.
+            <strong className="text-white">
+              Camera Access (<span className="font-mono text-slate-400">getUserMedia</span>):
+            </strong>{' '}
+            Requested solely to capture live packing video and scan barcodes at your workstation.
+            The video stream is composited in local memory on an HTML5 canvas and encoded directly
+            via <span className="font-mono text-slate-400">MediaRecorder</span> into your local
+            storage. It is never streamed externally.
           </div>
           <div>
-            <strong className="text-white">File System Access API (<span className="font-mono text-slate-400">showDirectoryPicker</span>):</strong> Used strictly to obtain permission to save video clips and JPEG photo collages into the folder you designate (your Evidence Vault) on your local hard drive.
+            <strong className="text-white">
+              File System Access API (
+              <span className="font-mono text-slate-400">showDirectoryPicker</span>):
+            </strong>{' '}
+            Used strictly to obtain permission to save video clips and JPEG photo collages into the
+            folder you designate (your Evidence Vault) on your local hard drive.
           </div>
           <div>
-            <strong className="text-white">IndexedDB Storage:</strong> Used to maintain a fast local index of orders, barcodes, and recordings so parcel lookups happen instantaneously without network latency.
+            <strong className="text-white">IndexedDB Storage:</strong> Used to maintain a fast local
+            index of orders, barcodes, and recordings so parcel lookups happen instantaneously
+            without network latency.
           </div>
         </div>
       </Card>
@@ -141,10 +199,20 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
         </div>
         <div className="space-y-3 text-xs leading-relaxed text-slate-300">
           <p>
-            <strong className="text-white">Razorpay (Payment Gateway):</strong> When you purchase a license, payment processing is handled securely by Razorpay Software Private Limited. We do not store or process your debit/credit card numbers or UPI PINs. Razorpay's data handling is subject to their privacy policy <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.
+            <strong className="text-white">Razorpay (Payment Gateway):</strong> When you purchase a
+            license, payment processing is handled securely by Razorpay Software Private Limited. We
+            do not store or process your debit/credit card numbers or UPI PINs. Razorpay's data
+            handling is subject to their privacy policy{' '}
+            <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.
           </p>
           <p>
-            <strong className="text-white">Supabase Realtime (Optional Companion Phone Pairing Only):</strong> If you choose to pair a companion smartphone camera as a wireless barcode gun, ephemeral room signaling is mediated via Supabase Realtime broadcast channels. Only transient pairing codes and scanned barcode strings are exchanged; no video feeds or label PDFs traverse these channels.
+            <strong className="text-white">
+              Supabase Realtime (Optional Companion Phone Pairing Only):
+            </strong>{' '}
+            If you choose to pair a companion smartphone camera as a wireless barcode gun, ephemeral
+            room signaling is mediated via Supabase Realtime broadcast channels. Only transient
+            pairing codes and scanned barcode strings are exchanged; no video feeds or label PDFs
+            traverse these channels.
           </p>
         </div>
       </Card>
@@ -156,13 +224,24 @@ export default function PrivacyPolicyPage({ navigate }: { navigate: (r: Route) =
         </div>
         <div className="space-y-3 text-xs leading-relaxed text-slate-300">
           <p>
-            <strong className="text-white">Total Data Sovereignty:</strong> Because all data resides on your machine, you can export a full JSON backup or completely wipe the database at any moment from the Settings page. Deleting your designated Vault folder permanently removes all video and photographic files.
+            <strong className="text-white">Total Data Sovereignty:</strong> Because all data resides
+            on your machine, you can export a full JSON backup or completely wipe the database at
+            any moment from the Settings page. Deleting your designated Vault folder permanently
+            removes all video and photographic files.
           </p>
           <p>
-            <strong className="text-white">Compliance with Indian Law:</strong> This privacy policy is formulated in accordance with the Information Technology Act, 2000, and the Digital Personal Data Protection Act, 2023 (DPDPA) <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.
+            <strong className="text-white">Compliance with Indian Law:</strong> This privacy policy
+            is formulated in accordance with the Information Technology Act, 2000, and the Digital
+            Personal Data Protection Act, 2023 (DPDPA){' '}
+            <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.
           </p>
           <p>
-            <strong className="text-white">Grievance Officer:</strong> For any data protection inquiries, contact our designated Grievance Officer at <a href="mailto:support@claimproof.in" className="text-proof-400 underline">support@claimproof.in</a> <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.
+            <strong className="text-white">Grievance Officer:</strong> For any data protection
+            inquiries, contact our designated Grievance Officer at{' '}
+            <a href={`mailto:${BRAND.supportEmail}`} className="text-proof-400 underline">
+              {BRAND.supportEmail}
+            </a>{' '}
+            <span className="font-mono text-warn-400">[NEEDS LEGAL REVIEW]</span>.
           </p>
         </div>
       </Card>

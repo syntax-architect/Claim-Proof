@@ -97,8 +97,8 @@ describe('Telemetry & Error Monitoring with Scrubbing', () => {
         'Failed to process file C:\\Users\\Seller\\Desktop\\flipkart_order.pdf for AWB FMPP0982341201 and SKU TSHIRT-BLK-L'
       );
       sensitiveError.stack = `Error: Failed to process file C:\\Users\\Seller\\Desktop\\flipkart_order.pdf
-    at Object.processLabel (C:\\Users\\Seller\\Desktop\\claimproof\\src\\pdf.ts:42:15)
-    at runTask (C:\\Users\\Seller\\Desktop\\claimproof\\src\\main.ts:10:5)`;
+    at Object.processLabel (C:\\Users\\Seller\\Desktop\\saboot\\src\\pdf.ts:42:15)
+    at runTask (C:\\Users\\Seller\\Desktop\\saboot\\src\\main.ts:10:5)`;
 
       const scrubbed = scrubError(sensitiveError);
 

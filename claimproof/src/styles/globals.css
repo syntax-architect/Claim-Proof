@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* ═══════════════════════════════════════════════════════════════════════
-   ClaimProof Suite V2 — professional light/dark design system.
+   SABOOT Suite V2 — professional light/dark design system.
    Semantic CSS variables flip per theme; Tailwind tokens map to them via
    @theme inline so every existing utility re-themes automatically.
    ═══════════════════════════════════════════════════════════════════════ */
@@ -30,17 +30,21 @@
   --color-proof-700: var(--cp-accent-strong);
 
   /* Status accents — text tones darken in light mode for contrast */
+  --color-success-300: var(--cp-successtext);
+  --color-success-400: var(--cp-successtext);
+  --color-success-500: #4FA37A;
+  --color-success-600: #2F7A55;
   --color-warn-300: var(--cp-warn-text);
   --color-warn-400: var(--cp-warn-text);
-  --color-warn-500: #f59e0b;
-  --color-warn-600: #d97706;
+  --color-warn-500: #E39A4F;
+  --color-warn-600: #C9812F;
   --color-danger-300: var(--cp-danger-text);
   --color-danger-400: var(--cp-danger-text);
-  --color-danger-500: #ef4444;
-  --color-danger-600: #dc2626;
-  --color-info-300: var(--cp-info-text);
-  --color-info-400: var(--cp-info-text);
-  --color-info-500: #06b6d4;
+  --color-danger-500: #D9534A;
+  --color-danger-600: #B3382F;
+  --color-info-300: var(--cp-infotext);
+  --color-info-400: var(--cp-infotext);
+  --color-info-500: #7F96AD;
 
   /* Text ramp — slate-* classes become theme-aware */
   --color-slate-100: var(--cp-text);
@@ -51,8 +55,8 @@
   --color-slate-600: var(--cp-text-3);
   --color-white: var(--cp-text);
 
-  /* Fixed tokens that never flip */
-  --color-on-accent: #ffffff;
+  /* Theme-flipped on-accent token */
+  --color-on-accent: var(--cp-on-accent);
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
@@ -69,55 +73,71 @@
 
 /* ── Dark palette (default) ─────────────────────────────────────────── */
 .dark {
-  --cp-bg: #0a0c12;
-  --cp-surface: #10131b;
-  --cp-surface-2: #171b26;
-  --cp-surface-3: #202634;
-  --cp-line: rgba(148, 163, 184, 0.12);
-  --cp-line-strong: rgba(148, 163, 184, 0.24);
-  --cp-text: #edeff5;
-  --cp-text-2: #9aa3b2;
-  --cp-text-3: #8a95a5;
-  --cp-accent: #60a5fa;
-  --cp-accent-text: #93c5fd;
-  --cp-accent-solid: #2563eb;
-  --cp-accent-strong: #1d4ed8;
-  --cp-accent-soft: rgba(59, 130, 246, 0.12);
-  --cp-warn-text: #fbbf24;
-  --cp-danger-text: #f87171;
-  --cp-info-text: #22d3ee;
-  --cp-glass: rgba(16, 19, 27, 0.86);
+  --cp-bg: #0B0C0E;
+  --cp-surface: #121316;
+  --cp-surface-2: #181A1F;
+  --cp-surface-3: #22252B;
+  --cp-line: rgba(232, 226, 212, 0.10);
+  --cp-linestrong: rgba(232, 226, 212, 0.20);
+  --cp-line-strong: rgba(232, 226, 212, 0.20);
+  --cp-text: #F2EFE8;
+  --cp-text-2: #A9A59B;
+  --cp-text-3: #8F8B82;
+  --cp-accent: #D4B483;
+  --cp-accent-text: #E3C896;
+  --cp-accentsolid: #C9A45C;
+  --cp-accent-solid: #C9A45C;
+  --cp-accent-strong: #B8923F;
+  --cp-accentsoft: rgba(212, 180, 131, 0.12);
+  --cp-accent-soft: rgba(212, 180, 131, 0.12);
+  --cp-on-accent: #14110A;
+  --cp-successtext: #6CC29A;
+  --cp-success-text: #6CC29A;
+  --cp-warn-text: #E39A4F;
+  --cp-danger-text: #E88A82;
+  --cp-infotext: #9DB1C6;
+  --cp-info-text: #9DB1C6;
+  --cp-glass: rgba(18, 19, 22, 0.88);
   --cp-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  --cp-hero-1: rgba(59, 130, 246, 0.08);
-  --cp-hero-2: rgba(34, 211, 238, 0.05);
+  --cp-hero-1: rgba(201, 164, 92, 0.07);
+  --cp-hero2: rgba(157, 177, 198, 0.04);
+  --cp-hero-2: rgba(157, 177, 198, 0.04);
   color-scheme: dark;
 }
 
 /* ── Light palette ──────────────────────────────────────────────────── */
 .light {
-  --cp-bg: #f6f7f9;
-  --cp-surface: #ffffff;
-  --cp-surface-2: #f3f4f6;
-  --cp-surface-3: #e8eaee;
-  --cp-line: rgba(13, 14, 18, 0.08);
-  --cp-line-strong: rgba(13, 14, 18, 0.16);
-  --cp-text: #0d0e12;
-  --cp-text-2: #4b5563;
-  --cp-text-3: #4b5565;
-  --cp-accent: #2563eb;
-  --cp-accent-text: #1d4ed8;
-  --cp-accent-solid: #2563eb;
-  --cp-accent-strong: #1d4ed8;
-  --cp-accent-soft: rgba(37, 99, 235, 0.08);
-  --cp-warn-text: #9a3412;
-  --cp-danger-text: #b91c1c;
-  --cp-info-text: #0e7490;
-  --cp-glass: rgba(255, 255, 255, 0.9);
+  --cp-bg: #FAF8F4;
+  --cp-surface: #FFFFFF;
+  --cp-surface-2: #F3F0EA;
+  --cp-surface-3: #E8E3DA;
+  --cp-line: rgba(21, 19, 15, 0.09);
+  --cp-linestrong: rgba(21, 19, 15, 0.18);
+  --cp-line-strong: rgba(21, 19, 15, 0.18);
+  --cp-text: #15130F;
+  --cp-text-2: #55504A;
+  --cp-text-3: #6B655D;
+  --cp-accent: #9A7428;
+  --cp-accent-text: #7A5A1B;
+  --cp-accentsolid: #7A5A1B;
+  --cp-accent-solid: #7A5A1B;
+  --cp-accent-strong: #5F4512;
+  --cp-accentsoft: rgba(154, 116, 40, 0.10);
+  --cp-accent-soft: rgba(154, 116, 40, 0.10);
+  --cp-on-accent: #FFFFFF;
+  --cp-successtext: #2F7A55;
+  --cp-success-text: #2F7A55;
+  --cp-warn-text: #9A5A12;
+  --cp-danger-text: #B3382F;
+  --cp-infotext: #476178;
+  --cp-info-text: #476178;
+  --cp-glass: rgba(255, 255, 255, 0.92);
   --cp-shadow:
-    0 0 0 1px rgba(17, 17, 26, 0.03), 0 1px 2px rgba(16, 24, 40, 0.04),
-    0 8px 24px -10px rgba(16, 24, 40, 0.1);
-  --cp-hero-1: rgba(37, 99, 235, 0.07);
-  --cp-hero-2: rgba(14, 116, 144, 0.05);
+    0 0 0 1px rgba(21, 19, 15, 0.03), 0 1px 2px rgba(21, 19, 15, 0.04),
+    0 8px 24px -10px rgba(21, 19, 15, 0.10);
+  --cp-hero-1: rgba(154, 116, 40, 0.07);
+  --cp-hero2: rgba(71, 97, 120, 0.04);
+  --cp-hero-2: rgba(71, 97, 120, 0.04);
   color-scheme: light;
 }
 

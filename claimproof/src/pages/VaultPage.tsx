@@ -277,7 +277,7 @@ export default function VaultPage() {
     const blob = new Blob([header + body], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `claimproof_orders_${Date.now()}.csv`;
+    a.download = `saboot_orders_${Date.now()}.csv`;
     a.click();
     URL.revokeObjectURL(a.href);
     toast.success('CSV exported', `${rows.length} rows`);
@@ -313,7 +313,7 @@ export default function VaultPage() {
                 No vault folder chosen
               </div>
               <div className="mt-1 text-xs leading-relaxed text-slate-300">
-                Choose a dedicated folder on your computer (e.g. D:\ClaimProof_Vault). Videos and
+                Choose a dedicated folder on your computer (e.g. D:\SABOOT_Vault). Videos and
                 evidence collages will be saved directly into dated subfolders on your hard drive.
               </div>
             </div>

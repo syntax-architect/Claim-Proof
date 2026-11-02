@@ -1,5 +1,5 @@
-/* ClaimProof Suite — Manifest V3 Background Service Worker
- * Opens the ClaimProof application in a full browser tab when the extension action icon is clicked.
+/* SABOOT Suite — Manifest V3 Background Service Worker
+ * Opens the SABOOT application in a full browser tab when the extension action icon is clicked.
  * Requires zero host permissions and minimal extension privileges. */
 
 chrome.action.onClicked.addListener(async () => {

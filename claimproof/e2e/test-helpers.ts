@@ -31,7 +31,7 @@ export async function mintTestLicense(plan = 'claimradar', days = 365): Promise<
   const header = { alg: 'ES256', typ: 'JWT', kid: 'cp-dev-1' };
   const now = Math.floor(Date.now() / 1000);
   const payload = {
-    iss: 'https://claimproof.in',
+    iss: 'https://saboot.in',
     sub: 'cust_playwright_e2e',
     cid: 'cust_playwright_e2e',
     plan,

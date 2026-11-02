@@ -1,11 +1,15 @@
-/* UPI payment-link primitives for the ClaimProof paywall.
+/* UPI payment-link primitives for the SABOOT paywall.
  * The VPA below is a placeholder — production checkout uses Razorpay/Cashfree
  * dynamic QR codes generated server-side per order. */
 
-export const CLAIMPROOF_VPA = 'claimproof@upi'; // placeholder production VPA (server-side Razorpay/Cashfree dynamic QR replaces it)
+export const SABOOT_VPA =
+  (typeof import.meta !== 'undefined' &&
+    (import.meta.env?.VITE_SABOOT_VPA || import.meta.env?.VITE_CLAIMPROOF_VPA)) ||
+  'saboot@upi';
+export const CLAIMPROOF_VPA = SABOOT_VPA; // legacy alias for backward compatibility
 
 export interface UpiIntent {
-  /** Payee VPA, e.g. `claimproof@upi`. */
+  /** Payee VPA, e.g. `saboot@upi`. */
   pa: string;
   /** Payee display name shown in the UPI app. */
   pn: string;

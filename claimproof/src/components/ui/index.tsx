@@ -44,7 +44,7 @@ export function Card({
       className={cn(
         'glass',
         hover && 'hover:-translate-y-0.5 hover:border-line-bright',
-        glow && 'border-proof-500/35 shadow-[0_10px_36px_-16px_rgba(37,99,235,0.45)]',
+        glow && 'border-proof-500/35 shadow-[0_10px_36px_-16px_color-mix(in_srgb,var(--cp-accentsolid)_45%,transparent)]',
         className
       )}
     >

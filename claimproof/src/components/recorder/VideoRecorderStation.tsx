@@ -965,12 +965,12 @@ export function VideoRecorderStation({ className }: { className?: string }) {
             {/* Idle overlay */}
             {stage === 'idle' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="scanline absolute inset-x-6 h-px animate-scan-y rounded-full bg-proof-400/60 shadow-[0_0_12px_rgba(59,130,246,0.5)]" />
+                <div className="scanline absolute inset-x-6 h-px animate-scan-y rounded-full bg-proof-400/60 shadow-[0_0_12px_color-mix(in_srgb,var(--cp-accentsolid)_50%,transparent)]" />
                 <div className="absolute left-4 top-14 h-7 w-7 border-l-2 border-t-2 border-proof-400/60" />
                 <div className="absolute right-4 top-14 h-7 w-7 border-r-2 border-t-2 border-proof-400/60" />
                 <div className="absolute bottom-16 left-4 h-7 w-7 border-b-2 border-l-2 border-proof-400/60" />
                 <div className="absolute bottom-16 right-4 h-7 w-7 border-b-2 border-r-2 border-proof-400/60" />
-                <ScanLine className="h-9 w-9 animate-rec-pulse text-emerald-300" />
+                <ScanLine className="h-9 w-9 animate-rec-pulse text-success-300" />
                 <div className="mt-4 font-display text-xl font-bold tracking-[0.2em] text-slate-50">
                   WAITING FOR SCAN
                 </div>
@@ -997,9 +997,9 @@ export function VideoRecorderStation({ className }: { className?: string }) {
                           className={cn(
                             'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border font-mono text-[11px] font-bold',
                             i < activeStep
-                              ? 'border-emerald-400/60 bg-emerald-500/20 text-emerald-300'
+                              ? 'border-success-400/60 bg-success-500/20 text-success-300'
                               : i === activeStep
-                                ? 'animate-rec-pulse border-amber-400/70 bg-amber-500/20 text-amber-300'
+                                ? 'animate-rec-pulse border-warn-400/70 bg-warn-500/20 text-warn-300'
                                 : 'border-[#3a4a5e] bg-[#17202c] text-[#64748b]'
                           )}
                         >
@@ -1021,7 +1021,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
             )}
 
             {flagged && stage === 'recording' && (
-              <div className="absolute left-1/2 top-14 -translate-x-1/2 animate-rec-pulse rounded-lg border border-red-500/60 bg-red-500/25 px-4 py-2 font-display text-sm font-bold tracking-widest text-red-300 backdrop-blur">
+              <div className="absolute left-1/2 top-14 -translate-x-1/2 animate-rec-pulse rounded-lg border border-danger-500/60 bg-danger-500/25 px-4 py-2 font-display text-sm font-bold tracking-widest text-danger-300 backdrop-blur">
                 ⚑ FLAGGED: BAD RETURN — pick a reason on stop
               </div>
             )}
@@ -1041,7 +1041,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
                 <span
                   className={cn(
                     'font-mono text-xs',
-                    isOverTarget ? 'text-amber-400 font-semibold' : 'text-slate-400'
+                    isOverTarget ? 'text-warn-400 font-semibold' : 'text-slate-400'
                   )}
                 >
                   ~{estimatedMB} MB / Target: &lt;{targetSizeMB} MB

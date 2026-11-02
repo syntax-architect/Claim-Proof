@@ -351,7 +351,7 @@ export default function PricingPage() {
             className={cn(
               'relative flex items-center gap-2 rounded-lg px-5 py-2 text-xs font-semibold transition-all',
               interval === 'annual'
-                ? 'bg-proof-500/25 text-proof-200 shadow-sm ring-1 ring-proof-400/60'
+                ? 'bg-proof-500/25 text-proof-300 shadow-sm ring-1 ring-proof-400/60'
                 : 'text-slate-400 hover:text-slate-200'
             )}
           >
@@ -530,7 +530,7 @@ export default function PricingPage() {
                       className={cn(
                         'px-4 py-3 text-xs',
                         cell.includes('✓')
-                          ? 'text-proof-400'
+                          ? 'text-proof-300'
                           : cell === '—'
                             ? 'text-slate-600'
                             : 'text-slate-300'

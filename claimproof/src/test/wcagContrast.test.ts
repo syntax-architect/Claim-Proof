@@ -8,13 +8,13 @@ function hexToRgb(hex: string): [number, number, number] {
     return [
       parseInt(clean[0] + clean[0], 16),
       parseInt(clean[1] + clean[1], 16),
-      parseInt(clean[2] + clean[2], 16),
+      parseInt(clean[2] + clean[2], 16)
     ];
   }
   return [
     parseInt(clean.slice(0, 2), 16),
     parseInt(clean.slice(2, 4), 16),
-    parseInt(clean.slice(4, 6), 16),
+    parseInt(clean.slice(4, 6), 16)
   ];
 }
 
@@ -26,10 +26,7 @@ function relativeLuminance([r, g, b]: [number, number, number]): number {
   return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
 }
 
-function contrastRatio(
-  c1: [number, number, number],
-  c2: [number, number, number]
-): number {
+function contrastRatio(c1: [number, number, number], c2: [number, number, number]): number {
   const l1 = relativeLuminance(c1);
   const l2 = relativeLuminance(c2);
   const lighter = Math.max(l1, l2);
@@ -37,10 +34,7 @@ function contrastRatio(
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-function parseTheme(
-  css: string,
-  theme: 'dark' | 'light'
-): Record<string, string> {
+function parseTheme(css: string, theme: 'dark' | 'light'): Record<string, string> {
   const match = css.match(new RegExp(`\\.${theme}\\s*\\{([\\s\\S]*?)\\}`));
   if (!match) throw new Error(`Could not find .${theme} block in CSS`);
   const vars: Record<string, string> = {};
@@ -69,7 +63,7 @@ describe('WCAG 2.1 Contrast Ratios in globals.css (Obsidian & Champagne Palette)
     tokens: Record<string, string>;
   }> = [
     { name: 'dark', tokens: darkTokens },
-    { name: 'light', tokens: lightTokens },
+    { name: 'light', tokens: lightTokens }
   ];
 
   for (const { name, tokens } of themes) {
@@ -106,10 +100,7 @@ describe('WCAG 2.1 Contrast Ratios in globals.css (Obsidian & Champagne Palette)
       });
 
       it('primary CTA button text meets WCAG AA (>= 4.5:1)', () => {
-        const buttonContrast = contrastRatio(
-          buttonOnAccentRgb,
-          buttonFillRgb
-        );
+        const buttonContrast = contrastRatio(buttonOnAccentRgb, buttonFillRgb);
         expect(buttonContrast).toBeGreaterThanOrEqual(4.5);
       });
 

@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ═══════════════════════════════════════════════════════════════════════
    SABOOT Suite V2 — professional light/dark design system.
    Semantic CSS variables flip per theme; Tailwind tokens map to them via
@@ -57,6 +59,7 @@
 
   /* Theme-flipped on-accent token */
   --color-on-accent: var(--cp-on-accent);
+  --color-pure-white: #ffffff;
 
   --font-sans:
     'Inter Variable', 'Inter', 'Inter-fallback', ui-sans-serif, system-ui, -apple-system,

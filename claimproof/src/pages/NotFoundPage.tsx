@@ -87,7 +87,7 @@ export default function NotFoundPage({ navigate, path }: NotFoundPageProps) {
           Need assistance with your evidence or labels?{' '}
           <a
             href={SUPPORT_CONFIG.url}
-            className="inline-flex items-center gap-1 font-medium text-proof-400 underline underline-offset-4 transition-colors hover:text-proof-300"
+            className="inline-flex items-center gap-1 font-medium text-proof-300 underline underline-offset-4 transition-colors hover:text-proof-200"
           >
             <HelpCircle className="h-3.5 w-3.5 inline" />
             {SUPPORT_CONFIG.label}

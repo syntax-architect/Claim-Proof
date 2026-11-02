@@ -58,7 +58,8 @@ describe('Unprovable Claims & Banned Words Guard', () => {
 
   // For 100%, match claims/promises (e.g. 100% local, 100% private, 100% offline, 100% free, 100% refund, 100% on-device)
   // while allowing standard CSS/SVG layout dimensions (width: 100%, height: 100%, size-adjust: 100%, stop offset="100%", @keyframes 100%)
-  const CLAIM_100_PERCENT = /\b100\s*%\s*(?:local|offline|private|free|refund|on-device|guaranteed|transparent|pure|cotton|awb|serverless|payout|approval|claim|[a-zA-Z]+)/i;
+  const CLAIM_100_PERCENT =
+    /\b100\s*%\s*(?:local|offline|private|free|refund|on-device|guaranteed|transparent|pure|cotton|awb|serverless|payout|approval|claim|[a-zA-Z]+)/i;
 
   it('ensures src/ has ZERO occurrences of banned words and unprovable claims', () => {
     const srcFiles = getFilesRecursively(srcDir);

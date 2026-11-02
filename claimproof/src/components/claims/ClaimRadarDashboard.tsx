@@ -208,7 +208,7 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
               onClick={() => openPaywall({ scope: 'claimRadar', plan: 'claimradar' })}
             >
               Unlock ClaimRadar Pro — ₹4,499/yr{' '}
-              <span className="ml-1 font-mono text-sm text-on-accent/70 font-bold line-through">
+              <span className="ml-1 font-mono text-sm text-on-accent font-bold line-through">
                 ₹7,188
               </span>
             </Button>

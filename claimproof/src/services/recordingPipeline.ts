@@ -29,7 +29,6 @@ export interface OverlayMeta {
   freeTier: boolean;
 }
 
-
 export interface PipelineEvents {
   onPhotoTaken?: (index: 0 | 1 | 2 | 3, dataUrl: string) => void;
   onElapsed?: (sec: number) => void;

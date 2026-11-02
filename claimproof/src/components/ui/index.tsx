@@ -130,7 +130,7 @@ const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   outline:
     'border border-proof-500/45 text-proof-300 hover:bg-proof-500/10 hover:border-proof-500/70 active:scale-[0.98]',
   danger:
-    'bg-danger-600 text-on-accent font-semibold hover:bg-danger-700 border border-danger-500/50 active:scale-[0.98]'
+    'bg-danger-600 text-pure-white font-semibold hover:bg-danger-700 border border-danger-500/50 active:scale-[0.98]'
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {

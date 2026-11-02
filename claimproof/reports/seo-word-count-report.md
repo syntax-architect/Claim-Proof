@@ -1,6 +1,6 @@
 # SABOOT Site SEO & Quality Audit Report
 
-Generated on: 2026-11-02T16:40:29.811Z
+Generated on: 2026-11-02T18:22:38.251Z
 
 ## 1. Lighthouse Quality Scores (Threshold: ≥ 90)
 
@@ -8,16 +8,16 @@ Generated on: 2026-11-02T16:40:29.811Z
 | :--- | :---: | :---: | :---: | :---: |
 | Marketing Site: Home (/) | **100** / 100 | **92** / 100 | ≥ 90 | ✅ PASS |
 | Marketing Site: Features (/features) | **100** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
-| SABOOT: Landing Page (/landing.html) | **98** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
-| SABOOT: App Shell (/) | **97** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
+| SABOOT: Landing Page (/landing.html) | **100** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
+| SABOOT: App Shell (/) | **100** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
 
 ## 2. Page Metadata & Content Audit (Title ≤ 60, Desc ≤ 160)
 
 | Target Suite | Page / Route | Title (≤ 60) | Meta Desc (≤ 160) | H1 | Canonical | Words | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| Marketing Site | `/` | ✓ (49) | ✓ (134) | ✓ | ✓ | 666 | ✅ Pass |
+| Marketing Site | `/` | ✓ (49) | ✓ (134) | ✓ | ✓ | 664 | ✅ Pass |
 | Marketing Site | `/features` | ✓ (34) | ✓ (143) | ✓ | ✓ | 634 | ✅ Pass |
-| Marketing Site | `/pricing` | ✓ (30) | ✓ (151) | ✓ | ✓ | 508 | ✅ Pass |
+| Marketing Site | `/pricing` | ✓ (30) | ✓ (151) | ✓ | ✓ | 506 | ✅ Pass |
 | Marketing Site | `/guides` | ✓ (49) | ✓ (137) | ✓ | ✓ | ⚠️ **264** (Flagged < 300) | ✅ Pass |
 | Marketing Site | `/guides/meesho-safe-claim-guide` | ✓ (41) | ✓ (121) | ✓ | ✓ | 477 | ✅ Pass |
 | Marketing Site | `/guides/flipkart-spf-claim-guide` | ✓ (42) | ✓ (126) | ✓ | ✓ | 407 | ✅ Pass |
@@ -29,19 +29,19 @@ Generated on: 2026-11-02T16:40:29.811Z
 | Marketing Site | `/terms` | ✓ (31) | ✓ (104) | ✓ | ✓ | 429 | ✅ Pass |
 | Marketing Site | `/refund` | ✓ (37) | ✓ (86) | ✓ | ✓ | 357 | ✅ Pass |
 | Marketing Site | `/404.html` | ✓ (29) | ✓ (108) | ✓ | ✓ | ⚠️ **146** (Flagged < 300) | ✅ Pass |
-| SABOOT App | `/landing.html` | ✓ (45) | ✓ (143) | ✓ | ✓ | 1341 | ✅ Pass |
+| SABOOT App | `/landing.html` | ✓ (45) | ✓ (143) | ✓ | ✓ | 1339 | ✅ Pass |
 | SABOOT App | `/404.html` | ✓ (35) | ✓ (48) | ✓ | ✓ | ⚠️ **49** (Flagged < 300) | ✅ Pass |
-| SABOOT App | `/#/overview` | ✓ (36) | ✓ (134) | ✓ | ✓ | 535 | ✅ Pass |
-| SABOOT App | `/#/labels` | ✓ (41) | ✓ (132) | ✓ | ✓ | ⚠️ **245** (Flagged < 300) | ✅ Pass |
-| SABOOT App | `/#/recorder` | ✓ (42) | ✓ (133) | ✓ | ✓ | 392 | ✅ Pass |
+| SABOOT App | `/#/overview` | ✓ (36) | ✓ (134) | ✓ | ✓ | 533 | ✅ Pass |
+| SABOOT App | `/#/labels` | ✓ (41) | ✓ (132) | ✓ | ✓ | ⚠️ **244** (Flagged < 300) | ✅ Pass |
+| SABOOT App | `/#/recorder` | ✓ (42) | ✓ (124) | ✓ | ✓ | 392 | ✅ Pass |
 | SABOOT App | `/#/claims` | ✓ (41) | ✓ (133) | ✓ | ✓ | ⚠️ **252** (Flagged < 300) | ✅ Pass |
-| SABOOT App | `/#/vault` | ✓ (43) | ✓ (136) | ✓ | ✓ | ⚠️ **274** (Flagged < 300) | ✅ Pass |
-| SABOOT App | `/#/pricing` | ✓ (44) | ✓ (135) | ✓ | ✓ | 555 | ✅ Pass |
-| SABOOT App | `/#/settings` | ✓ (37) | ✓ (128) | ✓ | ✓ | 559 | ✅ Pass |
-| SABOOT App | `/#/privacy` | ✓ (43) | ✓ (133) | ✓ | ✓ | 726 | ✅ Pass |
-| SABOOT App | `/#/terms` | ✓ (31) | ✓ (125) | ✓ | ✓ | 791 | ✅ Pass |
-| SABOOT App | `/#/refund` | ✓ (37) | ✓ (129) | ✓ | ✓ | 577 | ✅ Pass |
-| SABOOT App | `/#/support` | ✓ (35) | ✓ (129) | ✓ | ✓ | 655 | ✅ Pass |
+| SABOOT App | `/#/vault` | ✓ (38) | ✓ (136) | ✓ | ✓ | ⚠️ **274** (Flagged < 300) | ✅ Pass |
+| SABOOT App | `/#/pricing` | ✓ (44) | ✓ (135) | ✓ | ✓ | 560 | ✅ Pass |
+| SABOOT App | `/#/settings` | ✓ (37) | ✓ (128) | ✓ | ✓ | 680 | ✅ Pass |
+| SABOOT App | `/#/privacy` | ✓ (44) | ✓ (133) | ✓ | ✓ | 729 | ✅ Pass |
+| SABOOT App | `/#/terms` | ✓ (31) | ✓ (125) | ✓ | ✓ | 790 | ✅ Pass |
+| SABOOT App | `/#/refund` | ✓ (37) | ✓ (129) | ✓ | ✓ | 576 | ✅ Pass |
+| SABOOT App | `/#/support` | ✓ (35) | ✓ (129) | ✓ | ✓ | 658 | ✅ Pass |
 | SABOOT App | `/#/404` | ✓ (29) | ✓ (123) | ✓ | ✓ | ⚠️ **227** (Flagged < 300) | ✅ Pass |
 
 ## 3. Pages Flagged Under 300 Words
@@ -52,7 +52,7 @@ The following 8 pages contain fewer than 300 words (thin content / utility pages
 - **Marketing Site: Contact (/contact)** (`/contact`): **196 words** (Flagged < 300 words)
 - **Marketing Site: 404 Fallback (/404.html)** (`/404.html`): **146 words** (Flagged < 300 words)
 - **SABOOT App: Static 404 Fallback (/404.html)** (`/404.html`): **49 words** (Flagged < 300 words)
-- **SABOOT App: SPA: SmartLabel Studio (/#/labels)** (`/#/labels`): **245 words** (Flagged < 300 words)
+- **SABOOT App: SPA: SmartLabel Studio (/#/labels)** (`/#/labels`): **244 words** (Flagged < 300 words)
 - **SABOOT App: SPA: ClaimRadar (/#/claims)** (`/#/claims`): **252 words** (Flagged < 300 words)
 - **SABOOT App: SPA: Vault (/#/vault)** (`/#/vault`): **274 words** (Flagged < 300 words)
 - **SABOOT App: SPA: 404 Not Found (/#/404)** (`/#/404`): **227 words** (Flagged < 300 words)

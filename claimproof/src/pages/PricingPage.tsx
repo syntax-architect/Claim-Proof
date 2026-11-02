@@ -351,7 +351,7 @@ export default function PricingPage() {
             className={cn(
               'relative flex items-center gap-2 rounded-lg px-5 py-2 text-xs font-semibold transition-all',
               interval === 'annual'
-                ? 'bg-proof-500/25 text-proof-300 shadow-sm ring-1 ring-proof-400/60'
+                ? 'bg-proof-500/25 text-proof-700 dark:text-white shadow-sm ring-1 ring-proof-400/60'
                 : 'text-slate-400 hover:text-slate-200'
             )}
           >
@@ -508,6 +508,7 @@ export default function PricingPage() {
         <div
           className="overflow-x-auto focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-proof-500"
           role="region"
+          tabIndex={0}
           aria-label="Complete Feature Comparison"
         >
           <table className="w-full min-w-[640px] text-left text-sm">

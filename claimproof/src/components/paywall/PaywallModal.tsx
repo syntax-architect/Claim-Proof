@@ -129,6 +129,22 @@ export function PaywallModal(): JSX.Element {
     }
   };
 
+  let devDemoSection: React.ReactNode = null;
+  if (import.meta.env.DEV) {
+    devDemoSection = (
+      <div className="flex items-center gap-2.5">
+        <Badge tone="outline">TEST ONLY</Badge>
+        <button
+          type="button"
+          onClick={startDemo}
+          className="text-xs text-slate-500 underline decoration-line-bright underline-offset-4 transition-colors hover:text-proof-300"
+        >
+          Try without paying (demo license)
+        </button>
+      </div>
+    );
+  }
+
   return (
     <Modal
       open={ctx.open}
@@ -144,18 +160,7 @@ export function PaywallModal(): JSX.Element {
             Offline-first: your license is verified on-device via an ES256 signature. No account
             required.
           </div>
-          {import.meta.env.DEV && (
-            <div className="flex items-center gap-2.5">
-              <Badge tone="outline">TEST ONLY</Badge>
-              <button
-                type="button"
-                onClick={startDemo}
-                className="text-xs text-slate-500 underline decoration-line-bright underline-offset-4 transition-colors hover:text-proof-300"
-              >
-                Try without paying (demo license)
-              </button>
-            </div>
-          )}
+          {devDemoSection}
         </div>
       }
     >

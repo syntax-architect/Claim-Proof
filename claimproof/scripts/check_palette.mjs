@@ -141,7 +141,7 @@ for (const file of allFiles) {
     }
 
     // 3. rgb/rgba/hsl check
-    const colorFnMatches = line.match(/(?:rgb|hsl)a?\([^)]+\)/gi) || [];
+    const colorFnMatches = line.match(/\b(?:rgba?|hsla?)\([^)]+\)/gi) || [];
     for (const colorFn of colorFnMatches) {
       // Allowlist rgb(0,0,0) in sample PDF generator or test fixtures
       if (/rgb\(\s*0\s*,\s*0\s*,\s*0\s*\)/i.test(colorFn) && (

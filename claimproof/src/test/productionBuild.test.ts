@@ -3,12 +3,16 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { execSync } from 'node:child_process';
 
+const appDir = join(import.meta.dirname, '..', '..');
+const distDir = join(appDir, 'dist');
+
 describe('Production build verification', () => {
   it('proves production builds contain no activateDemoPlan or un-gated demo license buttons', () => {
-    const distDir = join(process.cwd(), 'dist');
-    if (!existsSync(distDir)) {
-      execSync('npm run build', { stdio: 'pipe' });
-    }
+    execSync('npm run build', {
+      cwd: appDir,
+      stdio: 'pipe',
+      env: { ...process.env, NODE_ENV: 'production' }
+    });
 
     expect(existsSync(distDir)).toBe(true);
 
@@ -35,10 +39,10 @@ describe('Production build verification', () => {
 
     searchDir(distDir);
     expect(matches).toEqual([]);
-  });
+  }, 30000);
 
   it('proves service worker is versioned automatically at build time with pre-cached assets', () => {
-    const swPath = join(process.cwd(), 'dist', 'sw.js');
+    const swPath = join(distDir, 'sw.js');
     expect(existsSync(swPath)).toBe(true);
 
     const swContent = readFileSync(swPath, 'utf8');
@@ -49,7 +53,7 @@ describe('Production build verification', () => {
   });
 
   it('proves code-split chunk sizes do not exceed 500 kB limit', () => {
-    const assetsDir = join(process.cwd(), 'dist', 'assets');
+    const assetsDir = join(distDir, 'assets');
     expect(existsSync(assetsDir)).toBe(true);
 
     const files = readdirSync(assetsDir);

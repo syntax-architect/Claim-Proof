@@ -1,6 +1,6 @@
 # SABOOT Site SEO & Quality Audit Report
 
-Generated on: 2026-11-02T16:28:18.619Z
+Generated on: 2026-11-02T16:40:29.811Z
 
 ## 1. Lighthouse Quality Scores (Threshold: ≥ 90)
 
@@ -8,8 +8,8 @@ Generated on: 2026-11-02T16:28:18.619Z
 | :--- | :---: | :---: | :---: | :---: |
 | Marketing Site: Home (/) | **100** / 100 | **92** / 100 | ≥ 90 | ✅ PASS |
 | Marketing Site: Features (/features) | **100** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
-| SABOOT: Landing Page (/landing.html) | **96** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
-| SABOOT: App Shell (/) | **95** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
+| SABOOT: Landing Page (/landing.html) | **98** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
+| SABOOT: App Shell (/) | **97** / 100 | **100** / 100 | ≥ 90 | ✅ PASS |
 
 ## 2. Page Metadata & Content Audit (Title ≤ 60, Desc ≤ 160)
 

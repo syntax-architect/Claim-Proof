@@ -8,6 +8,7 @@ import * as cameraScanner from '../../lib/cameraScanner';
 import * as hidScanner from '../../lib/hidScanner';
 import * as vaultWriter from '../../services/vaultWriter';
 import * as mediaLibrary from '../../services/mediaLibrary';
+import * as quota from '../../lib/quota';
 import { db } from '../../db/schema';
 
 expect.extend(toHaveNoViolations);
@@ -79,6 +80,7 @@ describe('VideoRecorderStation Component', () => {
   beforeEach(async () => {
     vi.restoreAllMocks();
     await db.recordings.clear();
+    await db.usage_counters.clear();
 
     mockStream = new MockMediaStream();
     Object.defineProperty(navigator, 'mediaDevices', {
@@ -112,6 +114,8 @@ describe('VideoRecorderStation Component', () => {
       createLinearGradient: vi.fn(() => ({ addColorStop: vi.fn() }))
     };
 
+    HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
+    HTMLMediaElement.prototype.pause = vi.fn();
     HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(mockCtx);
     HTMLCanvasElement.prototype.captureStream = vi
       .fn()
@@ -139,10 +143,16 @@ describe('VideoRecorderStation Component', () => {
       mode: 'fs-api'
     });
     vi.spyOn(mediaLibrary, 'cacheRecordingMedia').mockResolvedValue();
+    vi.spyOn(quota, 'consumeRecordingQuota').mockResolvedValue({
+      allowed: true,
+      used: 0,
+      limit: 10
+    });
   });
 
   afterEach(async () => {
     await db.recordings.clear();
+    await db.usage_counters.clear();
   });
 
   it('renders in idle state waiting for barcode scan and passes axe', async () => {

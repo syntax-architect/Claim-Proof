@@ -323,6 +323,12 @@ export function VideoRecorderStation({ className }: { className?: string }) {
     async (code: string) => {
       const pipeline = pipelineRef.current;
       if (!pipeline || stageRef.current === 'saving') return;
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      if (!pipeline.bound && video && canvas) {
+        const bound = await pipeline.bind(video, canvas);
+        setMode(bound);
+      }
       const quota = await consumeRecordingQuota();
       if (!quota.allowed) {
         playErrorBeep();

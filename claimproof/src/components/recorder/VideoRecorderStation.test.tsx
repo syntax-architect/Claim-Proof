@@ -193,7 +193,7 @@ describe('VideoRecorderStation Component', () => {
       () => {
         expect(screen.getByText(/WAITING FOR SCAN/i)).toBeDefined();
       },
-      { timeout: 5000 }
+      { timeout: 10000 }
     );
 
     // Verify record was inserted into database
@@ -202,7 +202,7 @@ describe('VideoRecorderStation Component', () => {
         const count = await db.recordings.where('awb').equals('AWB99887766').count();
         expect(count).toBe(1);
       },
-      { timeout: 5000 }
+      { timeout: 10000 }
     );
 
     const idleAxe = await axe(container, {

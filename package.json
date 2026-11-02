@@ -2,6 +2,8 @@
   "name": "saboot-root",
   "private": true,
   "scripts": {
+    "dev": "npm --prefix claimproof run dev",
+    "dev:site": "npm --prefix site run dev",
     "typecheck": "npm --prefix claimproof run typecheck && npm --prefix site run typecheck",
     "lint": "npm --prefix claimproof run lint",
     "format": "npm --prefix claimproof run format",

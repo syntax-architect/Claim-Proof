@@ -598,7 +598,7 @@ export function SmartLabelWorkbench() {
                     className={cn(
                       'flex flex-col items-center gap-2 rounded-xl border p-3 transition-all',
                       options.preset === p.value
-                        ? 'border-proof-500/60 bg-proof-500/10 shadow-[0_10px_28px_-16px_rgba(37,99,235,0.55)]'
+                        ? 'border-proof-500/60 bg-proof-500/10 shadow-[0_10px_28px_-16px_color-mix(in_srgb,var(--cp-accentsolid)_50%,transparent)]'
                         : 'border-line bg-ink-850/60 hover:border-line-bright'
                     )}
                   >

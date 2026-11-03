@@ -24,8 +24,8 @@ describe('Obsidian & Champagne Palette Verification', () => {
     expectCssToContain('--cp-surface: #121316');
     expectCssToContain('--cp-surface-2: #181A1F');
     expectCssToContain('--cp-surface-3: #22252B');
-    expectCssToContain('--cp-line: rgba(232, 226, 212, 0.10)');
-    expectCssToContain('--cp-linestrong: rgba(232, 226, 212, 0.20)');
+    expectCssToContain('--cp-line: rgba(232, 226, 212, 0.14)');
+    expectCssToContain('--cp-linestrong: rgba(232, 226, 212, 0.26)');
     expectCssToContain('--cp-text: #F2EFE8');
     expectCssToContain('--cp-text-2: #A9A59B');
     expectCssToContain('--cp-text-3: #8F8B82');
@@ -50,8 +50,8 @@ describe('Obsidian & Champagne Palette Verification', () => {
     expectCssToContain('--cp-surface: #FFFFFF');
     expectCssToContain('--cp-surface-2: #F3F0EA');
     expectCssToContain('--cp-surface-3: #E8E3DA');
-    expectCssToContain('--cp-line: rgba(21, 19, 15, 0.09)');
-    expectCssToContain('--cp-linestrong: rgba(21, 19, 15, 0.18)');
+    expectCssToContain('--cp-line: rgba(21, 19, 15, 0.12)');
+    expectCssToContain('--cp-linestrong: rgba(21, 19, 15, 0.24)');
     expectCssToContain('--cp-text: #15130F');
     expectCssToContain('--cp-text-2: #55504A');
     expectCssToContain('--cp-text-3: #6B655D');

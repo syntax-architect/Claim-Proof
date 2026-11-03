@@ -30,9 +30,35 @@ A high-throughput browser-based shipping label parser, vector cropper, and wareh
 
 ### 1.2 SABOOT AWB Recorder (Module B)
 A rapid, hands-free video recording packing station designed for fast warehouse table operation.
-* **Hands-Free Triggering:**
-  * Physical USB / Bluetooth HID barcode scanner gun (<80ms burst key listener with trailing Enter).
-  * Web camera barcode scanner (native browser `BarcodeDetector` API with `@zxing/library` fallback).
+* **Hands-Free Triggering & Barcode Scanner Subsystem:**
+  * **Keyboard-Wedge USB / Bluetooth HID Scanner Listener (`src/lib/hidScanner.ts` & `src/config/scannerConfig.ts`):**
+    * **Typing Speed Detection:** Analyzes inter-keystroke timing deltas. Hardware laser/CCD barcode guns emit keystroke bursts at <80ms intervals (typically 10–35ms), whereas human typing averages 120–250ms with high variance.
+    * **Form Field Isolation:** Transparently distinguishes barcode scanner bursts from normal human typing inside `<input>`, `<textarea>`, and `contentEditable` fields. Normal typing in text inputs is ignored; high-speed scanner bursts are captured, processed, and the form field cleared.
+    * **Configurable Suffix & Terminators:** Supports `Enter`, `Tab`, `EnterOrTab`, or `None` (idle timeout fallback).
+    * **Prefix & Symbology Cleaning:**
+      * Automatically strips ISO/IEC 15424 standard AIM Symbology Identifiers (e.g. `]C1` for Code 128, `]e0` for EAN-13, `]A0` for Code 39, `]Q1` for QR).
+      * Strips leading/trailing ASCII control characters (`\x00-\x1F`, `\x7F`), carriage returns, and whitespace.
+      * Strips user-configured custom prefix strings (e.g. carrier identifiers).
+      * Normalizes case according to configuration (`uppercase`, `lowercase`, `preserve`).
+    * **Duplicate Scan Debounce:** Configurable debounce suppression window (default 1,500 ms) preventing double-scans from accidental repeat trigger pulls.
+    * **Minimum Length Guard:** Configurable minimum code length (default 4 chars) preventing stray single-key activations.
+    * **Acoustic & Visual Feedback:**
+      * Valid scan: Web Audio API crisp 1046.5 Hz sine tone (70ms) + green confirmation indicator.
+      * Invalid scan: Descending 280 Hz -> 140 Hz sawtooth buzz (180ms) + red visual flash ring and actionable warning toast.
+  * **Phone & Web Camera Barcode Scanner (`src/lib/cameraScanner.ts`):**
+    * Uses native browser `BarcodeDetector` API for zero-overhead hardware-accelerated scanning, falling back automatically to `@zxing/library` when unsupported.
+    * Hardware Torch Control: Detects `torch` capability via `MediaTrackConstraints` and provides an instant toggle (`hasTorch`, `isTorchOn`, `setTorch`).
+    * Hardware Zoom Control: Queries camera `zoom` capability (min, max, step) and provides an interactive slider (`hasZoom`, `getZoomRange`, `setZoom`).
+    * Shares the identical barcode normalization, noise stripping, duplicate debounce, and audio tone pipeline.
+* **Scanner Test Workbench (`src/pages/ScannerTestPage.tsx`, `/scanner-test`):**
+  * Dedicated interactive diagnostic laboratory for testing and calibrating any barcode scanner gun or camera.
+  * Live Keystroke Inspector displaying every raw key event with exact millisecond intervals.
+  * Speed & Burst Analytics calculating key count, total burst duration (ms), average ms/key, and detected terminator.
+  * Typing Sandbox comparing slow manual keyboard typing vs high-speed barcode gun bursts inside form fields.
+  * Live camera preview with hardware torch toggle and zoom slider.
+  * Acoustic sound testing for good scan sine tone and invalid scan buzz.
+  * Quick settings controls for prefix, suffix, min length, debounce duration, noise stripping, and case handling.
+  * Scan session history table with Indian Standard Time (`IST`) timestamps.
 * **Packing Video Stream (`MediaRecorder` & Canvas Compositor):**
   * Records continuous uncut MP4/WebM video at ~1.2 Mbps.
   * Dynamically burns in an live timestamp evidence banner across the top:
@@ -43,7 +69,15 @@ A rapid, hands-free video recording packing station designed for fast warehouse 
 * **Sub-100ms Parcel Chaining:** Scanning the next AWB immediately finalizes, saves the previous recording, and starts the next clip with zero mouse or keyboard interaction.
 * **Dual Operation Modes:**
   * **Dispatch Mode:** For outbound order packing.
-  * **Return Unboxing Mode:** For receiving and opening customer returns or Return to Origin (RTO) parcels. Pressing `F2` flags a defective, damaged, or swapped return immediately.
+  * **Return Unboxing Mode:** A guided unboxing workflow engineered specifically to produce dispute evidence that satisfies Indian marketplace seller panels (Meesho, Flipkart, Amazon India, Myntra, AJIO, Snapdeal, GlowRoad):
+    * **Continuous Uncut Video Rule:** Marketplaces summarily reject spliced or paused return footage. Pausing mid-recording is strictly blocked with an explanatory warning in plain language.
+    * **Guided Live Checklist Overlay:** Config-driven checklist (`src/config/evidenceChecklists.ts`) showing required steps with official citations (marked `UNVERIFIED - check your seller panel` until confirmed by seller).
+    * **Step Actions & Hotkeys:** Every step is tickable via click or physical keyboard keys (`1`–`6` or `T` to advance). Ticks record completion timestamp and video offset seconds.
+    * **Mandatory Package Condition Tag:** Enforces condition selection (`good`, `wrong_item`, `empty`, `damaged`, `used_worn`) before allowing the recording to be finalized.
+    * **Automatic ClaimRadar Integration:** Selecting any defective condition (`damaged`, `wrong_item`, `empty`, `used_worn`) automatically creates a pending claim item with marketplace countdown in ClaimRadar.
+    * **Burned-in Evidence Banner:** Dynamically watermarks `[RETURN UNBOXING]` vs `[DISPATCH]` alongside AWB, order ID, SKU, and live Indian Standard Time (`DD-MMM-YYYY HH:mm:ss.SSS IST`).
+    * **Hardware & Network Resilience:** Mid-recording camera disconnects or interruptions trigger emergency save of in-progress footage flagged as `partial: true` to prevent evidence loss (Rule 11).
+    * **Take Indexing:** Repeated scans of the same AWB automatically version files (`Return_Video_{AWB}_Take2.mp4`) preserving all attempts.
 * **Synthetic Demo Camera:** Allows complete testing of the recording pipeline without requiring a physical webcam.
 
 ### 1.3 ClaimRadar (Module C)
@@ -129,7 +163,31 @@ A zero-cloud, private local storage engine.
 * **Downloads Fallback:** For browsers without File System Access API, files save seamlessly through browser downloads.
 * **Media Cache:** Rolling local blob cache stored inside IndexedDB to provide immediate instant replays inside the UI.
 
-### 1.5 Pricing & Offline Licensing Engine
+### 1.6 Unified Global Evidence Search
+A sub-200ms multi-index search engine and accessible modal dialog unifying packing videos, return unboxing footage, photo collages, and marketplace dispute claim status.
+* **Global Access & Keyboard Shortcuts:**
+  - Accessible via `Ctrl+K` / `⌘K` global keyboard shortcut or the search button in the TopBar and Command Palette.
+  - Automatically captures USB/Bluetooth barcode scanner gun bursts anywhere in the application shell.
+* **Input Sanitization & Tolerant Matching (`src/services/evidenceSearch.ts`):**
+  - Trims leading/trailing whitespace, converts input to lowercase for case-insensitive lookup.
+  - Automatically strips laser barcode scanner control characters, non-printable bytes, and suffix delimiters (`\r`, `\n`, `\t`).
+  - Supports exact prefix matching via IndexedDB multi-field indexes (`awb`, `orderId`, `sku`) with in-memory substring/partial matching fallback.
+* **Performance Benchmark SLA Guard:**
+  - Guaranteed sub-200ms latency across 10,000+ local IndexedDB parcel and recording records (measured typically < 60ms).
+* **Unified Evidence Dossier Aggregation:**
+  - Consolidates multiple takes/attempts for the same AWB, categorizing the latest verified attempt and listing previous takes in a duplicate attempts dropdown.
+  - Cross-references outbound Dispatch video, inbound Return Unboxing video, 2×2 photo collages, and active ClaimRadar dispute claim status into a single comprehensive dossier.
+* **Actionable Statuses & Plain-Language Next Steps:**
+  - **Found:** Direct 1-click video replay and photo collage preview.
+  - **Missing Disk File:** Detects when vault files were moved or the drive was disconnected, displaying `"Evidence file not found on disk"` with an actionable `"Relink Vault Folder"` button.
+  - **Not Recorded:** Handles return-only parcels or missing dispatch footage, displaying an actionable `"Open Packing Station"` link to begin immediate recording.
+* **Large Result Set Pagination:**
+  - Paginates search results (10 dossiers per page) with Previous and Next controls, active page indicator, and result count with elapsed latency in milliseconds.
+* **Zero-Cloud Privacy (Rule 4):**
+  - 100% computed on-device using local IndexedDB tables; zero search queries or parcel identifiers ever leave the seller's computer.
+* **Feature Flag:** Controlled via `FEATURES.globalEvidenceSearch` in `src/config/features.ts`.
+
+### 1.7 Pricing & Offline Licensing Engine
 A hardware-bound, offline-verifiable cryptographic licensing system.
 * **Single Source of Truth (`src/config/plans.ts`):** Defines all plans in INR (Starter Station ₹349/mo or ₹2,499/yr, ClaimRadar Pro ₹599/mo or ₹4,499/yr, Warehouse ₹1,199/mo or ₹8,999/yr), consumed uniformly across UI and tests.
 * **Launch Payment Checkout:** Direct "Buy" button opens a Razorpay Payment Link / Payment Page (`VITE_RAZORPAY_PAYMENT_URL`) in a new tab for frictionless customer payment.
@@ -156,7 +214,7 @@ A hardware-bound, offline-verifiable cryptographic licensing system.
 * **ES256 Offline JWT Tokens:** Licenses are digitally signed using an ECDSA P-256 private key and validated strictly on-device using a public JWK (`src/lib/licenseKeys.ts`). Verification requires zero network calls or server round-trips. Every token includes `plan`, `exp` (expiry), and `cid`/`sub` (customer ID).
 * **Soft Device Binding:** Tokens support soft binding to up to 2 workstations per license. If a customer upgrades their PC or hits the limit, the app provides a 1-click "Move license to this device" option rather than a rigid lockout.
 
-### 1.6 Opt-In Analytics & Scrubbed Error Monitoring
+### 1.8 Opt-In Analytics & Scrubbed Error Monitoring
 * **Strictly Opt-In:** Disabled by default (`defaultOptIn: false`). Can be toggled on/off anytime in Settings.
 * **Zero PII / Zero Order Data:** Never collects or transmits AWBs, order IDs, SKUs, customer addresses, videos, or label documents.
 * **Allowed Milestone Events:** Only 5 milestone events can ever be tracked:
@@ -168,7 +226,7 @@ A hardware-bound, offline-verifiable cryptographic licensing system.
 * **Client-Side Sensitive Data Scrubber:** Automatic multi-pattern redaction engine scrubs all local file paths (`C:\...`, `/home/...`), document/media filenames, tracking numbers (`AWB*`, `FMPP*`, `MSH*`, etc.), order IDs (`ORD*`, `OD*`, `404-*`), catalog SKUs, mobile numbers, and emails before error messages or stack traces leave the client.
 * **Endpoints:** Analytics and Sentry-compatible endpoints in `src/config/telemetryConfig.ts` are marked `[needs verification]`.
 
-### 1.7 Optional Chrome Web Store Extension (Manifest V3)
+### 1.9 Optional Chrome Web Store Extension (Manifest V3)
 Designed strictly for sellers requesting a 1-click browser extension launcher.
 * **Architecture:** Manifest V3 (`extension/manifest.json`), opening the full web application in a browser tab upon clicking the extension action icon (`chrome.action.onClicked`).
 * **Zero Host Permissions:** `host_permissions: []`. Does not inject scripts, read cookies, or touch marketplace websites (Meesho, Flipkart, Amazon, Myntra, AJIO) in any way.
@@ -176,7 +234,7 @@ Designed strictly for sellers requesting a 1-click browser extension launcher.
 * **Trademark Compliance:** Extension title (`**SABOOT** — Shipping Label & Packing Evidence Studio`) strictly avoids marketplace brand names.
 * **Packaging & Store Review:** Built via `npm run build:extension` (`scripts/build_extension.mjs`), outputting `dist-extension/saboot-extension.zip`. Accompanied by the submission checklist in `EXTENSION_STORE_CHECKLIST.md`.
 
-### 1.8 Internationalization (i18n) & Typography
+### 1.10 Internationalization (i18n) & Typography
 Designed for accessibility across Indian seller warehouses and packing stations.
 * **Bilingual Support:** 100% typed catalogs for English (`en`) and Hindi (`hi`) in `src/locales/en.ts` and `src/locales/hi.ts`.
 * **Zero Hardcoded Strings:** All user-facing labels, empty states, error messages, templates, and buttons are routed through `t(key, params)` via `useI18n()`.
@@ -186,13 +244,45 @@ Designed for accessibility across Indian seller warehouses and packing stations.
 * **AI Translation Review Registry:** All translated strings are registered in `src/locales/translation-metadata.json` with status `"needs-review"` and domain categorization for native speaker sign-off.
 * **Pseudo-Localization:** Built-in pseudo-localization helper (`pseudoLocalize`) with accented character expansion (+30%) and bracket delimitation (`[!!! ... !!!]`) accessible via Settings for UI stress-testing.
 
-### 1.9 Restrained Motion System
+### 1.11 Restrained Motion System
 Subtle, high-performance UI feedback utilizing `framer-motion`:
 * **Design Principles:** Restrained durations (160–280ms) and snappy ease-out curve (`cubic-bezier(0.16, 1, 0.3, 1)`).
 * **GPU-Friendly:** Animates only `transform` and `opacity` properties; never animates layout dimensions (`width`, `height`, `margin`, `padding`).
 * **Active Recording Safety:** All animations (except the live pulsing recording indicator dot) are strictly suppressed during active video capture to prevent frame drops.
 * **Reduced Motion Accessibility:** Honors `prefers-reduced-motion` at both Framer Motion level (`<MotionConfig reducedMotion="user">`) and CSS media query level.
 * **Motion Tokens (`src/lib/motion.ts`):** Standardized variants for `fadeIn`, `fadeUp`, `scaleIn`, `staggerContainer`, modal springs, and smooth count-up number tickers.
+
+### 1.12 WebRTC Phone Companion (Wireless Packing Camera)
+Turns any smartphone into a wireless packing station camera and evidence capture device.
+* **Single-Use QR Pairing (120s TTL):**
+  - PC generates a high-entropy room identifier and a cryptographic pairing token with a strict 2-minute (120-second) TTL.
+  - Seller scans the QR code (`#pair?room=<room>&token=<token>`) using standard mobile camera or scanner app.
+  - Expired, re-used, or invalid tokens are immediately rejected with clear actionable alerts.
+  - **Single-Phone Mutex:** If a second phone attempts to pair to an active station, it is immediately rejected with a plain-language `"Another device is already connected"` alert.
+* **WebRTC Peer-to-Peer Live Preview:**
+  - Phone establishes direct P2P streaming to the PC via `RTCPeerConnection` and STUN servers.
+  - Real-time video preview renders on the PC packing station monitor with zero discernible latency.
+* **Zero-Media Signaling Privacy (Rule 4):**
+  - WebRTC signaling uses lightweight pub/sub channels strictly for SDP offer/answer exchanges and ICE candidates.
+  - Guarded by runtime assertions (`assertNoMediaInSignaling`) verifying that no raw video, binary blobs, base64 media, or data URLs can ever pass through signaling servers.
+* **Full-Quality Local Phone Recording & Forensics:**
+  - The phone records directly from its high-resolution camera sensor using an offscreen canvas compositor.
+  - Burns in legal forensic metadata: live Indian Standard Time (`DD-MMM-YYYY HH:mm:ss IST`), active parcel AWB / tracking number, recording timer, and grid framing guides.
+* **64 KB Chunked DataChannel Transfer & SHA-256 Verification (Rule 11):**
+  - Upon stopping recording, the phone segments the full-quality MP4/WebM file into 64 KB binary chunks transmitted over an `RTCDataChannel`.
+  - Every chunk includes index ordering and a per-chunk SHA-256 hash.
+  - The PC reassembles the chunks, computes the complete SHA-256 digest, and cross-references it with the phone's transfer manifest.
+  - **Never Delete User Videos:** The phone is strictly forbidden from purging or clearing the local recording until the PC transmits an explicit `ack_verified` receipt.
+  - In the event of network disruption, chunk corruption, or checksum mismatch, the phone retains the recording locally and displays a retry prompt.
+* **Direct Connection Failure & NAT Fallback:**
+  - When restrictive symmetric NAT or corporate firewall policies prevent P2P connectivity (no TURN server), the app provides a plain-language explanation and seamless fallback: records directly onto the phone's local storage with a 1-click option to download or transfer later.
+* **Mobile Hardware Resilience:**
+  - **Screen WakeLock:** Keeps the mobile display active during recording to prevent device auto-sleep.
+  - **Battery & Storage Safeguards:** Detects low battery and storage limits, prompting actionable alerts before starting capture.
+  - **Interruption Guard:** Listens to visibility changes (incoming calls, app switching) to gracefully pause or finalize recording without losing captured frames.
+* **Automatic Vault Organization:**
+  - Received video files on the PC are automatically written to the local vault directory structure (`<Vault_Root>/<YYYY-MM-DD>/<Dispatch|Return>/<AWB>/<AWB>_Video.mp4`) via the File System Access API.
+* **Feature Flag:** Controlled via `phoneCompanion` in `src/config/featureFlags.ts`.
 
 ---
 
@@ -211,6 +301,10 @@ Database version 1 defines 9 object stores:
 7. `settings`: Application configuration preferences and directory handles keyed by string identifier.
 8. `vault`: Persisted `FileSystemDirectoryHandle` for directory access.
 9. `media_cache`: Local temporary blob cache for in-app media playback indexed by `id, savedAt`.
+
+Database version 2 adds stores for guided return unboxing:
+10. `returnVideos`: Return unboxing records indexed by `++id, awb, orderId, condition, startedAt, linkedDispatchRecordingId, partial`.
+11. `checklistResults`: Step-by-step checklist ticks indexed by `++id, returnVideoId, awb, stepId, completed, timestamp`.
 
 ### 2.2 Local Storage Keys
 * `saboot_last_plan (with legacy fallback to claimproof_last_plan)`: Cached plan identifier to prevent UI flashes during startup.
@@ -247,4 +341,21 @@ All marketplace-specific dispute filing windows, official seller help URLs, and 
 * Flipkart SPF claim window: 14 days (336 hours) (Source: `https://seller.flipkart.com/help/protection-fund`) *[needs verification]*
 * Amazon India SAFE-T claim window: 30 days (720 hours) (Source: `https://sellercentral.amazon.in/help/hub/reference/G202103440`) *[needs verification]*
 * GlowRoad claim window: 72 hours (Source: `https://glowroad.com/`) *[needs verification]*
+
+---
+
+## 5. Brand Identity & Application Shell
+
+### 5.1 The SABOOT Seal (Logo)
+The product mark is the **SABOOT Seal**: a champagne-gold postage-stamp silhouette with perforated edges (12 semicircular notches), an inner official-seal keyline, and a bold on-accent verification check. It encodes the product promise (label + verified proof) in one geometry.
+* App implementation: `LogoMark` / `Logo` in `claimproof/src/components/ui/index.tsx` (theme-aware via `--cp-accent-solid` / `--cp-on-accent`, unique SVG mask id per instance via `useId`).
+* Standalone assets: `claimproof/public/favicon.svg`, the regenerated PWA/extension icon set (`npm run gen:icons`, see `claimproof/scripts/gen_icons.py`), and the marketing lockup `site/public/logo.svg` (mark + `SABOOT.in` wordmark + `PROOF SUITE` sub-label) used by the website header/footer.
+* All logo colors are within the Obsidian & Champagne approved palette enforced by `npm run check:palette`.
+
+### 5.2 Application Shell Behavior
+* The desktop shell is `Sidebar` (≥768px) + `TopBar` + `MobileNav` tab rail (<768px).
+* `TopBar`, `ClaimUrgencyAlertBanner` and `MobileNav` render inside one sticky cluster in `claimproof/src/App.tsx`, so the mobile tab rail can never slide beneath the translucent header while scrolling.
+
+### 5.3 Page Header Pattern
+* `PageHeader` renders the module icon plate, the page title (leading), an optional one-line subtitle, and module identification as a quiet mono tag chip (e.g. `MODULE A`) aligned with the actions. Marketing kicker suffixes (e.g. "FREE FOREVER", "THE PROOF ENGINE") are retired; module IDs A/B/C/D remain the canonical taxonomy from this spec.
 

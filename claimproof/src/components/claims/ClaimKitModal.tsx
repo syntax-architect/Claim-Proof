@@ -235,11 +235,11 @@ export function ClaimKitModal({ claim, open, onClose, onSuccess }: ClaimKitModal
 
         {/* Success Banner */}
         {result && (
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-5 space-y-4">
+          <div className="rounded-xl border border-success-500/30 bg-success-500/10 p-5 space-y-4">
             <div className="flex items-start gap-3">
-              <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+              <CheckCircle2 className="h-5 w-5 text-success-400 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <div className="text-sm font-semibold text-emerald-300">
+                <div className="text-sm font-semibold text-success-300">
                   {t('claimKit.status.success')}
                 </div>
                 <div className="text-xs text-slate-300">
@@ -253,10 +253,10 @@ export function ClaimKitModal({ claim, open, onClose, onSuccess }: ClaimKitModal
 
             {/* Warnings list */}
             {result.warnings.length > 0 && (
-              <div className="rounded-lg border border-amber-500/30 bg-amber-950/30 p-3 text-xs text-amber-200">
+              <div className="rounded-lg border border-warn-500/30 bg-warn-500/10 p-3 text-xs text-warn-300">
                 {result.warnings.map((w, i) => (
                   <div key={i} className="flex items-center gap-1.5">
-                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-400" />
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0 text-warn-400" />
                     <span>{w}</span>
                   </div>
                 ))}
@@ -264,8 +264,8 @@ export function ClaimKitModal({ claim, open, onClose, onSuccess }: ClaimKitModal
             )}
 
             {/* List of files packaged */}
-            <div className="space-y-1.5 border-t border-emerald-500/20 pt-3">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
+            <div className="space-y-1.5 border-t border-success-500/20 pt-3">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-success-400">
                 Packaged Evidence Dossier:
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 font-mono text-xs text-slate-300">
@@ -282,11 +282,11 @@ export function ClaimKitModal({ claim, open, onClose, onSuccess }: ClaimKitModal
 
         {/* Actionable Error Banner */}
         {errorInfo && (
-          <div className="rounded-xl border border-rose-500/30 bg-rose-950/20 p-4 space-y-2">
+          <div className="rounded-xl border border-danger-500/30 bg-danger-500/10 p-4 space-y-2">
             <div className="flex items-start gap-2.5">
-              <AlertCircle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-danger-400 shrink-0 mt-0.5" />
               <div>
-                <div className="text-sm font-semibold text-rose-200">{errorInfo.message}</div>
+                <div className="text-sm font-semibold text-danger-300">{errorInfo.message}</div>
                 <div className="mt-1 text-xs text-slate-300">{errorInfo.nextStep}</div>
               </div>
             </div>

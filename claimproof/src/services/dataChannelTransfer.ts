@@ -464,7 +464,7 @@ export function setupDataChannelReceiver(
       });
 
       // If end was already received, try finalizing now that a chunk arrived
-      if (currentTransfer.endReceived) {
+      if (currentTransfer?.endReceived) {
         await tryFinalize();
       }
       return;

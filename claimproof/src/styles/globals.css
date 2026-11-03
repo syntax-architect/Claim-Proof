@@ -84,9 +84,9 @@
   --cp-surface: #121316;
   --cp-surface-2: #181a1f;
   --cp-surface-3: #22252b;
-  --cp-line: rgba(232, 226, 212, 0.1);
-  --cp-linestrong: rgba(232, 226, 212, 0.2);
-  --cp-line-strong: rgba(232, 226, 212, 0.2);
+  --cp-line: rgba(232, 226, 212, 0.14);
+  --cp-linestrong: rgba(232, 226, 212, 0.26);
+  --cp-line-strong: rgba(232, 226, 212, 0.26);
   --cp-text: #f2efe8;
   --cp-text-2: #a9a59b;
   --cp-text-3: #8f8b82;
@@ -118,9 +118,9 @@
   --cp-surface: #ffffff;
   --cp-surface-2: #f3f0ea;
   --cp-surface-3: #e8e3da;
-  --cp-line: rgba(21, 19, 15, 0.09);
-  --cp-linestrong: rgba(21, 19, 15, 0.18);
-  --cp-line-strong: rgba(21, 19, 15, 0.18);
+  --cp-line: rgba(21, 19, 15, 0.12);
+  --cp-linestrong: rgba(21, 19, 15, 0.24);
+  --cp-line-strong: rgba(21, 19, 15, 0.24);
   --cp-text: #15130f;
   --cp-text-2: #55504a;
   --cp-text-3: #6b655d;
@@ -341,20 +341,6 @@ body::before {
   pointer-events: none;
 }
 
-@keyframes champagne-drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(-32px, 24px, 0) scale(1.08);
-  }
-}
-
-.overview-champagne-drift {
-  animation: champagne-drift 24s ease-in-out infinite;
-}
-
 @keyframes gold-pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(201, 164, 92, 0.5);
@@ -391,10 +377,6 @@ html[data-recording-active='true'] .animate-rec-pulse {
 
   .fade-opacity {
     transition: opacity 200ms ease !important;
-  }
-
-  .overview-champagne-drift {
-    animation: none !important;
   }
 
   .skeleton-shimmer::after {

@@ -18,6 +18,7 @@ import {
   Receipt,
   ShieldCheck,
   Sparkles,
+  Star,
   Warehouse,
   type LucideIcon
 } from 'lucide-react';
@@ -205,8 +206,9 @@ export function PaywallModal(): JSX.Element {
         </div>
         <div className="text-center text-xs text-slate-400">
           {interval === 'annual' ? (
-            <span className="text-proof-300 font-medium">
-              ★ Best value for Indian sellers: 4 months free + instant offline license key
+            <span className="inline-flex items-center gap-1.5 text-proof-300 font-medium">
+              <Star className="h-3.5 w-3.5" aria-hidden="true" />
+              Best value for Indian sellers: 4 months free + instant offline license key
             </span>
           ) : (
             <span>Recurring monthly billing · cancel anytime</span>

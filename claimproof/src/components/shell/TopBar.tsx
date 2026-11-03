@@ -101,7 +101,7 @@ export default function TopBar({ route }: { route: Route }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-ink-950/80 backdrop-blur-xl">
+    <header className="border-b border-line bg-ink-950/95 backdrop-blur-xl">
       <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <div className="md:hidden">

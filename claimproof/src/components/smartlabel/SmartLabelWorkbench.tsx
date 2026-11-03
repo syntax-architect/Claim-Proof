@@ -391,7 +391,7 @@ export function SmartLabelWorkbench() {
     <div className="space-y-6">
       <PageHeader
         icon={ScanBarcode}
-        kicker="MODULE A · FREE FOREVER"
+        kicker="MODULE A"
         title="SmartLabel SKU+ Studio"
         subtitle="Vector PDF label cropper, SKU stamper & courier sorter"
         actions={
@@ -782,7 +782,7 @@ export function SmartLabelWorkbench() {
               <CheckCircle2 className="h-8 w-8" />
             </div>
             <div className="mt-5 font-display text-2xl font-bold text-white">
-              ✅ {doneInfo.count} Labels Cropped &amp; Loaded into Memory!
+              {doneInfo.count} Labels Cropped &amp; Loaded into Memory!
             </div>
             <div className="mt-2 font-mono text-xs text-slate-400">
               {doneInfo.fileName} · downloaded

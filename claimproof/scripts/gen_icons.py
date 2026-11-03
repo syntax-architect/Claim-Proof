@@ -7,11 +7,20 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 VB = 64.0
 # Obsidian & Champagne Palette
-CHAMPAGNE = (212, 180, 131, 255)       # #D4B483 (Corner brackets)
-CHAMPAGNE_LIGHT = (227, 200, 150, 255) # #E3C896 (Parcel box outline)
-GOLD = (201, 164, 92, 255)             # #C9A45C (Lightning bolt)
+CHAMPAGNE = (212, 180, 131, 255)       # #D4B483 (unused, kept for reference)
+GOLD = (201, 164, 92, 255)             # #C9A45C (Stamp fill)
 BG = (11, 12, 14, 255)                 # #0B0C0E (Obsidian background)
 BORDER = (34, 37, 43, 255)             # #22252B (Obsidian line strong)
+INK = (20, 17, 10, 255)                # #14110A (On-accent check)
+INK_SOFT = (20, 17, 10, 77)            # #14110A @ 30% (Inner keyline)
+
+# Perforation notch centres on each stamp edge (stamp spans 10..54)
+NOTCHES = [
+    (23, 10), (32, 10), (41, 10),
+    (23, 54), (32, 54), (41, 54),
+    (10, 23), (10, 32), (10, 41),
+    (54, 23), (54, 32), (54, 41),
+]
 
 
 def px(v: float, s: int) -> float:
@@ -27,30 +36,32 @@ def make(size: int, path: str, maskable: bool = False) -> None:
     radius = 0 if maskable else px(14, s)
     d.rounded_rectangle([0, 0, s - 1, s - 1], radius=radius, fill=BG, outline=BORDER, width=max(1, int(px(1, s))))
 
-    # Corner scan brackets
-    w = max(2, int(px(4.5, s)))
-    off = int(px(14, s))
-    arm = int(px(9, s))
-    for cx, cy, dx, dy in [
-        (off, off, 1, 1),
-        (s - off, off, -1, 1),
-        (s - off, s - off, -1, -1),
-        (off, s - off, 1, -1),
-    ]:
-        d.line([(cx, cy + dy * arm), (cx, cy)], fill=CHAMPAGNE, width=w)
-        d.line([(cx, cy), (cx + dx * arm, cy)], fill=CHAMPAGNE, width=w)
-
-    # Parcel box
+    # Proof stamp (perforated edges via plate-coloured notches)
     d.rounded_rectangle(
-        [px(23, s), px(25, s), px(41, s), px(39, s)],
-        radius=px(2.5, s),
-        outline=CHAMPAGNE_LIGHT,
-        width=max(2, int(px(3, s))),
+        [px(10, s), px(10, s), px(54, s), px(54, s)],
+        radius=px(10, s),
+        fill=GOLD,
+    )
+    notch_r = px(3, s)
+    for cx, cy in NOTCHES:
+        cxp, cyp = px(cx, s), px(cy, s)
+        d.ellipse([cxp - notch_r, cyp - notch_r, cxp + notch_r, cyp + notch_r], fill=BG)
+
+    # Inner official-seal keyline
+    d.rounded_rectangle(
+        [px(14.5, s), px(14.5, s), px(49.5, s), px(49.5, s)],
+        radius=px(6.5, s),
+        outline=INK_SOFT,
+        width=max(1, int(px(1.5, s))),
     )
 
-    # Lightning bolt
-    bolt = [(35.5, 27.5), (30.5, 32.0), (33.9, 32.0), (31.5, 36.5), (37.1, 31.3), (33.7, 31.3)]
-    d.polygon([(px(x, s), px(y, s)) for x, y in bolt], fill=GOLD)
+    # Verification check (round caps + joins)
+    check_w = max(2, int(px(6.5, s)))
+    pts = [(px(21.5, s), px(33, s)), (px(29, s), px(40.5, s)), (px(44, s), px(23, s))]
+    d.line(pts, fill=INK, width=check_w, joint='curve')
+    cap = check_w / 2
+    for cxp, cyp in (pts[0], pts[-1]):
+        d.ellipse([cxp - cap, cyp - cap, cxp + cap, cyp + cap], fill=INK)
 
     img = img.resize((size, size), Image.LANCZOS)
     img.save(path)

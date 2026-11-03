@@ -7,6 +7,7 @@ import {
   Flag,
   Flashlight,
   Keyboard,
+  Lock,
   Play,
   QrCode,
   ScanLine,
@@ -1296,7 +1297,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
     <div className={cn('space-y-5', className)}>
       <PageHeader
         icon={Video}
-        kicker="MODULE B · THE PROOF ENGINE"
+        kicker="MODULE B"
         title={`${BRAND.name} AWB Recorder`}
         subtitle="Scan → uncut video starts itself → scan the next parcel to chain instantly"
         actions={
@@ -1448,8 +1449,9 @@ export function VideoRecorderStation({ className }: { className?: string }) {
             )}
 
             {flagged && stage === 'recording' && (
-              <div className="absolute left-1/2 top-14 -translate-x-1/2 animate-rec-pulse rounded-lg border border-danger-500/60 bg-danger-500/25 px-4 py-2 font-display text-sm font-bold tracking-widest text-danger-300 backdrop-blur">
-                ⚑ FLAGGED: BAD RETURN — pick a reason on stop
+              <div className="absolute left-1/2 top-14 flex -translate-x-1/2 animate-rec-pulse items-center gap-2 rounded-lg border border-danger-500/60 bg-danger-500/25 px-4 py-2 font-display text-sm font-bold tracking-widest text-danger-300 backdrop-blur">
+                <Flag className="h-3.5 w-3.5" aria-hidden="true" />
+                FLAGGED: BAD RETURN, pick a reason on stop
               </div>
             )}
           </div>
@@ -1682,9 +1684,10 @@ export function VideoRecorderStation({ className }: { className?: string }) {
                 <button
                   type="button"
                   onClick={() => openPaywall({ scope: 'collage' })}
-                  className="text-[11px] font-semibold text-warn-300 underline-offset-2 hover:underline"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-warn-300 underline-offset-2 hover:underline"
                 >
-                  🔒 ClaimRadar Pro
+                  <Lock className="h-3 w-3" aria-hidden="true" />
+                  ClaimRadar Pro
                 </button>
               )}
             </div>

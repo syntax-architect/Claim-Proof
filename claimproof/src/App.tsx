@@ -163,9 +163,13 @@ export default function App() {
             <div className="flex h-full min-h-screen">
               <Sidebar route={route} navigate={navigate} />
               <div className="flex min-w-0 flex-1 flex-col">
-                <TopBar route={route} />
-                <ClaimUrgencyAlertBanner navigate={navigate} />
-                <MobileNav route={route} navigate={navigate} />
+                {/* Sticky shell cluster: header, urgency banner and tab rail move as one,
+                    so the tab rail can never slide beneath the header when scrolling. */}
+                <div className="sticky top-0 z-40">
+                  <TopBar route={route} />
+                  <ClaimUrgencyAlertBanner navigate={navigate} />
+                  <MobileNav route={route} navigate={navigate} />
+                </div>
                 <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-16 pt-6 sm:px-6 lg:px-8">
                   <ErrorBoundary level="page" resetKey={route}>
                     <AnimatePresence mode="wait" initial={false}>

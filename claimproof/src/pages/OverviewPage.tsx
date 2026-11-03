@@ -35,6 +35,7 @@ import {
   Card,
   EmptyState,
   LoadingSkeleton,
+  LogoMark,
   PageHeader,
   Ring,
   StatCard,
@@ -318,23 +319,22 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <Card className="relative overflow-hidden">
         <div className="grid-bg absolute inset-0 opacity-70" />
-        <div
-          className="overview-champagne-drift pointer-events-none absolute -right-20 -top-28 h-96 w-96 rounded-full opacity-20 blur-3xl"
-          style={{
-            background: 'radial-gradient(closest-side, var(--cp-accent-solid), transparent)'
-          }}
+        {/* Brand seal watermark — replaces the generic drifting gradient blob */}
+        <LogoMark
+          size={340}
+          className="pointer-events-none absolute -right-16 -top-20 opacity-[0.07] sm:-right-10"
         />
         <div className="relative p-7 sm:p-9">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="proof">LOCAL-FIRST · ₹0 SERVER</Badge>
-            <Badge tone="outline">Meesho · Flipkart · Amazon · AJIO</Badge>
+            <Badge tone="outline">Meesho, Flipkart, Amazon &amp; AJIO</Badge>
           </div>
           <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-white sm:text-[2.6rem] sm:leading-[1.1]">
             {greeting()}, seller. <span className="text-proof-300">Every parcel, proven.</span>
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-slate-400">
-            Crop shipping labels to thermal size, record uncut barcode-verified packing videos, and
-            beat every 72-hour / 14-day claim window — all on this PC, all free to start.
+            Crop labels to thermal size, record uncut barcode-verified packing videos, and beat
+            every 72-hour and 14-day claim window. All on this PC, free to start.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button
@@ -343,7 +343,7 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
               icon={ScanBarcode}
               onClick={() => navigate('labels')}
             >
-              Crop labels — free
+              Crop labels
             </Button>
             <Button variant="outline" size="lg" icon={Video} onClick={() => navigate('recorder')}>
               Open AWB Recorder
@@ -552,7 +552,7 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-sm font-semibold text-white">
-              📦 Packing Supply Alert: ~{(consumables?.cumulative ?? 0).toLocaleString('en-IN')}{' '}
+              Packing Supply Alert: ~{(consumables?.cumulative ?? 0).toLocaleString('en-IN')}{' '}
               labels printed.
             </div>
             <div className="mt-0.5 text-xs text-slate-400">

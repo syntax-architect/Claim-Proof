@@ -30,9 +30,35 @@ A high-throughput browser-based shipping label parser, vector cropper, and wareh
 
 ### 1.2 SABOOT AWB Recorder (Module B)
 A rapid, hands-free video recording packing station designed for fast warehouse table operation.
-* **Hands-Free Triggering:**
-  * Physical USB / Bluetooth HID barcode scanner gun (<80ms burst key listener with trailing Enter).
-  * Web camera barcode scanner (native browser `BarcodeDetector` API with `@zxing/library` fallback).
+* **Hands-Free Triggering & Barcode Scanner Subsystem:**
+  * **Keyboard-Wedge USB / Bluetooth HID Scanner Listener (`src/lib/hidScanner.ts` & `src/config/scannerConfig.ts`):**
+    * **Typing Speed Detection:** Analyzes inter-keystroke timing deltas. Hardware laser/CCD barcode guns emit keystroke bursts at <80ms intervals (typically 10–35ms), whereas human typing averages 120–250ms with high variance.
+    * **Form Field Isolation:** Transparently distinguishes barcode scanner bursts from normal human typing inside `<input>`, `<textarea>`, and `contentEditable` fields. Normal typing in text inputs is ignored; high-speed scanner bursts are captured, processed, and the form field cleared.
+    * **Configurable Suffix & Terminators:** Supports `Enter`, `Tab`, `EnterOrTab`, or `None` (idle timeout fallback).
+    * **Prefix & Symbology Cleaning:**
+      * Automatically strips ISO/IEC 15424 standard AIM Symbology Identifiers (e.g. `]C1` for Code 128, `]e0` for EAN-13, `]A0` for Code 39, `]Q1` for QR).
+      * Strips leading/trailing ASCII control characters (`\x00-\x1F`, `\x7F`), carriage returns, and whitespace.
+      * Strips user-configured custom prefix strings (e.g. carrier identifiers).
+      * Normalizes case according to configuration (`uppercase`, `lowercase`, `preserve`).
+    * **Duplicate Scan Debounce:** Configurable debounce suppression window (default 1,500 ms) preventing double-scans from accidental repeat trigger pulls.
+    * **Minimum Length Guard:** Configurable minimum code length (default 4 chars) preventing stray single-key activations.
+    * **Acoustic & Visual Feedback:**
+      * Valid scan: Web Audio API crisp 1046.5 Hz sine tone (70ms) + green confirmation indicator.
+      * Invalid scan: Descending 280 Hz -> 140 Hz sawtooth buzz (180ms) + red visual flash ring and actionable warning toast.
+  * **Phone & Web Camera Barcode Scanner (`src/lib/cameraScanner.ts`):**
+    * Uses native browser `BarcodeDetector` API for zero-overhead hardware-accelerated scanning, falling back automatically to `@zxing/library` when unsupported.
+    * Hardware Torch Control: Detects `torch` capability via `MediaTrackConstraints` and provides an instant toggle (`hasTorch`, `isTorchOn`, `setTorch`).
+    * Hardware Zoom Control: Queries camera `zoom` capability (min, max, step) and provides an interactive slider (`hasZoom`, `getZoomRange`, `setZoom`).
+    * Shares the identical barcode normalization, noise stripping, duplicate debounce, and audio tone pipeline.
+* **Scanner Test Workbench (`src/pages/ScannerTestPage.tsx`, `/scanner-test`):**
+  * Dedicated interactive diagnostic laboratory for testing and calibrating any barcode scanner gun or camera.
+  * Live Keystroke Inspector displaying every raw key event with exact millisecond intervals.
+  * Speed & Burst Analytics calculating key count, total burst duration (ms), average ms/key, and detected terminator.
+  * Typing Sandbox comparing slow manual keyboard typing vs high-speed barcode gun bursts inside form fields.
+  * Live camera preview with hardware torch toggle and zoom slider.
+  * Acoustic sound testing for good scan sine tone and invalid scan buzz.
+  * Quick settings controls for prefix, suffix, min length, debounce duration, noise stripping, and case handling.
+  * Scan session history table with Indian Standard Time (`IST`) timestamps.
 * **Packing Video Stream (`MediaRecorder` & Canvas Compositor):**
   * Records continuous uncut MP4/WebM video at ~1.2 Mbps.
   * Dynamically burns in an live timestamp evidence banner across the top:
@@ -129,7 +155,31 @@ A zero-cloud, private local storage engine.
 * **Downloads Fallback:** For browsers without File System Access API, files save seamlessly through browser downloads.
 * **Media Cache:** Rolling local blob cache stored inside IndexedDB to provide immediate instant replays inside the UI.
 
-### 1.5 Pricing & Offline Licensing Engine
+### 1.6 Unified Global Evidence Search
+A sub-200ms multi-index search engine and accessible modal dialog unifying packing videos, return unboxing footage, photo collages, and marketplace dispute claim status.
+* **Global Access & Keyboard Shortcuts:**
+  - Accessible via `Ctrl+K` / `⌘K` global keyboard shortcut or the search button in the TopBar and Command Palette.
+  - Automatically captures USB/Bluetooth barcode scanner gun bursts anywhere in the application shell.
+* **Input Sanitization & Tolerant Matching (`src/services/evidenceSearch.ts`):**
+  - Trims leading/trailing whitespace, converts input to lowercase for case-insensitive lookup.
+  - Automatically strips laser barcode scanner control characters, non-printable bytes, and suffix delimiters (`\r`, `\n`, `\t`).
+  - Supports exact prefix matching via IndexedDB multi-field indexes (`awb`, `orderId`, `sku`) with in-memory substring/partial matching fallback.
+* **Performance Benchmark SLA Guard:**
+  - Guaranteed sub-200ms latency across 10,000+ local IndexedDB parcel and recording records (measured typically < 60ms).
+* **Unified Evidence Dossier Aggregation:**
+  - Consolidates multiple takes/attempts for the same AWB, categorizing the latest verified attempt and listing previous takes in a duplicate attempts dropdown.
+  - Cross-references outbound Dispatch video, inbound Return Unboxing video, 2×2 photo collages, and active ClaimRadar dispute claim status into a single comprehensive dossier.
+* **Actionable Statuses & Plain-Language Next Steps:**
+  - **Found:** Direct 1-click video replay and photo collage preview.
+  - **Missing Disk File:** Detects when vault files were moved or the drive was disconnected, displaying `"Evidence file not found on disk"` with an actionable `"Relink Vault Folder"` button.
+  - **Not Recorded:** Handles return-only parcels or missing dispatch footage, displaying an actionable `"Open Packing Station"` link to begin immediate recording.
+* **Large Result Set Pagination:**
+  - Paginates search results (10 dossiers per page) with Previous and Next controls, active page indicator, and result count with elapsed latency in milliseconds.
+* **Zero-Cloud Privacy (Rule 4):**
+  - 100% computed on-device using local IndexedDB tables; zero search queries or parcel identifiers ever leave the seller's computer.
+* **Feature Flag:** Controlled via `FEATURES.globalEvidenceSearch` in `src/config/features.ts`.
+
+### 1.7 Pricing & Offline Licensing Engine
 A hardware-bound, offline-verifiable cryptographic licensing system.
 * **Single Source of Truth (`src/config/plans.ts`):** Defines all plans in INR (Starter Station ₹349/mo or ₹2,499/yr, ClaimRadar Pro ₹599/mo or ₹4,499/yr, Warehouse ₹1,199/mo or ₹8,999/yr), consumed uniformly across UI and tests.
 * **Launch Payment Checkout:** Direct "Buy" button opens a Razorpay Payment Link / Payment Page (`VITE_RAZORPAY_PAYMENT_URL`) in a new tab for frictionless customer payment.
@@ -229,4 +279,21 @@ All marketplace-specific dispute filing windows, official seller help URLs, and 
 * Flipkart SPF claim window: 14 days (336 hours) (Source: `https://seller.flipkart.com/help/protection-fund`) *[needs verification]*
 * Amazon India SAFE-T claim window: 30 days (720 hours) (Source: `https://sellercentral.amazon.in/help/hub/reference/G202103440`) *[needs verification]*
 * GlowRoad claim window: 72 hours (Source: `https://glowroad.com/`) *[needs verification]*
+
+---
+
+## 5. Brand Identity & Application Shell
+
+### 5.1 The SABOOT Seal (Logo)
+The product mark is the **SABOOT Seal**: a champagne-gold postage-stamp silhouette with perforated edges (12 semicircular notches), an inner official-seal keyline, and a bold on-accent verification check. It encodes the product promise (label + verified proof) in one geometry.
+* App implementation: `LogoMark` / `Logo` in `src/components/ui/index.tsx` (theme-aware via `--cp-accent-solid` / `--cp-on-accent`, unique SVG mask id per instance via `useId`).
+* Standalone assets: `public/favicon.svg` (app), regenerated PWA/extension icon set (`npm run gen:icons`, see `scripts/gen_icons.py`), and the marketing lockup `site/public/logo.svg` (mark + `SABOOT.in` wordmark + `PROOF SUITE` sub-label) used by the website header/footer.
+* All logo colors are within the Obsidian & Champagne approved palette enforced by `npm run check:palette`.
+
+### 5.2 Application Shell Behavior
+* The desktop shell is `Sidebar` (≥768px) + `TopBar` + `MobileNav` tab rail (<768px).
+* `TopBar`, `ClaimUrgencyAlertBanner` and `MobileNav` render inside one sticky cluster in `App.tsx`, so the mobile tab rail can never slide beneath the translucent header while scrolling.
+
+### 5.3 Page Header Pattern
+* `PageHeader` renders the module icon plate, the page title (leading), an optional one-line subtitle, and module identification as a quiet mono tag chip (e.g. `MODULE A`) aligned with the actions. Marketing kicker suffixes (e.g. "FREE FOREVER", "THE PROOF ENGINE") are retired; module IDs A/B/C/D remain the canonical taxonomy from this spec.
 

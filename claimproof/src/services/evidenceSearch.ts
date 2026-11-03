@@ -156,12 +156,27 @@ export async function searchUnifiedEvidence(
   const prefixOrds = [...ordPrefixAwb, ...ordPrefixOrder, ...ordPrefixSku];
   const prefixClms = [...clmPrefixAwb];
 
-  // If prefix search returned fewer than 50 results, perform fast in-memory partial/substring scan
+  // If prefix search returned fewer than 50 results and no exact primary identifier match was found,
+  // perform fast in-memory partial/substring scan. An exact match on AWB, Order ID, or SKU resolves immediately.
   let allRecs = prefixRecs;
   let allOrds = prefixOrds;
   let allClms = prefixClms;
 
-  const performPartialScan = prefixRecs.length < 50 && prefixOrds.length < 50;
+  const hasExactKeyMatch =
+    prefixRecs.some(
+      (r) =>
+        r.awb.toLowerCase() === qLower ||
+        r.orderId.toLowerCase() === qLower ||
+        r.sku.toLowerCase() === qLower
+    ) ||
+    prefixOrds.some(
+      (o) =>
+        o.awb.toLowerCase() === qLower ||
+        o.orderId.toLowerCase() === qLower ||
+        o.sku.toLowerCase() === qLower
+    );
+
+  const performPartialScan = !hasExactKeyMatch && prefixRecs.length < 50 && prefixOrds.length < 50;
 
   if (performPartialScan) {
     // Fast collection scan with toArray() - in V8 / IndexedDB, reading 10k items takes ~10-40ms

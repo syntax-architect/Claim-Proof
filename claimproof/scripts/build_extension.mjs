@@ -103,7 +103,22 @@ console.log(`   Host Permissions: none`);
 
 // 3. Prepare clean staging directory
 if (existsSync(STAGING_DIR)) {
-  rmSync(STAGING_DIR, { recursive: true, force: true });
+  try {
+    rmSync(STAGING_DIR, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+  } catch {
+    try {
+      const entries = readdirSync(STAGING_DIR);
+      for (const entry of entries) {
+        try {
+          rmSync(join(STAGING_DIR, entry), { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+        } catch {
+          // Ignore Windows file locking if locked by OneDrive or OS scanner
+        }
+      }
+    } catch {
+      // Ignore
+    }
+  }
 }
 mkdirSync(STAGING_DIR, { recursive: true });
 
@@ -155,12 +170,29 @@ function collectFiles(dir) {
   return results;
 }
 
+function readFileSyncWithRetry(file, retries = 5, delayMs = 150) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return readFileSync(file);
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      try {
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, delayMs);
+      } catch {
+        // Fallback if Atomics is unavailable
+      }
+    }
+  }
+}
+
 const allFiles = collectFiles(packageDir);
-const zipEntries = allFiles.map((file) => {
-  const relPath = relative(packageDir, file).replace(/\\/g, '/');
-  const data = readFileSync(file);
-  return { name: relPath, data };
-});
+const zipEntries = allFiles
+  .filter((file) => existsSync(file))
+  .map((file) => {
+    const relPath = relative(packageDir, file).replace(/\\/g, '/');
+    const data = readFileSyncWithRetry(file);
+    return { name: relPath, data };
+  });
 
 function writeZip(entries, outPath) {
   const localHeaders = [];

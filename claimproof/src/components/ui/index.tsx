@@ -18,6 +18,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -1012,18 +1013,20 @@ export function PageHeader({
           <Icon className="h-5 w-5" />
         </div>
         <div>
-          {kicker && (
-            <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-proof-300">
-              {kicker}
-            </div>
-          )}
           <h1 className="font-display text-[22px] font-bold leading-tight tracking-tight text-white">
             {title}
           </h1>
           {subtitle && <div className="mt-0.5 text-sm text-slate-400">{subtitle}</div>}
         </div>
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      <div className="flex flex-wrap items-center gap-2">
+        {kicker && (
+          <span className="rounded-md border border-line bg-ink-800/60 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+            {kicker}
+          </span>
+        )}
+        {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      </div>
     </div>
   );
 }
@@ -1031,6 +1034,8 @@ export function PageHeader({
 /* ── Logo ────────────────────────────────────────────────────────────── */
 
 export function LogoMark({ size = 34, className }: { size?: number; className?: string }) {
+  /* Unique mask id per instance — several logos can render on one page. */
+  const maskId = `saboot-stamp-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
   return (
     <svg
       width={size}
@@ -1039,24 +1044,58 @@ export function LogoMark({ size = 34, className }: { size?: number; className?: 
       className={cn('shrink-0', className)}
       aria-hidden="true"
     >
-      <rect width="64" height="64" rx="14" fill="#0B0C0E" stroke="#22252B" />
-      <g stroke="#D4B483" strokeWidth="4.5" strokeLinecap="round" fill="none">
-        <path d="M14 23 V17 a3 3 0 0 1 3 -3 h6" />
-        <path d="M41 14 h6 a3 3 0 0 1 3 3 v6" />
-        <path d="M50 41 v6 a3 3 0 0 1 -3 3 h-6" />
-        <path d="M23 50 h-6 a3 3 0 0 1 -3 -3 v-6" />
+      <defs>
+        <mask id={maskId}>
+          <rect width="64" height="64" fill="black" />
+          <rect x="10" y="10" width="44" height="44" rx="10" fill="white" />
+          <g fill="black">
+            <circle cx="23" cy="10" r="3" />
+            <circle cx="32" cy="10" r="3" />
+            <circle cx="41" cy="10" r="3" />
+            <circle cx="23" cy="54" r="3" />
+            <circle cx="32" cy="54" r="3" />
+            <circle cx="41" cy="54" r="3" />
+            <circle cx="10" cy="23" r="3" />
+            <circle cx="10" cy="32" r="3" />
+            <circle cx="10" cy="41" r="3" />
+            <circle cx="54" cy="23" r="3" />
+            <circle cx="54" cy="32" r="3" />
+            <circle cx="54" cy="41" r="3" />
+          </g>
+        </mask>
+      </defs>
+      <rect width="64" height="64" rx="14" fill="var(--cp-surface-2)" />
+      <rect
+        x="0.5"
+        y="0.5"
+        width="63"
+        height="63"
+        rx="13.5"
+        fill="none"
+        stroke="var(--cp-line-strong)"
+      />
+      <g mask={`url(#${maskId})`}>
+        <rect x="10" y="10" width="44" height="44" fill="var(--cp-accent-solid)" />
       </g>
       <rect
-        x="23"
-        y="25"
-        width="18"
-        height="14"
-        rx="2.5"
+        x="14.5"
+        y="14.5"
+        width="35"
+        height="35"
+        rx="6.5"
         fill="none"
-        stroke="#E3C896"
-        strokeWidth="3"
+        stroke="var(--cp-on-accent)"
+        strokeOpacity="0.3"
+        strokeWidth="1.5"
       />
-      <path d="M35.5 27.5 l-5 4.5 h3.4 l-2.4 4.5 5.6 -5.2 h-3.4 z" fill="#C9A45C" />
+      <path
+        d="M21.5 33 L29 40.5 L44 23"
+        fill="none"
+        stroke="var(--cp-on-accent)"
+        strokeWidth="6.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

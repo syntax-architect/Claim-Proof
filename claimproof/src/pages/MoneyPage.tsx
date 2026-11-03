@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { AlertCircle, HelpCircle, IndianRupee, Percent, Plus } from 'lucide-react';
+import { AlertCircle, CheckCircle2, HelpCircle, IndianRupee, Percent, Plus } from 'lucide-react';
 import { db, getSetting, setSetting } from '../db/schema';
 import { formatPaise, paiseToRupees } from '../lib/money';
 import {
@@ -98,7 +98,7 @@ export default function MoneyPage({ navigate: _navigate }: { navigate?: (route: 
       <PageHeader
         icon={IndianRupee}
         title="Money & Claims Ledger"
-        subtitle="Track marketplace return disputes, rupee recoveries, and software ROI — computed exclusively from your own data."
+        subtitle="Track marketplace return disputes, rupee recoveries, and software ROI, computed exclusively from your own data."
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -159,9 +159,12 @@ export default function MoneyPage({ navigate: _navigate }: { navigate?: (route: 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="font-display text-base font-bold text-white">
+                <span className="flex items-center gap-2 font-display text-base font-bold text-white">
+                  {planRoi.paidForItself && (
+                    <CheckCircle2 className="h-4.5 w-4.5 text-proof-400" aria-hidden="true" />
+                  )}
                   {planRoi.paidForItself
-                    ? '🎉 Your plan has paid for itself!'
+                    ? 'Your plan has paid for itself!'
                     : 'Plan Breakeven Meter'}
                 </span>
                 <Badge tone={planRoi.paidForItself ? 'proof' : 'neutral'}>

@@ -199,7 +199,7 @@ export function MobileNav({ route, navigate }: { route: Route; navigate: (r: Rou
     { route: 'settings', label: getLabel('settings'), icon: Settings }
   ];
   return (
-    <div className="flex gap-1 overflow-x-auto border-b border-line bg-ink-900/70 px-3 py-2 backdrop-blur-xl md:hidden">
+    <div className="flex gap-1 overflow-x-auto border-b border-line bg-ink-900 px-3 py-2 md:hidden">
       {entries.map(({ route: r, label, icon: Icon }) => (
         <button
           key={r}

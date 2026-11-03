@@ -298,7 +298,7 @@ export default function VaultPage() {
     <div className="space-y-6">
       <PageHeader
         icon={FolderArchive}
-        kicker="MODULE B+C · EVIDENCE"
+        kicker="MODULE B+C"
         title="Vault"
         subtitle="Every recording & label ever processed on this workstation"
         actions={

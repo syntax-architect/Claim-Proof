@@ -10,11 +10,14 @@ import {
   FileCheck2,
   FolderDown,
   IndianRupee,
+  Info,
+  Lock,
   Radar,
   RotateCcw,
   Send,
   Sliders,
   Trash2,
+  TriangleAlert,
   Trophy,
   Video
 } from 'lucide-react';
@@ -147,17 +150,23 @@ function EditDeliveryDateModal({
         </div>
 
         {isPastExpired && (
-          <div className="rounded-xl border border-danger-500/30 bg-danger-500/10 p-3 text-xs text-danger-300">
-            ⚠️ <strong>Window expired:</strong> The entered return delivery date means the dispute
-            deadline closed on {formatIST(calculatedDeadline)}. You will need to file manually with
-            carrier proof of delivery delay.
+          <div className="flex items-start gap-2 rounded-xl border border-danger-500/30 bg-danger-500/10 p-3 text-xs text-danger-300">
+            <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span>
+              <strong>Window expired:</strong> The entered return delivery date means the dispute
+              deadline closed on {formatIST(calculatedDeadline)}. You will need to file manually with
+              carrier proof of delivery delay.
+            </span>
           </div>
         )}
 
         {isFuture && (
-          <div className="rounded-xl border border-warn-500/30 bg-warn-500/10 p-3 text-xs text-warn-300">
-            ℹ️ <strong>Future timestamp:</strong> The return delivery date is set in the future
-            relative to this device&apos;s current clock.
+          <div className="flex items-start gap-2 rounded-xl border border-warn-500/30 bg-warn-500/10 p-3 text-xs text-warn-300">
+            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span>
+              <strong>Future timestamp:</strong> The return delivery date is set in the future
+              relative to this device&apos;s current clock.
+            </span>
           </div>
         )}
 
@@ -226,9 +235,12 @@ function NotificationExplainerModal({ open, onClose }: { open: boolean; onClose:
             <span>Urgent final reminder before dispute portal closes</span>
           </li>
         </ul>
-        <div className="rounded-xl border border-proof-500/30 bg-proof-500/10 p-3 text-xs text-proof-300">
-          🔒 <strong>Local &amp; Private:</strong> Notifications are generated directly by your
-          browser on this device. Zero cloud servers, zero trackers, and zero marketing promotions.
+        <div className="flex items-start gap-2 rounded-xl border border-proof-500/30 bg-proof-500/10 p-3 text-xs text-proof-300">
+          <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          <span>
+            <strong>Local &amp; Private:</strong> Notifications are generated directly by your
+            browser on this device. Zero cloud servers, zero trackers, and zero marketing promotions.
+          </span>
         </div>
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="secondary" size="sm" onClick={onClose}>
@@ -566,7 +578,7 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
       <div className={cn('space-y-6', className)}>
         <PageHeader
           icon={Radar}
-          kicker="MODULE C · PRO UPGRADE"
+          kicker="MODULE C"
           title="ClaimRadar Pro"
           subtitle="Return-dispute deadline tracking & 1-click evidence packaging"
         />
@@ -619,7 +631,7 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
     <div className={cn('space-y-6', className)}>
       <PageHeader
         icon={Radar}
-        kicker="MODULE C · ACTIVE"
+        kicker="MODULE C"
         title="ClaimRadar Pro"
         subtitle="Flagged returns, live deadline radar and evidence packaging"
         actions={

@@ -183,9 +183,9 @@ export default function PricingPage() {
     <div className="space-y-6 pb-28">
       <PageHeader
         icon={IndianRupee}
-        kicker="MODULE D · MONETIZATION &amp; ROI"
+        kicker="MODULE D"
         title="Seller Protection Plans"
-        subtitle="Designed for Indian marketplace sellers · UPI Autopay / Instant QR · Verified offline with zero server downtime"
+        subtitle="Plans for Indian marketplace sellers. UPI Autopay and instant QR, verified offline with zero server downtime."
       />
 
       {/* Current license status card */}

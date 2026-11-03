@@ -343,13 +343,13 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
     ctx.drawImage(video, 0, 0, width, height);
 
     // Draw Burnt-In Header Bar (same as PC recordingPipeline)
-    ctx.fillStyle = isRecording ? '#000000' : 'rgba(0, 0, 0, 0.75)';
+    ctx.fillStyle = isRecording ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.75)';
     ctx.fillRect(0, 0, width, barHeight);
 
     // Red REC Badge
     if (isRecording) {
       const pulse = (Math.sin(Date.now() / 250) + 1) / 2;
-      ctx.fillStyle = '#DC2626';
+      ctx.fillStyle = '#D9534A';
       ctx.beginPath();
       ctx.roundRect(10, 8, 88, 30, 4);
       ctx.fill();
@@ -359,10 +359,13 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
       ctx.textBaseline = 'middle';
       ctx.fillText('REC', 40, barHeight / 2 + 1);
 
-      ctx.fillStyle = `rgba(255, 255, 255, ${0.4 + pulse * 0.6})`;
+      const pulseAlpha = 0.4 + pulse * 0.6;
+      ctx.globalAlpha = pulseAlpha;
+      ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
       ctx.arc(24, barHeight / 2, 5, 0, Math.PI * 2);
       ctx.fill();
+      ctx.globalAlpha = 1;
     }
 
     // Burnt-in IST Timestamp Bar text
@@ -574,7 +577,7 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
       {/* Top Mobile Bar */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-slate-900/90 px-4 py-3 backdrop-blur-md">
         <div className="flex items-center gap-2">
-          <div className="h-6 w-6 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
+          <div className="h-6 w-6 rounded bg-success-500/20 text-success-400 flex items-center justify-center font-bold text-xs">
             S
           </div>
           <div>
@@ -627,10 +630,10 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
 
       {/* Error Banner */}
       {errorMessage && (
-        <div className="flex items-center gap-2 bg-rose-500/10 border-b border-rose-500/20 px-4 py-2 text-xs text-rose-300">
+        <div className="flex items-center gap-2 bg-danger-500/10 border-b border-danger-500/20 px-4 py-2 text-xs text-danger-300">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <span className="flex-1">{errorMessage}</span>
-          <button onClick={() => setErrorMessage('')} className="text-rose-400 hover:text-white">
+          <button onClick={() => setErrorMessage('')} className="text-danger-400 hover:text-white">
             ✕
           </button>
         </div>
@@ -689,7 +692,7 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
 
         {/* Transfer Progress / Status Bar */}
         {transferState === 'transferring' && transferProgress && (
-          <div className="w-full max-w-xl glass-soft p-3 rounded-lg space-y-2 border border-emerald-500/20">
+          <div className="w-full max-w-xl glass-soft p-3 rounded-lg space-y-2 border border-success-500/20">
             <div className="flex justify-between text-xs text-slate-300 font-mono">
               <span>{t('phone.transferring', { percent: transferProgress.percent })}</span>
               <span>
@@ -698,7 +701,7 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
             </div>
             <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
               <div
-                className="h-full bg-emerald-500 transition-all duration-150"
+                className="h-full bg-success-500 transition-all duration-150"
                 style={{ width: `${transferProgress.percent}%` }}
               />
             </div>
@@ -707,8 +710,8 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
 
         {/* Transfer Success Banner */}
         {transferState === 'verified' && (
-          <div className="w-full max-w-xl p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-2 text-xs">
-            <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+          <div className="w-full max-w-xl p-3 rounded-lg bg-success-500/10 border border-success-500/30 text-success-300 flex items-center gap-2 text-xs">
+            <CheckCircle2 className="h-5 w-5 text-success-400 shrink-0" />
             <span>{t('phone.transferSuccess')}</span>
           </div>
         )}
@@ -759,7 +762,7 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
               value={awb}
               onChange={(e) => setAwb(e.target.value.toUpperCase())}
               placeholder="e.g. 1420984812"
-              className="mt-1 w-full rounded border border-white/10 bg-slate-900 px-2 py-1.5 font-mono text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="mt-1 w-full rounded border border-white/10 bg-slate-900 px-2 py-1.5 font-mono text-white placeholder-slate-500 focus:border-success-500 focus:outline-none"
             />
           </div>
 
@@ -770,7 +773,7 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
               value={orderId}
               onChange={(e) => setOrderId(e.target.value)}
               placeholder="e.g. ORD-8120"
-              className="mt-1 w-full rounded border border-white/10 bg-slate-900 px-2 py-1.5 font-mono text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="mt-1 w-full rounded border border-white/10 bg-slate-900 px-2 py-1.5 font-mono text-white placeholder-slate-500 focus:border-success-500 focus:outline-none"
             />
           </div>
 
@@ -781,7 +784,7 @@ export default function PhoneCompanionPage({ onBackToApp }: PhoneCompanionProps)
               value={sku}
               onChange={(e) => setSku(e.target.value)}
               placeholder="e.g. BLK-TEE-L"
-              className="mt-1 w-full rounded border border-white/10 bg-slate-900 px-2 py-1.5 font-mono text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="mt-1 w-full rounded border border-white/10 bg-slate-900 px-2 py-1.5 font-mono text-white placeholder-slate-500 focus:border-success-500 focus:outline-none"
             />
           </div>
 

@@ -58,6 +58,22 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           const normalizedId = id.replace(/\\/g, '/');
+          if (normalizedId.includes('/src/locales/')) return 'locales';
+          if (
+            normalizedId.includes('/src/pages/PrivacyPolicy') ||
+            normalizedId.includes('/src/pages/Terms') ||
+            normalizedId.includes('/src/pages/Refund') ||
+            normalizedId.includes('/src/pages/Support') ||
+            normalizedId.includes('/src/pages/NotFound') ||
+            normalizedId.includes('/src/pages/ScannerTest') ||
+            normalizedId.includes('/src/pages/PhoneCompanion')
+          ) {
+            return 'pages-secondary';
+          }
+          if (normalizedId.includes('/src/pages/')) return 'pages-main';
+          if (normalizedId.includes('/src/components/smartlabel/')) return 'workbench-labels';
+          if (normalizedId.includes('/src/components/recorder/')) return 'workbench-recorder';
+          if (normalizedId.includes('/src/components/claims/')) return 'workbench-claims';
           if (normalizedId.includes('node_modules')) {
             if (normalizedId.includes('pdfjs-dist')) return 'pdfjs';
             if (normalizedId.includes('pdf-lib')) return 'pdf-lib';

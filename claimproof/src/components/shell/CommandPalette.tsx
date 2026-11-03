@@ -50,9 +50,11 @@ const ROUTE_ICONS: Record<string, LucideIcon> = {
   labels: ScanBarcode,
   recorder: Video,
   claims: Radar,
+  money: IndianRupee,
   vault: FolderOpen,
   pricing: IndianRupee,
   settings: Settings,
+  'scanner-test': ScanBarcode,
   privacy: ShieldCheck,
   terms: FileText,
   refund: RotateCcw,
@@ -78,6 +80,15 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
       run: () => navigateTo(r)
     }));
     const actions: Command[] = [
+      {
+        id: 'search-evidence',
+        label: 'Search evidence & claims (AWB / SKU / Order)',
+        icon: Search,
+        group: 'Actions',
+        run: () => {
+          window.dispatchEvent(new CustomEvent('cp-open-search'));
+        }
+      },
       {
         id: 'theme',
         label: 'Toggle light / dark theme',

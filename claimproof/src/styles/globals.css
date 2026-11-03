@@ -62,8 +62,8 @@
   --color-pure-white: #ffffff;
 
   --font-sans:
-    'Inter Variable', 'Inter', 'Inter-fallback', ui-sans-serif, system-ui, -apple-system,
-    'Segoe UI', Roboto, sans-serif;
+    'Inter Variable', 'Inter', 'Noto Sans Devanagari Variable', 'Noto Sans Devanagari',
+    'Inter-fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Fraunces Variable', 'Fraunces', 'Fraunces-fallback', Georgia, serif;
   --font-mono:
     'JetBrains Mono Variable', 'JetBrains Mono', 'JetBrainsMono-fallback', ui-monospace,

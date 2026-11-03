@@ -43,7 +43,7 @@ import {
 import type { RecordingMeta, StoredOrder } from '../types';
 import { cn } from '../lib/utils';
 
-function RecordingPlayer({
+export function RecordingPlayer({
   recording,
   onClose
 }: {

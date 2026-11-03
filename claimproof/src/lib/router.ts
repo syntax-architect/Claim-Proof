@@ -7,13 +7,16 @@ export const ROUTES = [
   'labels',
   'recorder',
   'claims',
+  'money',
   'vault',
   'pricing',
   'settings',
+  'scanner-test',
   'privacy',
   'terms',
   'refund',
-  'support'
+  'support',
+  'pair'
 ] as const;
 
 export type KnownRoute = (typeof ROUTES)[number];
@@ -24,13 +27,16 @@ export const ROUTE_LABELS: Record<Route, string> = {
   labels: 'SmartLabel Studio',
   recorder: 'AWB Recorder',
   claims: 'ClaimRadar',
+  money: 'Money Ledger',
   vault: 'Vault',
   pricing: 'Pricing & License',
   settings: 'Settings',
+  'scanner-test': 'Scanner Test Workbench',
   privacy: 'Privacy Policy',
   terms: 'Terms of Service',
   refund: 'Refund Policy',
   support: 'Support & Help',
+  pair: 'Phone Companion',
   'not-found': 'Page Not Found',
   '404': 'Page Not Found'
 };

@@ -25,6 +25,7 @@ export {
   UNVERIFIED_LABEL,
   UNVERIFIED_STATUS,
   type MarketplaceClaimWindowConfig,
+  getClaimWindowHours,
   isClaimWindowUnverified,
   saveCustomClaimWindowHours,
   resetCustomClaimWindows,
@@ -100,7 +101,10 @@ export function buildClaimFromFlag(
     deadlineAt: claimDeadlineFor(detail.marketplace, returnScanAt, customOverrides),
     status: 'pending',
     disputeText: '',
-    returnRecordingId: detail.recordingId
+    returnRecordingId: detail.recordingId,
+    amountClaimedPaise: 0,
+    amountRecoveredPaise: 0,
+    auditTrail: []
   };
 }
 

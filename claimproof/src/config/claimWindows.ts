@@ -10,13 +10,16 @@ export interface MarketplaceClaimWindowConfig {
   marketplace: Marketplace;
   displayName: string;
   hours: number;
+  defaultHours: number;
   sourceUrl: string;
   lastVerified: string; // 'UNVERIFIED' or ISO date string (e.g. '2026-11-02')
+  verified: boolean;
 }
 
 export const DEFAULT_CLAIM_WINDOW_HOURS = 72;
 export const UNVERIFIED_STATUS = 'UNVERIFIED';
-export const UNVERIFIED_LABEL = 'UNVERIFIED - check your seller panel';
+export const UNVERIFIED_LABEL = 'UNVERIFIED, check your seller panel.';
+export const LEGACY_UNVERIFIED_LABEL = 'UNVERIFIED - check your seller panel';
 
 export const CLAIM_WINDOWS_STORAGE_KEY = BRAND.storageKeys.claimWindows;
 export const LEGACY_CLAIM_WINDOWS_STORAGE_KEY = BRAND.storageKeys.legacyClaimWindows;
@@ -26,57 +29,73 @@ export const MARKETPLACE_CLAIM_WINDOWS: Record<Marketplace, MarketplaceClaimWind
     marketplace: 'Meesho',
     displayName: 'Meesho SAFE',
     hours: 72,
+    defaultHours: 72,
     sourceUrl: 'https://supplier.meesho.com/support',
-    lastVerified: UNVERIFIED_STATUS
+    lastVerified: UNVERIFIED_STATUS,
+    verified: false
   },
   Flipkart: {
     marketplace: 'Flipkart',
     displayName: 'Flipkart SPF',
     hours: 336, // 14 days
+    defaultHours: 336,
     sourceUrl: 'https://seller.flipkart.com/help/protection-fund',
-    lastVerified: UNVERIFIED_STATUS
+    lastVerified: UNVERIFIED_STATUS,
+    verified: false
   },
   Amazon: {
     marketplace: 'Amazon',
     displayName: 'Amazon SAFE-T',
     hours: 720, // 30 days
+    defaultHours: 720,
     sourceUrl: 'https://sellercentral.amazon.in/help/hub/reference/G202103440',
-    lastVerified: UNVERIFIED_STATUS
+    lastVerified: UNVERIFIED_STATUS,
+    verified: false
   },
   AJIO: {
     marketplace: 'AJIO',
     displayName: 'AJIO',
     hours: 72,
+    defaultHours: 72,
     sourceUrl: 'https://supplier.ajio.com/',
-    lastVerified: UNVERIFIED_STATUS
+    lastVerified: UNVERIFIED_STATUS,
+    verified: false
   },
   Snapdeal: {
     marketplace: 'Snapdeal',
     displayName: 'Snapdeal',
     hours: 72,
+    defaultHours: 72,
     sourceUrl: 'https://sellers.snapdeal.com/',
-    lastVerified: UNVERIFIED_STATUS
+    lastVerified: UNVERIFIED_STATUS,
+    verified: false
   },
   Myntra: {
     marketplace: 'Myntra',
     displayName: 'Myntra',
     hours: 72,
+    defaultHours: 72,
     sourceUrl: 'https://partner.myntra.com/',
-    lastVerified: UNVERIFIED_STATUS
+    lastVerified: UNVERIFIED_STATUS,
+    verified: false
   },
   GlowRoad: {
     marketplace: 'GlowRoad',
     displayName: 'GlowRoad',
     hours: 72,
+    defaultHours: 72,
     sourceUrl: 'https://glowroad.com/',
-    lastVerified: UNVERIFIED_STATUS
+    lastVerified: UNVERIFIED_STATUS,
+    verified: false
   },
   Unknown: {
     marketplace: 'Unknown',
     displayName: 'Standard',
     hours: DEFAULT_CLAIM_WINDOW_HOURS,
+    defaultHours: DEFAULT_CLAIM_WINDOW_HOURS,
     sourceUrl: '',
-    lastVerified: UNVERIFIED_STATUS
+    lastVerified: UNVERIFIED_STATUS,
+    verified: false
   }
 };
 
@@ -169,7 +188,7 @@ export function getClaimWindowHours(
 export function isClaimWindowUnverified(marketplace: Marketplace): boolean {
   const config = MARKETPLACE_CLAIM_WINDOWS[marketplace];
   if (!config) return true;
-  return config.lastVerified === UNVERIFIED_STATUS || !config.lastVerified;
+  return !config.verified || config.lastVerified === UNVERIFIED_STATUS || !config.lastVerified;
 }
 
 /** Gets the configuration entry for a given marketplace. */
@@ -179,8 +198,10 @@ export function getClaimWindowConfig(marketplace: Marketplace): MarketplaceClaim
       marketplace,
       displayName: marketplace === 'Unknown' ? 'Standard' : marketplace,
       hours: DEFAULT_CLAIM_WINDOW_HOURS,
+      defaultHours: DEFAULT_CLAIM_WINDOW_HOURS,
       sourceUrl: '',
-      lastVerified: UNVERIFIED_STATUS
+      lastVerified: UNVERIFIED_STATUS,
+      verified: false
     }
   );
 }

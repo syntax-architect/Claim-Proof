@@ -6,6 +6,7 @@ import { ToastProvider } from '../ui';
 import { PaywallProvider } from '../../providers/PaywallProvider';
 import * as claimEngine from '../../services/claimEngine';
 import * as licenseService from '../../services/licenseService';
+import { UNVERIFIED_LABEL } from '../../config/claimWindows';
 import type { ClaimItem } from '../../types';
 
 expect.extend(toHaveNoViolations);
@@ -97,7 +98,7 @@ describe('ClaimRadarDashboard Component', () => {
     expect(screen.getAllByText(/left to file/i).length).toBeGreaterThan(0);
 
     // Shows unverified badge next to unconfirmed window
-    expect(screen.getAllByText('UNVERIFIED - check your seller panel').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(UNVERIFIED_LABEL).length).toBeGreaterThan(0);
 
     const prepareBtn = screen.getByRole('button', {
       name: /Prepare Claim/i
@@ -129,7 +130,7 @@ describe('ClaimRadarDashboard Component', () => {
     expect(screen.getByText('END')).toBeDefined();
 
     // Verify unverified badge for Flipkart
-    expect(screen.getAllByText('UNVERIFIED - check your seller panel').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(UNVERIFIED_LABEL).length).toBeGreaterThan(0);
 
     const results = await axe(container, {
       rules: { region: { enabled: false }, 'heading-order': { enabled: false } }

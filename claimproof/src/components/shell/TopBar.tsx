@@ -4,6 +4,7 @@ import {
   FolderCheck,
   FolderMinus,
   IndianRupee,
+  Languages,
   Layers,
   Moon,
   Search,
@@ -21,6 +22,7 @@ import { useLicense } from '../../services/licenseService';
 import { currentTheme, toggleTheme, type Theme } from '../../lib/theme';
 import { BRAND } from '../../config/brand';
 import { Badge, Logo, StatusDot } from '../ui';
+import { useI18n, type I18nKey } from '../../lib/i18n';
 
 function QuotaChip({
   icon: Icon,
@@ -59,6 +61,7 @@ export default function TopBar({ route }: { route: Route }) {
   const [clock, setClock] = useState(() => formatIST(Date.now()));
   const [theme, setTheme] = useState<Theme>(() => currentTheme());
   const vaultStatus = useLiveQuery(() => getVaultStatus(), []);
+  const { lang, toggleLang, t } = useI18n();
 
   useEffect(() => {
     const t = setInterval(() => setClock(formatIST(Date.now())), 1000);
@@ -79,12 +82,23 @@ export default function TopBar({ route }: { route: Route }) {
 
   const planBadge =
     license.plan === 'free'
-      ? 'Free'
+      ? t('topbar.planFree')
       : license.plan === 'starter'
-        ? 'Starter'
+        ? t('topbar.planStarter')
         : license.plan === 'claimradar'
-          ? 'Pro'
-          : 'Warehouse';
+          ? t('topbar.planPro')
+          : t('topbar.planWarehouse');
+
+  const routeKey = `nav.${route}` as I18nKey;
+  let routeLabel = ROUTE_LABELS[route];
+  try {
+    const localized = t(routeKey);
+    if (localized && localized !== routeKey) {
+      routeLabel = localized;
+    }
+  } catch {
+    // fallback to default
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-ink-950/80 backdrop-blur-xl">
@@ -97,36 +111,48 @@ export default function TopBar({ route }: { route: Route }) {
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-proof-300">
               {BRAND.domain}
             </div>
-            <div className="truncate font-display text-sm font-bold text-white">
-              {ROUTE_LABELS[route]}
-            </div>
+            <div className="truncate font-display text-sm font-bold text-white">{routeLabel}</div>
           </div>
         </div>
 
         <div className="ml-auto flex items-center gap-2">
           <button
             type="button"
-            onClick={() => window.dispatchEvent(new Event('cp-open-palette'))}
+            onClick={() => window.dispatchEvent(new CustomEvent('cp-open-search'))}
             className="glass-soft hidden h-9 items-center gap-2 px-3 text-slate-400 transition-colors hover:text-slate-200 md:flex"
-            title="Command menu (Ctrl+K)"
+            title={t('topbar.searchTooltip')}
           >
             <Search className="h-3.5 w-3.5" />
-            <span className="text-xs">Commands</span>
+            <span className="text-xs">{t('topbar.search')}</span>
             <span className="font-mono text-[10px] text-slate-500">⌃K</span>
           </button>
           <button
             type="button"
-            onClick={() => window.dispatchEvent(new Event('cp-open-palette'))}
-            aria-label="Open command menu"
+            onClick={() => window.dispatchEvent(new CustomEvent('cp-open-search'))}
+            aria-label={t('topbar.searchTooltip')}
             className="glass-soft flex h-9 w-9 shrink-0 items-center justify-center text-slate-300 md:hidden"
           >
             <Search className="h-4 w-4" />
           </button>
+
+          {/* Language Switch Button */}
+          <button
+            type="button"
+            onClick={toggleLang}
+            aria-label={t('topbar.langToggle')}
+            title={t('topbar.langToggle')}
+            data-testid="language-switch-button"
+            className="glass-soft flex h-9 shrink-0 items-center gap-1.5 px-2.5 text-xs font-semibold text-slate-300 transition-colors hover:text-proof-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-proof-400"
+          >
+            <Languages className="h-3.5 w-3.5 text-proof-400" />
+            <span className="font-sans text-[11px]">{lang === 'en' ? 'हिन्दी' : 'EN'}</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setTheme((t) => toggleTheme(t))}
             aria-label="Toggle light / dark theme"
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? t('topbar.themeDark') : t('topbar.themeLight')}
             className="glass-soft flex h-9 w-9 shrink-0 items-center justify-center text-slate-300 transition-colors hover:text-proof-300"
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -145,13 +171,13 @@ export default function TopBar({ route }: { route: Route }) {
 
           <QuotaChip
             icon={Layers}
-            label="labels today"
+            label={t('topbar.labelsToday')}
             used={usage?.labelsCropped ?? 0}
             limit={license.plan === 'free' ? FREE_LABELS_PER_DAY : null}
           />
           <QuotaChip
             icon={Video}
-            label="videos today"
+            label={t('topbar.videosToday')}
             used={recordingsToday ?? 0}
             limit={license.plan === 'free' ? FREE_AWBS_PER_DAY : null}
           />
@@ -167,10 +193,10 @@ export default function TopBar({ route }: { route: Route }) {
             )}
             <span className="text-[11px] text-slate-400">
               {vaultStatus === 'connected'
-                ? 'Vault'
+                ? t('topbar.vaultConnected')
                 : vaultStatus === 'downloads'
-                  ? 'Downloads'
-                  : 'Vault off'}
+                  ? t('topbar.vaultDownloads')
+                  : t('topbar.vaultOff')}
             </span>
           </div>
 
@@ -182,7 +208,7 @@ export default function TopBar({ route }: { route: Route }) {
           >
             <StatusDot tone={license.plan === 'free' ? 'warn' : 'proof'} />
             <span className="text-[11px] font-semibold text-slate-200">{planBadge}</span>
-            {license.demo && <Badge tone="warn">DEMO</Badge>}
+            {license.demo && <Badge tone="warn">{t('topbar.demoBadge')}</Badge>}
             {license.plan === 'free' && <IndianRupee className="h-3 w-3 text-warn-400" />}
           </button>
 

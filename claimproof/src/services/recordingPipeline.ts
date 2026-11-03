@@ -290,6 +290,18 @@ export class RecordingPipeline {
     };
   }
 
+  /**
+   * Pausing is explicitly blocked because Indian marketplace dispute resolutions
+   * (Meesho, Flipkart SPF, Amazon SAFE-T) strictly reject paused or cut footage.
+   */
+  pauseRecording(): { allowed: false; reason: string } {
+    return {
+      allowed: false,
+      reason:
+        'Continuous recording is mandatory: marketplaces reject paused or cut footage as unverified evidence.'
+    };
+  }
+
   async release(): Promise<void> {
     cancelAnimationFrame(this.compositorRaf);
     if (this.throttleInterval) {
@@ -450,10 +462,11 @@ export class RecordingPipeline {
     }
 
     /* Overlay text — auto-shrinks to fit the space right of the REC badge.
-     * Uses real-time wall-clock IST timestamp Date.now(). */
+     * Uses real-time wall-clock IST timestamp Date.now() and explicitly declares mode. */
+    const modeLabel = meta?.type === 'return' ? 'RETURN UNBOXING' : 'DISPATCH';
     const text =
       recording && meta
-        ? `${BRAND.videoWatermarkHeader} | AWB: ${meta.awb} | ORDER: ${meta.orderId} | SKU: ${meta.sku} (Qty: ${meta.qty}) | ${formatIST(Date.now())} | ${BRAND.domain}`
+        ? `${BRAND.videoWatermarkHeader} [${modeLabel}] | AWB: ${meta.awb} | ORDER: ${meta.orderId} | SKU: ${meta.sku} (Qty: ${meta.qty}) | ${formatIST(Date.now())} | ${BRAND.domain}`
         : `${BRAND.domain} — PACKING STATION LIVE · ${formatIST(Date.now())}`;
     const textX = recording ? 150 : 38;
     const maxTextW = WIDTH - textX - 16;

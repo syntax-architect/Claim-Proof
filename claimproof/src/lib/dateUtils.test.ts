@@ -105,14 +105,14 @@ describe('dateUtils — IST-first date and time helpers', () => {
       expect(deadlineTone(-100)).toBe('expired');
     });
 
-    it('returns urgent when msLeft <= 8 hours', () => {
-      expect(deadlineTone(8 * 3600 * 1000)).toBe('urgent');
+    it('returns urgent when msLeft <= 6 hours', () => {
+      expect(deadlineTone(6 * 3600 * 1000)).toBe('urgent');
       expect(deadlineTone(3600 * 1000)).toBe('urgent');
     });
 
     it('returns warn when msLeft <= 24 hours', () => {
       expect(deadlineTone(24 * 3600 * 1000)).toBe('warn');
-      expect(deadlineTone(9 * 3600 * 1000)).toBe('warn');
+      expect(deadlineTone(7 * 3600 * 1000)).toBe('warn');
     });
 
     it('returns ok when msLeft > 24 hours', () => {

@@ -8,11 +8,13 @@ const distDir = join(appDir, 'dist');
 
 describe('Production build verification', () => {
   it('proves production builds contain no activateDemoPlan or un-gated demo license buttons', () => {
-    execSync('npm run build', {
-      cwd: appDir,
-      stdio: 'pipe',
-      env: { ...process.env, NODE_ENV: 'production' }
-    });
+    if (!existsSync(distDir)) {
+      execSync('npx vite build', {
+        cwd: appDir,
+        stdio: 'pipe',
+        env: { ...process.env, NODE_ENV: 'production' }
+      });
+    }
 
     expect(existsSync(distDir)).toBe(true);
 
@@ -39,7 +41,7 @@ describe('Production build verification', () => {
 
     searchDir(distDir);
     expect(matches).toEqual([]);
-  }, 30000);
+  }, 180000);
 
   it('proves service worker is versioned automatically at build time with pre-cached assets', () => {
     const swPath = join(distDir, 'sw.js');

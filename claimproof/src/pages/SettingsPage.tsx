@@ -11,9 +11,11 @@ import {
   FolderOpen,
   HardDrive,
   Info,
+  Languages,
   LifeBuoy,
   QrCode,
   RotateCcw,
+  ScanBarcode,
   ShieldCheck,
   Smartphone,
   Sparkles,
@@ -28,10 +30,12 @@ import { db, getSetting, setSetting } from '../db/schema';
 import { connectVault, getVaultStatus } from '../services/vaultWriter';
 import { isPhonePairingConfigured, pairingQrPayload } from '../services/phonePairing';
 import { formatISTShort } from '../lib/dateUtils';
-import { downloadBlob } from '../lib/utils';
+import { cn, downloadBlob } from '../lib/utils';
 import { Badge, Button, Card, PageHeader, StatusDot, Toggle, useToast } from '../components/ui';
 import { isBeepsMuted, setBeepsMuted } from '../lib/audioBeeps';
 import { isTelemetryEnabled, setTelemetryEnabled } from '../services/telemetry';
+import { useI18n } from '../lib/i18n';
+import { recalculateClaimsForMarketplace } from '../services/claimEngine';
 import { navigateTo } from '../lib/router';
 import { RECORDER_CONFIG } from '../config/recorderConfig';
 import {
@@ -43,6 +47,13 @@ import {
   resetCustomClaimWindows,
   isClaimWindowUnverified
 } from '../config/claimWindows';
+import {
+  getScannerSettings,
+  saveScannerSettings,
+  type ScannerSettings,
+  type ScannerSuffix,
+  type CaseHandling
+} from '../config/scannerConfig';
 import type { Marketplace } from '../types';
 
 const CLAIM_MARKETPLACES: Marketplace[] = [
@@ -84,6 +95,7 @@ function Section({
 
 export default function SettingsPage() {
   const toast = useToast();
+  const { lang, setLang, t, pseudoMode, setPseudoMode } = useI18n();
   const [connecting, setConnecting] = useState(false);
   const [sampleQr, setSampleQr] = useState<string | null>(null);
   const [beepsMuted, setBeepsMutedState] = useState(() => isBeepsMuted());
@@ -95,6 +107,9 @@ export default function SettingsPage() {
   const [customClaimWindows, setCustomClaimWindowsState] = useState<
     Partial<Record<Marketplace, number>>
   >(() => getCustomClaimWindows());
+  const [scannerSettings, setScannerSettings] = useState<ScannerSettings>(() =>
+    getScannerSettings()
+  );
 
   useEffect(() => {
     const onTelemetryChanged = () => setTelemetryEnabledState(isTelemetryEnabled());
@@ -118,17 +133,20 @@ export default function SettingsPage() {
   }, []);
 
   const handleClaimWindowChange = (m: Marketplace, valStr: string) => {
+    const prevHours = customClaimWindows[m] ?? MARKETPLACE_CLAIM_WINDOWS[m]?.hours ?? 72;
     const val = Math.max(1, Math.min(2160, Number(valStr) || 1));
     saveCustomClaimWindowHours(m, val);
     setCustomClaimWindowsState((prev) => ({ ...prev, [m]: val }));
     void setSetting('claim_windows_hours', { ...getCustomClaimWindows(), [m]: val });
+    void recalculateClaimsForMarketplace(m, val, prevHours);
     toast.success(
       'Claim window updated',
-      `${MARKETPLACE_CLAIM_WINDOWS[m]?.displayName || m} set to ${val} hours.`
+      `${MARKETPLACE_CLAIM_WINDOWS[m]?.displayName || m} set to ${val} hours. Existing claims recalculated.`
     );
   };
 
   const handleResetSingleWindow = (m: Marketplace) => {
+    const prevHours = customClaimWindows[m] ?? MARKETPLACE_CLAIM_WINDOWS[m]?.hours ?? 72;
     resetSingleClaimWindow(m);
     setCustomClaimWindowsState((prev) => {
       const next = { ...prev };
@@ -136,9 +154,11 @@ export default function SettingsPage() {
       return next;
     });
     void setSetting('claim_windows_hours', getCustomClaimWindows());
+    const defaultHours = MARKETPLACE_CLAIM_WINDOWS[m]?.hours ?? 72;
+    void recalculateClaimsForMarketplace(m, defaultHours, prevHours);
     toast.info(
       'Claim window reset',
-      `${MARKETPLACE_CLAIM_WINDOWS[m]?.displayName || m} restored to default.`
+      `${MARKETPLACE_CLAIM_WINDOWS[m]?.displayName || m} restored to default. Existing claims recalculated.`
     );
   };
 
@@ -200,6 +220,75 @@ export default function SettingsPage() {
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Section
+          icon={Languages}
+          title={t('settings.languageTitle')}
+          sub={t('settings.languageSub')}
+        >
+          <div className="space-y-4">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+              data-testid="settings-language-picker"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setLang('en');
+                  toast.success(t('common.saved'), 'Language set to English');
+                }}
+                className={cn(
+                  'flex items-center justify-between rounded-xl border p-3.5 text-left transition-all',
+                  lang === 'en'
+                    ? 'border-proof-400 bg-proof-500/15 text-white shadow-[0_0_12px_rgba(201,164,92,0.15)]'
+                    : 'border-line bg-ink-950/60 text-slate-400 hover:border-line-bright hover:text-slate-200'
+                )}
+                data-testid="lang-option-en"
+              >
+                <div>
+                  <div className="font-semibold text-sm">English</div>
+                  <div className="text-[11px] text-slate-400">Default interface language</div>
+                </div>
+                {lang === 'en' && <StatusDot tone="proof" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setLang('hi');
+                  toast.success(t('common.saved'), 'भाषा हिन्दी में बदली गई');
+                }}
+                className={cn(
+                  'flex items-center justify-between rounded-xl border p-3.5 text-left transition-all',
+                  lang === 'hi'
+                    ? 'border-proof-400 bg-proof-500/15 text-white shadow-[0_0_12px_rgba(201,164,92,0.15)]'
+                    : 'border-line bg-ink-950/60 text-slate-400 hover:border-line-bright hover:text-slate-200'
+                )}
+                data-testid="lang-option-hi"
+              >
+                <div>
+                  <div className="font-semibold text-sm">हिन्दी (Hindi)</div>
+                  <div className="text-[11px] text-slate-400">भारतीय विक्रेताओं के लिए</div>
+                </div>
+                {lang === 'hi' && <StatusDot tone="proof" />}
+              </button>
+            </div>
+
+            <div className="border-t border-line/60 pt-3">
+              <Toggle
+                checked={pseudoMode}
+                onChange={(enabled) => {
+                  setPseudoMode(enabled);
+                  toast.info(
+                    enabled ? 'Pseudo-localization enabled' : 'Pseudo-localization disabled',
+                    'Strings are expanded with accented characters to verify 360px width bounds.'
+                  );
+                }}
+                label="Pseudo-localization (Stress test 360px text overflow)"
+                hint="Expands all labels with accented characters to catch clipping and layout breakage."
+              />
+            </div>
+          </div>
+        </Section>
         <Section
           icon={FolderOpen}
           title="Evidence vault"
@@ -289,6 +378,138 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2 text-[11px] text-slate-600">
               <Usb className="h-3.5 w-3.5" /> USB / Bluetooth HID guns: plug &amp; play, no setup.
               <Cable className="h-3.5 w-3.5" />
+            </div>
+          </div>
+        </Section>
+
+        <Section
+          icon={ScanBarcode}
+          title="Barcode & USB Scanner"
+          sub="Configure keyboard-wedge guns, suffix terminators, and duplicate debounce"
+        >
+          <div className="glass-soft flex flex-col gap-3 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-xs text-slate-300">
+                Supports rapid USB laser guns, Bluetooth wedges, and phone/webcam scanning.
+              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={ScanBarcode}
+                onClick={() => navigateTo('scanner-test')}
+              >
+                Scanner Test Workbench
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 pt-2">
+              <div>
+                <label
+                  htmlFor="settings-scanner-suffix"
+                  className="text-[11px] font-medium text-slate-400"
+                >
+                  Suffix Terminator
+                </label>
+                <select
+                  id="settings-scanner-suffix"
+                  value={scannerSettings.suffix}
+                  onChange={async (e) => {
+                    const next = await saveScannerSettings({
+                      suffix: e.target.value as ScannerSuffix
+                    });
+                    setScannerSettings(next);
+                  }}
+                  className="mt-1 w-full rounded-md border border-slate-700 bg-ink-950 px-2.5 py-1.5 text-xs text-white focus:outline-none"
+                >
+                  <option value="EnterOrTab">Enter or Tab (Universal Default)</option>
+                  <option value="Enter">Enter Only</option>
+                  <option value="Tab">Tab Only</option>
+                  <option value="None">None (Timeout Burst)</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="settings-scanner-min-len"
+                  className="text-[11px] font-medium text-slate-400"
+                >
+                  Min Barcode Length
+                </label>
+                <input
+                  id="settings-scanner-min-len"
+                  type="number"
+                  min={1}
+                  max={64}
+                  value={scannerSettings.minLength}
+                  onChange={async (e) => {
+                    const next = await saveScannerSettings({
+                      minLength: Math.max(1, parseInt(e.target.value) || 1)
+                    });
+                    setScannerSettings(next);
+                  }}
+                  className="mt-1 w-full rounded-md border border-slate-700 bg-ink-950 px-2.5 py-1.5 font-mono text-xs text-white focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="settings-scanner-debounce"
+                  className="text-[11px] font-medium text-slate-400"
+                >
+                  Duplicate Debounce (ms)
+                </label>
+                <input
+                  id="settings-scanner-debounce"
+                  type="number"
+                  step={100}
+                  min={0}
+                  max={10000}
+                  value={scannerSettings.debounceMs}
+                  onChange={async (e) => {
+                    const next = await saveScannerSettings({
+                      debounceMs: Math.max(0, parseInt(e.target.value) || 0)
+                    });
+                    setScannerSettings(next);
+                  }}
+                  className="mt-1 w-full rounded-md border border-slate-700 bg-ink-950 px-2.5 py-1.5 font-mono text-xs text-white focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="settings-scanner-case"
+                  className="text-[11px] font-medium text-slate-400"
+                >
+                  Case Normalization
+                </label>
+                <select
+                  id="settings-scanner-case"
+                  value={scannerSettings.caseHandling}
+                  onChange={async (e) => {
+                    const next = await saveScannerSettings({
+                      caseHandling: e.target.value as CaseHandling
+                    });
+                    setScannerSettings(next);
+                  }}
+                  className="mt-1 w-full rounded-md border border-slate-700 bg-ink-950 px-2.5 py-1.5 text-xs text-white focus:outline-none"
+                >
+                  <option value="uppercase">UPPERCASE (Standard for AWBs)</option>
+                  <option value="lowercase">lowercase</option>
+                  <option value="preserve">Preserve Original Case</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-2 border-t border-slate-800/80">
+              <Toggle
+                checked={scannerSettings.stripNoise}
+                onChange={async (v) => {
+                  const next = await saveScannerSettings({ stripNoise: v });
+                  setScannerSettings(next);
+                }}
+                label="Strip AIM Symbology & Control Noise"
+                hint="Cleans ]C1 headers, invisible control bytes, and whitespace"
+              />
             </div>
           </div>
         </Section>

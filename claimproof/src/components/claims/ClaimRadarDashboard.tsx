@@ -1,19 +1,53 @@
 import { useEffect, useState } from 'react';
 import {
   AlarmClock,
+  Bell,
+  Calendar,
   CheckCircle2,
   ChevronRight,
   Clock,
+  ExternalLink,
   FileCheck2,
+  FolderDown,
+  IndianRupee,
   Radar,
+  RotateCcw,
   Send,
+  Sliders,
   Trash2,
   Trophy,
   Video
 } from 'lucide-react';
-import { deleteClaim, updateClaimStatus, useClaims } from '../../services/claimEngine';
+import {
+  deleteClaim,
+  recalculateClaimsForMarketplace,
+  updateClaimReturnDeliveryDate,
+  updateClaimStatus,
+  useClaims
+} from '../../services/claimEngine';
 import { claimWindowLabel, isClaimWindowUnverified, UNVERIFIED_LABEL } from '../../lib/claimRules';
-import { deadlineTone, formatCountdown, formatISTShort } from '../../lib/dateUtils';
+import {
+  getClaimWindowHours,
+  MARKETPLACE_CLAIM_WINDOWS,
+  getCustomClaimWindows,
+  saveCustomClaimWindowHours,
+  resetSingleClaimWindow
+} from '../../config/claimWindows';
+import {
+  deadlineTone,
+  formatCountdown,
+  formatIST,
+  formatISTForInput,
+  formatISTShort,
+  parseISTDateTime
+} from '../../lib/dateUtils';
+import { downloadClaimIcs } from '../../lib/calendarExport';
+import {
+  getNotificationPermission,
+  requestClaimNotificationPermission
+} from '../../lib/claimNotifications';
+import { formatPaise } from '../../lib/money';
+import { navigateTo } from '../../lib/router';
 import { planHasFeature, useLicense } from '../../services/licenseService';
 import { usePaywall } from '../../providers/PaywallProvider';
 import {
@@ -21,6 +55,7 @@ import {
   Button,
   Card,
   EmptyState,
+  Modal,
   PageHeader,
   Ring,
   Segmented,
@@ -29,21 +64,332 @@ import {
   StaggerItem,
   useToast
 } from '../ui';
-import type { ClaimItem, ClaimStatus } from '../../types';
+import type { ClaimItem, ClaimStatus, Marketplace } from '../../types';
 import { cn } from '../../lib/utils';
+import { isFeatureEnabled } from '../../config/featureFlags';
 import { ClaimEvidenceModal } from './ClaimEvidenceModal';
+import { ClaimKitModal } from './ClaimKitModal';
+
+function EditDeliveryDateModal({
+  claim,
+  onClose
+}: {
+  claim: ClaimItem | null;
+  onClose: () => void;
+}) {
+  const toast = useToast();
+  const [val, setVal] = useState('');
+  useEffect(() => {
+    if (claim) {
+      setVal(formatISTForInput(claim.returnScanAt));
+    }
+  }, [claim]);
+
+  if (!claim) return null;
+
+  const hours = getClaimWindowHours(claim.marketplace);
+  const parsedMs = parseISTDateTime(val);
+  const calculatedDeadline = parsedMs + hours * 3_600_000;
+  const isPastExpired = calculatedDeadline < Date.now();
+  const isFuture = parsedMs > Date.now();
+
+  const handleSave = async () => {
+    if (claim.id === undefined) return;
+    await updateClaimReturnDeliveryDate(claim.id, parsedMs, claim.marketplace);
+    toast.success(
+      'Return delivery date updated',
+      `Deadline recalculated in IST: ${formatIST(calculatedDeadline)}.`
+    );
+    onClose();
+  };
+
+  return (
+    <Modal
+      open={true}
+      onClose={onClose}
+      title={`Edit Return Delivery Date — ${claim.awb}`}
+      subtitle={`${claim.marketplace} claim window: ${hours} hours from delivery`}
+      icon={Clock}
+    >
+      <div className="space-y-4">
+        <div>
+          <label
+            htmlFor="return-delivery-date"
+            className="block text-xs font-semibold text-slate-300"
+          >
+            Return Delivery Date &amp; Time (IST)
+            <input
+              id="return-delivery-date"
+              type="datetime-local"
+              value={val}
+              onChange={(e) => setVal(e.target.value)}
+              className="mt-1.5 w-full rounded-xl border border-line bg-ink-950 px-3 py-2 font-mono text-sm text-white focus:border-proof-500 focus:outline-none"
+            />
+          </label>
+          <div className="mt-1 text-[11px] text-slate-500">
+            Recorded in Indian Standard Time (IST, UTC+05:30).
+          </div>
+        </div>
+
+        <div className="space-y-2 rounded-xl border border-line bg-ink-900/60 p-4 text-xs">
+          <div className="flex justify-between">
+            <span className="text-slate-400">Marketplace Window:</span>
+            <span className="font-mono font-bold text-white">
+              {hours} hours ({claim.marketplace})
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-slate-400">Calculated Deadline:</span>
+            <span className="font-mono font-bold text-proof-300">
+              {formatIST(calculatedDeadline)}
+            </span>
+          </div>
+        </div>
+
+        {isPastExpired && (
+          <div className="rounded-xl border border-danger-500/30 bg-danger-500/10 p-3 text-xs text-danger-300">
+            ⚠️ <strong>Window expired:</strong> The entered return delivery date means the dispute
+            deadline closed on {formatIST(calculatedDeadline)}. You will need to file manually with
+            carrier proof of delivery delay.
+          </div>
+        )}
+
+        {isFuture && (
+          <div className="rounded-xl border border-warn-500/30 bg-warn-500/10 p-3 text-xs text-warn-300">
+            ℹ️ <strong>Future timestamp:</strong> The return delivery date is set in the future
+            relative to this device&apos;s current clock.
+          </div>
+        )}
+
+        <div className="flex justify-end gap-2 pt-2">
+          <Button variant="secondary" size="sm" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" size="sm" onClick={() => void handleSave()}>
+            Save &amp; Recalculate
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function NotificationExplainerModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const toast = useToast();
+  const [permission, setPermission] = useState(getNotificationPermission());
+
+  if (!open) return null;
+
+  const handleEnable = async () => {
+    try {
+      const result = await requestClaimNotificationPermission();
+      setPermission(result);
+      if (result === 'granted') {
+        toast.success(
+          'Dispute notifications enabled',
+          'You will receive desktop alerts 24h and 6h before deadlines.'
+        );
+        onClose();
+      } else {
+        toast.warn(
+          'Notification permission not granted',
+          'You can enable it in your browser address bar.'
+        );
+      }
+    } catch (err: unknown) {
+      toast.error(
+        'Could not request notifications',
+        err instanceof Error ? err.message : String(err)
+      );
+    }
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Dispute Deadline Notifications"
+      subtitle="Never lose ₹ to a missed return dispute deadline"
+      icon={Bell}
+    >
+      <div className="space-y-4 text-xs text-slate-300 sm:text-sm">
+        <p className="leading-relaxed">
+          Enable optional desktop browser notifications to receive high-priority alerts:
+        </p>
+        <ul className="space-y-2 rounded-xl border border-line bg-ink-900/60 p-4 font-mono text-xs text-slate-300">
+          <li className="flex items-center gap-2">
+            <span className="font-bold text-warn-400">24 hours remaining:</span>
+            <span>Reminder to prepare claim kit and videos</span>
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="font-bold text-danger-400">6 hours remaining:</span>
+            <span>Urgent final reminder before dispute portal closes</span>
+          </li>
+        </ul>
+        <div className="rounded-xl border border-proof-500/30 bg-proof-500/10 p-3 text-xs text-proof-300">
+          🔒 <strong>Local &amp; Private:</strong> Notifications are generated directly by your
+          browser on this device. Zero cloud servers, zero trackers, and zero marketing promotions.
+        </div>
+        <div className="flex justify-end gap-2 pt-2">
+          <Button variant="secondary" size="sm" onClick={onClose}>
+            Not Now
+          </Button>
+          <Button variant="primary" size="sm" onClick={() => void handleEnable()}>
+            {permission === 'granted' ? 'Notifications Active' : 'Enable Notifications'}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function EditClaimWindowsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const toast = useToast();
+  const [customWindows, setCustomWindows] = useState<Partial<Record<Marketplace, number>>>(() =>
+    getCustomClaimWindows()
+  );
+
+  if (!open) return null;
+
+  const marketplaces: Marketplace[] = [
+    'Meesho',
+    'Flipkart',
+    'Amazon',
+    'AJIO',
+    'Snapdeal',
+    'Myntra',
+    'GlowRoad'
+  ];
+
+  const handleChange = (m: Marketplace, valStr: string) => {
+    const prevHours = customWindows[m] ?? MARKETPLACE_CLAIM_WINDOWS[m]?.hours ?? 72;
+    const val = Math.max(1, Math.min(2160, Number(valStr) || 1));
+    saveCustomClaimWindowHours(m, val);
+    setCustomWindows((prev) => ({ ...prev, [m]: val }));
+    void recalculateClaimsForMarketplace(m, val, prevHours);
+    toast.success(
+      'Window updated',
+      `${MARKETPLACE_CLAIM_WINDOWS[m]?.displayName || m} set to ${val} hours.`
+    );
+  };
+
+  const handleReset = (m: Marketplace) => {
+    const prevHours = customWindows[m] ?? MARKETPLACE_CLAIM_WINDOWS[m]?.hours ?? 72;
+    resetSingleClaimWindow(m);
+    setCustomWindows((prev) => {
+      const next = { ...prev };
+      delete next[m];
+      return next;
+    });
+    const defaultHours = MARKETPLACE_CLAIM_WINDOWS[m]?.hours ?? 72;
+    void recalculateClaimsForMarketplace(m, defaultHours, prevHours);
+    toast.info(
+      'Window reset',
+      `${MARKETPLACE_CLAIM_WINDOWS[m]?.displayName || m} restored to default.`
+    );
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Marketplace Claim Windows"
+      subtitle="Customize dispute filing deadlines based on your seller panel rubrics"
+      icon={Sliders}
+      width="lg"
+    >
+      <div className="space-y-4">
+        <div className="divide-y divide-line rounded-xl border border-line bg-ink-900/60">
+          {marketplaces.map((m) => {
+            const config = MARKETPLACE_CLAIM_WINDOWS[m];
+            const currentHours = customWindows[m] ?? config.hours;
+            const isCustom = typeof customWindows[m] === 'number';
+            const unverified = isClaimWindowUnverified(m);
+
+            return (
+              <div
+                key={m}
+                className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold text-white">{config.displayName}</span>
+                    {unverified && (
+                      <Badge tone="warn" title="Unconfirmed dispute deadline — check seller panel">
+                        {UNVERIFIED_LABEL}
+                      </Badge>
+                    )}
+                    {isCustom && <Badge tone="info">Customized</Badge>}
+                  </div>
+                  <div className="mt-1 flex items-center gap-3 text-xs text-slate-400">
+                    <span>Default: {config.defaultHours}h</span>
+                    {config.sourceUrl && (
+                      <a
+                        href={config.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-proof-300 underline hover:text-proof-200"
+                      >
+                        Official policy <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="number"
+                      min={1}
+                      max={2160}
+                      value={currentHours}
+                      onChange={(e) => handleChange(m, e.target.value)}
+                      className="w-20 rounded-lg border border-line bg-ink-950 px-2.5 py-1 text-center font-mono text-sm text-white focus:border-proof-500 focus:outline-none"
+                    />
+                    <span className="text-xs text-slate-400">hours</span>
+                  </div>
+                  {isCustom && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={RotateCcw}
+                      title="Reset to marketplace default"
+                      aria-label={`Reset ${config.displayName} to default`}
+                      onClick={() => handleReset(m)}
+                    />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <Button variant="primary" size="sm" onClick={onClose}>
+            Done
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
 
 function ClaimRow({
   claim,
   onPrepare,
+  onClaimKit,
+  onEditDate,
   onStatus,
   onDelete
 }: {
   claim: ClaimItem;
   onPrepare: () => void;
+  onClaimKit?: () => void;
+  onEditDate?: () => void;
   onStatus: (s: ClaimStatus) => void;
   onDelete: () => void;
 }) {
+  const toast = useToast();
   const [, setTick] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setTick((n) => n + 1), 1000);
@@ -102,6 +448,16 @@ function ClaimRow({
             <div className="mt-1 truncate font-mono text-[11px] text-slate-500">
               {claim.sku} · Qty {claim.qty} · {claim.courier} · return scanned{' '}
               {formatISTShort(claim.returnScanAt)}
+              {claim.amountClaimedPaise !== undefined && claim.amountClaimedPaise > 0 && (
+                <span className="ml-2 font-bold text-slate-300">
+                  · Claimed: {formatPaise(claim.amountClaimedPaise)}
+                  {claim.amountRecoveredPaise !== undefined && claim.amountRecoveredPaise > 0 && (
+                    <span className="text-proof-300 ml-1">
+                      (Recovered: {formatPaise(claim.amountRecoveredPaise)})
+                    </span>
+                  )}
+                </span>
+              )}
             </div>
             <div
               className={cn(
@@ -120,8 +476,45 @@ function ClaimRow({
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {isFeatureEnabled('claimKitBuilder') && (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={FolderDown}
+              onClick={onClaimKit}
+              title="Generate 1-Click Claim Kit (Videos, PDF Dossier, Dispute Text)"
+            >
+              1-Click Kit
+            </Button>
+          )}
           <Button variant="primary" size="sm" icon={FileCheck2} onClick={onPrepare}>
             Prepare Claim
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            icon={Calendar}
+            title="Export dispute deadline to calendar (.ics)"
+            aria-label="Export dispute deadline to calendar (.ics)"
+            onClick={() => {
+              downloadClaimIcs(claim);
+              toast.success(
+                'Calendar file (.ics) downloaded',
+                'Dispute deadline added to calendar.'
+              );
+            }}
+          >
+            .ics
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            icon={Clock}
+            title="Edit return delivery date & recalculate deadline"
+            aria-label="Edit return delivery date & recalculate deadline"
+            onClick={onEditDate}
+          >
+            Edit Date
           </Button>
           <Segmented
             value={claim.status}
@@ -157,6 +550,10 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
   const toast = useToast();
   const claims = useClaims();
   const [selected, setSelected] = useState<ClaimItem | null>(null);
+  const [kitClaim, setKitClaim] = useState<ClaimItem | null>(null);
+  const [editingDateClaim, setEditingDateClaim] = useState<ClaimItem | null>(null);
+  const [showWindowsModal, setShowWindowsModal] = useState(false);
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
 
   const pending = claims.filter((c) => c.status === 'pending' || c.status === 'prepared');
   const expiring24h = pending.filter((c) => c.deadlineAt - Date.now() <= 24 * 3_600_000);
@@ -225,6 +622,37 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
         kicker="MODULE C · ACTIVE"
         title="ClaimRadar Pro"
         subtitle="Flagged returns, live deadline radar and evidence packaging"
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={Bell}
+              onClick={() => setShowNotificationsModal(true)}
+              aria-label="Dispute notifications"
+            >
+              Reminders
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={Sliders}
+              onClick={() => setShowWindowsModal(true)}
+              aria-label="Marketplace claim windows"
+            >
+              Claim Windows
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={IndianRupee}
+              onClick={() => navigateTo('money')}
+              aria-label="Open Money Ledger"
+            >
+              Money Ledger
+            </Button>
+          </div>
+        }
       />
 
       {nearest && (
@@ -318,6 +746,8 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
               <ClaimRow
                 claim={claim}
                 onPrepare={() => setSelected(claim)}
+                onClaimKit={() => setKitClaim(claim)}
+                onEditDate={() => setEditingDateClaim(claim)}
                 onStatus={(status) => {
                   if (claim.id !== undefined) void updateClaimStatus(claim.id, status);
                   toast.success(`Claim marked ${status}`);
@@ -337,6 +767,13 @@ export function ClaimRadarDashboard({ className }: { className?: string }) {
       )}
 
       <ClaimEvidenceModal claim={selected} onClose={() => setSelected(null)} />
+      <ClaimKitModal claim={kitClaim} open={kitClaim !== null} onClose={() => setKitClaim(null)} />
+      <EditDeliveryDateModal claim={editingDateClaim} onClose={() => setEditingDateClaim(null)} />
+      <NotificationExplainerModal
+        open={showNotificationsModal}
+        onClose={() => setShowNotificationsModal(false)}
+      />
+      <EditClaimWindowsModal open={showWindowsModal} onClose={() => setShowWindowsModal(false)} />
     </div>
   );
 }

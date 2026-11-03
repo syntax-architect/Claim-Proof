@@ -105,7 +105,22 @@ export interface RecordingMeta {
 export type FlagReason =
   'Damaged' | 'Used/Worn' | 'Wrong/Swapped item' | 'Missing item' | 'Empty package' | 'Other';
 
-export type ClaimStatus = 'pending' | 'prepared' | 'submitted' | 'won' | 'lost';
+export type ClaimStatus =
+  'not_filed' | 'filed' | 'won' | 'partly_won' | 'lost' | 'pending' | 'prepared' | 'submitted';
+
+export interface ClaimAuditEntry {
+  timestamp: number;
+  changedAt: string;
+  fromStatus?: ClaimStatus;
+  toStatus?: ClaimStatus;
+  fromClaimedPaise?: number;
+  toClaimedPaise?: number;
+  fromRecoveredPaise?: number;
+  toRecoveredPaise?: number;
+  notes?: string;
+  reason?: string;
+  source?: 'user_edit' | 'csv_import' | 'system';
+}
 
 export interface ClaimItem {
   id?: number;
@@ -120,9 +135,60 @@ export interface ClaimItem {
   returnScanAt: number;
   deadlineAt: number;
   status: ClaimStatus;
-  disputeText: string;
+  disputeText?: string;
   dispatchRecordingId?: number;
   returnRecordingId?: number;
+  /** Monetary amount claimed in integer paise (e.g. ₹500 is 50000 paise). */
+  amountClaimedPaise?: number;
+  /** Monetary amount recovered in integer paise. */
+  amountRecoveredPaise?: number;
+  /** Epoch timestamp in ms when the claim was filed. */
+  filedAt?: number;
+  /** Epoch timestamp in ms when the claim was resolved (won, partly won, or lost). */
+  resolvedAt?: number;
+  /** Audit log of edits and status changes. */
+  auditTrail?: ClaimAuditEntry[];
+  /** Epoch timestamp in ms when the 1-click claim kit was generated. */
+  claimKitGeneratedAt?: number;
+  /** Local folder name or relative path where the claim kit was saved. */
+  claimKitPath?: string;
+}
+
+export type ReturnCondition = 'good' | 'wrong_item' | 'empty' | 'damaged' | 'used_worn';
+
+export interface ReturnVideoMeta {
+  id?: number;
+  awb: string;
+  orderId: string;
+  sku: string;
+  size: string;
+  qty: number;
+  courier: CourierPartner;
+  marketplace: Marketplace;
+  condition: ReturnCondition;
+  startedAt: number;
+  endedAt: number;
+  durationSec: number;
+  videoMime: string;
+  videoBytes: number;
+  vaultPath: string;
+  linkedDispatchRecordingId?: number;
+  partial: boolean;
+  checklistCompletedCount: number;
+  checklistTotalCount: number;
+  demo: boolean;
+}
+
+export interface ChecklistResultRow {
+  id?: number;
+  returnVideoId?: number;
+  awb: string;
+  stepId: string;
+  stepOrder: number;
+  title: string;
+  completed: boolean;
+  completedAtOffsetSec?: number;
+  timestamp: number;
 }
 
 export type PlanId = 'starter' | 'claimradar' | 'warehouse';

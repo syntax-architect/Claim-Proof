@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Calendar,
   ClipboardCopy,
+  Download,
   FileCheck2,
   FolderOpen,
   Package,
@@ -18,10 +20,15 @@ import {
 import { loadRecordingMedia, type RecordingMedia } from '../../services/mediaLibrary';
 import { revealAwbFolder } from '../../services/vaultWriter';
 import { recordingTypeLabel } from '../../lib/claimRules';
+import { downloadClaimIcs } from '../../lib/calendarExport';
 import { formatIST } from '../../lib/dateUtils';
 import { formatBytes } from '../../lib/utils';
 import { Badge, Button, Modal, Spinner, useToast } from '../ui';
 import type { ClaimItem, RecordingMeta } from '../../types';
+import { isFeatureEnabled } from '../../config/featureFlags';
+import { t } from '../../lib/i18n';
+import { DisputeMessageStudio } from './DisputeMessageStudio';
+import { ClaimKitModal } from './ClaimKitModal';
 
 interface Side {
   rec: RecordingMeta | null;
@@ -97,6 +104,7 @@ export function ClaimEvidenceModal({
   const [returnRec, setReturnRec] = useState<Side | null>(null);
   const [disputeText, setDisputeText] = useState('');
   const [saving, setSaving] = useState(false);
+  const [kitModalOpen, setKitModalOpen] = useState(false);
 
   const claimId = claim?.id;
 
@@ -164,12 +172,33 @@ export function ClaimEvidenceModal({
           >
             Open Folder &amp; Drag Files to Seller Portal
           </Button>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              icon={Calendar}
+              onClick={() => {
+                downloadClaimIcs(claim);
+                toast.success('Calendar file (.ics) downloaded', 'Add reminder to your calendar.');
+              }}
+            >
+              Export Calendar (.ics)
+            </Button>
             <Button variant="secondary" size="sm" onClick={onClose}>
               Close
             </Button>
+            {isFeatureEnabled('claimKitBuilder') && (
+              <Button
+                variant="primary"
+                size="sm"
+                icon={Download}
+                onClick={() => setKitModalOpen(true)}
+              >
+                {t('claimKit.button.create')}
+              </Button>
+            )}
             <Button
-              variant="primary"
+              variant="outline"
               size="sm"
               icon={FileCheck2}
               loading={saving}
@@ -197,53 +226,69 @@ export function ClaimEvidenceModal({
       </div>
 
       <div className="mt-6">
-        <div className="mb-2 flex items-center justify-between">
-          <Badge tone="mono">CLAIM DISPUTE TEXT — copy-paste ready</Badge>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="xs"
-              icon={RefreshCw}
-              onClick={() =>
-                setDisputeText(
-                  generateDisputeText(
-                    claim,
-                    dispatch?.rec ?? undefined,
-                    returnRec?.rec ?? undefined
-                  )
-                )
-              }
-            >
-              Regenerate
-            </Button>
-            <Button
-              variant="secondary"
-              size="xs"
-              icon={ClipboardCopy}
-              onClick={() =>
-                void navigator.clipboard
-                  .writeText(disputeText)
-                  .then(() => toast.success('Dispute text copied'))
-                  .catch(() =>
-                    toast.error('Clipboard blocked', 'Select the text and copy manually.')
-                  )
-              }
-            >
-              Copy
-            </Button>
+        {isFeatureEnabled('disputeTemplates') ? (
+          <DisputeMessageStudio
+            claim={claim}
+            dispatchRec={dispatch?.rec}
+            returnRec={returnRec?.rec}
+            initialText={disputeText}
+            onTextChange={setDisputeText}
+          />
+        ) : (
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <Badge tone="mono">CLAIM DISPUTE TEXT — copy-paste ready</Badge>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  icon={RefreshCw}
+                  onClick={() =>
+                    setDisputeText(
+                      generateDisputeText(
+                        claim,
+                        dispatch?.rec ?? undefined,
+                        returnRec?.rec ?? undefined
+                      )
+                    )
+                  }
+                >
+                  Regenerate
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="xs"
+                  icon={ClipboardCopy}
+                  onClick={() =>
+                    void navigator.clipboard
+                      .writeText(disputeText)
+                      .then(() => toast.success('Dispute text copied'))
+                      .catch(() =>
+                        toast.error('Clipboard blocked', 'Select the text and copy manually.')
+                      )
+                  }
+                >
+                  Copy
+                </Button>
+              </div>
+            </div>
+            <textarea
+              value={disputeText}
+              onChange={(e) => setDisputeText(e.target.value)}
+              rows={12}
+              className="w-full rounded-xl border border-line bg-ink-950/80 p-4 font-mono text-xs leading-relaxed text-slate-200 focus:border-proof-500/50 focus:outline-none"
+            />
+            <div className="mt-2 flex items-center gap-1.5 text-[11px] text-slate-500">
+              <Undo2 className="h-3 w-3" /> Cites AWB, dispatch &amp; return timestamps and the
+              barcode verification chain — tailored to {claim.marketplace} support rubrics.
+            </div>
           </div>
-        </div>
-        <textarea
-          value={disputeText}
-          onChange={(e) => setDisputeText(e.target.value)}
-          rows={12}
-          className="w-full rounded-xl border border-line bg-ink-950/80 p-4 font-mono text-xs leading-relaxed text-slate-200 focus:border-proof-500/50 focus:outline-none"
-        />
-        <div className="mt-2 flex items-center gap-1.5 text-[11px] text-slate-500">
-          <Undo2 className="h-3 w-3" /> Cites AWB, dispatch &amp; return timestamps and the barcode
-          verification chain — tailored to {claim.marketplace} support rubrics.
-        </div>
+        )}
       </div>
+
+      {kitModalOpen && (
+        <ClaimKitModal claim={claim} open={kitModalOpen} onClose={() => setKitModalOpen(false)} />
+      )}
     </Modal>
   );
 }

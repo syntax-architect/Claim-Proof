@@ -16,6 +16,7 @@ import { cn } from '../../lib/utils';
 import { ROUTE_LABELS, type Route } from '../../lib/router';
 import { BRAND } from '../../config/brand';
 import { Badge, Logo } from '../ui';
+import { useI18n, type I18nKey } from '../../lib/i18n';
 
 interface NavEntry {
   route: Route;
@@ -72,35 +73,52 @@ export default function Sidebar({
   route: Route;
   navigate: (r: Route) => void;
 }) {
+  const { t } = useI18n();
   const pendingClaims = useLiveQuery(
     () => db.claims.filter((c) => c.status === 'pending' || c.status === 'prepared').count(),
     []
   );
   const ordersInMemory = useLiveQuery(() => db.orders.count(), []);
 
+  const getLabel = (r: Route) => {
+    const key = `nav.${r}` as I18nKey;
+    try {
+      const loc = t(key);
+      if (loc && loc !== key) return loc;
+    } catch {
+      // fallback
+    }
+    return ROUTE_LABELS[r];
+  };
+
   const operate: NavEntry[] = [
-    { route: 'overview', label: ROUTE_LABELS.overview, icon: LayoutDashboard },
+    { route: 'overview', label: getLabel('overview'), icon: LayoutDashboard },
     {
       route: 'labels',
-      label: ROUTE_LABELS.labels,
+      label: getLabel('labels'),
       icon: ScanBarcode,
       badge: ordersInMemory ?? 0,
       badgeTone: 'neutral'
     },
-    { route: 'recorder', label: ROUTE_LABELS.recorder, icon: Video },
+    { route: 'recorder', label: getLabel('recorder'), icon: Video },
     {
       route: 'claims',
-      label: ROUTE_LABELS.claims,
+      label: getLabel('claims'),
       icon: Radar,
       badge: pendingClaims ?? 0,
       badgeTone: 'danger'
+    },
+    {
+      route: 'money',
+      label: ROUTE_LABELS.money,
+      icon: IndianRupee
     }
   ];
 
   const manage: NavEntry[] = [
-    { route: 'vault', label: ROUTE_LABELS.vault, icon: FolderArchive },
-    { route: 'pricing', label: ROUTE_LABELS.pricing, icon: IndianRupee },
-    { route: 'settings', label: ROUTE_LABELS.settings, icon: Settings }
+    { route: 'vault', label: getLabel('vault'), icon: FolderArchive },
+    { route: 'pricing', label: getLabel('pricing'), icon: IndianRupee },
+    { route: 'settings', label: getLabel('settings'), icon: Settings }
   ];
 
   return (
@@ -158,14 +176,27 @@ export default function Sidebar({
 
 /** Compact icon rail for small screens. */
 export function MobileNav({ route, navigate }: { route: Route; navigate: (r: Route) => void }) {
+  const { t } = useI18n();
+  const getLabel = (r: Route) => {
+    const key = `nav.${r}` as I18nKey;
+    try {
+      const loc = t(key);
+      if (loc && loc !== key) return loc;
+    } catch {
+      // fallback
+    }
+    return ROUTE_LABELS[r];
+  };
+
   const entries: NavEntry[] = [
-    { route: 'overview', label: ROUTE_LABELS.overview, icon: LayoutDashboard },
-    { route: 'labels', label: ROUTE_LABELS.labels, icon: ScanBarcode },
-    { route: 'recorder', label: ROUTE_LABELS.recorder, icon: Video },
-    { route: 'claims', label: ROUTE_LABELS.claims, icon: Radar },
-    { route: 'vault', label: ROUTE_LABELS.vault, icon: FolderArchive },
-    { route: 'pricing', label: ROUTE_LABELS.pricing, icon: IndianRupee },
-    { route: 'settings', label: ROUTE_LABELS.settings, icon: Settings }
+    { route: 'overview', label: getLabel('overview'), icon: LayoutDashboard },
+    { route: 'labels', label: getLabel('labels'), icon: ScanBarcode },
+    { route: 'recorder', label: getLabel('recorder'), icon: Video },
+    { route: 'claims', label: getLabel('claims'), icon: Radar },
+    { route: 'money', label: ROUTE_LABELS.money, icon: IndianRupee },
+    { route: 'vault', label: getLabel('vault'), icon: FolderArchive },
+    { route: 'pricing', label: getLabel('pricing'), icon: IndianRupee },
+    { route: 'settings', label: getLabel('settings'), icon: Settings }
   ];
   return (
     <div className="flex gap-1 overflow-x-auto border-b border-line bg-ink-900/70 px-3 py-2 backdrop-blur-xl md:hidden">

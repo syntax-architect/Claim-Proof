@@ -133,8 +133,15 @@ describe('VideoRecorderStation Component', () => {
     );
 
     vi.spyOn(cameraScanner, 'startCameraScanner').mockResolvedValue({
-      stop: vi.fn()
-    });
+      stop: vi.fn(),
+      hasTorch: false,
+      isTorchOn: () => false,
+      setTorch: vi.fn().mockResolvedValue(false),
+      hasZoom: false,
+      getZoomRange: () => null,
+      getZoom: () => 1,
+      setZoom: vi.fn().mockResolvedValue(false)
+    } as any);
     vi.spyOn(hidScanner, 'startHidListener').mockReturnValue({
       stop: vi.fn()
     });

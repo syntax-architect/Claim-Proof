@@ -3,9 +3,17 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { BRAND } from '../config/brand';
 import { db } from '../db/schema';
-import { claimWindowLabel } from '../lib/claimRules';
+import { claimWindowHours, claimWindowLabel } from '../lib/claimRules';
 import { formatIST } from '../lib/dateUtils';
-import type { ClaimItem, ClaimStatus, RecordingMeta } from '../types';
+import type { ClaimItem, ClaimStatus, Marketplace, RecordingMeta } from '../types';
+import {
+  getDisputeTemplate,
+  renderDisputeTemplate,
+  type DisputeRenderResult,
+  type DisputeTemplateCategory,
+  type DisputeTemplateData,
+  type DisputeTemplateLanguage
+} from '../config/disputeTemplates';
 
 const TEN_DAYS_MS = 10 * 24 * 3_600_000;
 
@@ -57,6 +65,57 @@ export async function saveDisputeText(id: number, text: string): Promise<void> {
 
 export async function deleteClaim(id: number): Promise<void> {
   await db.claims.delete(id);
+}
+
+/**
+ * Recalculates dispute deadlines and appends an IST explanatory note for all active
+ * claims of a given marketplace when window hours are updated.
+ */
+export async function recalculateClaimsForMarketplace(
+  marketplace: Marketplace,
+  newHours: number,
+  oldHours?: number
+): Promise<number> {
+  const activeClaims = await db.claims
+    .where('marketplace')
+    .equals(marketplace)
+    .filter((c) => c.status === 'pending' || c.status === 'prepared' || c.status === 'submitted')
+    .toArray();
+
+  let count = 0;
+  const nowMs = Date.now();
+  const istNow = formatIST(nowMs);
+
+  for (const claim of activeClaims) {
+    if (claim.id === undefined) continue;
+    const prevHours = oldHours ?? Math.round((claim.deadlineAt - claim.returnScanAt) / 3_600_000);
+    const newDeadlineAt = claim.returnScanAt + newHours * 3_600_000;
+    const noteLine = `[Window updated from ${prevHours}h to ${newHours}h on ${istNow}]`;
+    const updatedNotes = claim.notes ? `${claim.notes}\n${noteLine}` : noteLine;
+
+    await db.claims.update(claim.id, {
+      deadlineAt: newDeadlineAt,
+      notes: updatedNotes
+    });
+    count++;
+  }
+  return count;
+}
+
+/**
+ * Updates the user-entered return delivery date and recalculates deadline in IST.
+ */
+export async function updateClaimReturnDeliveryDate(
+  id: number,
+  newReturnScanAt: number,
+  marketplace: Marketplace
+): Promise<void> {
+  const hours = claimWindowHours(marketplace);
+  const deadlineAt = newReturnScanAt + hours * 3_600_000;
+  await db.claims.update(id, {
+    returnScanAt: newReturnScanAt,
+    deadlineAt
+  });
 }
 
 /* ── marketplace-tailored dispute text ───────────────────────────────── */
@@ -135,4 +194,104 @@ export function generateDisputeText(
   lines.push(`Seller — via ${BRAND.domain}`);
 
   return lines.join('\n');
+}
+
+export function buildDisputeTemplateData(
+  claim: ClaimItem,
+  dispatch?: RecordingMeta,
+  _returnRec?: RecordingMeta,
+  language: DisputeTemplateLanguage = 'en'
+): DisputeTemplateData {
+  const rawOrderId = claim.orderId && claim.orderId !== 'UNKNOWN' ? claim.orderId : '';
+  const rawAwb = claim.awb && claim.awb !== 'UNKNOWN' ? claim.awb : '';
+  const rawSku = claim.sku && claim.sku !== 'UNKNOWN' ? claim.sku : '';
+  const dispatchDate = dispatch?.startedAt ? formatIST(dispatch.startedAt) : '';
+  const returnDate = claim.returnScanAt ? formatIST(claim.returnScanAt) : '';
+
+  let whatWasSent = '';
+  if (rawSku) {
+    const sizeStr = dispatch?.size && dispatch.size !== 'Free' ? `Size: ${dispatch.size}, ` : '';
+    whatWasSent =
+      language === 'hi'
+        ? `${rawSku} (${sizeStr}मात्रा: ${claim.qty || 1})`
+        : `${rawSku} (${sizeStr}Qty: ${claim.qty || 1})`;
+  }
+
+  let whatWasReceived = claim.notes ? claim.notes.trim() : '';
+  if (!whatWasReceived) {
+    if (language === 'hi') {
+      switch (claim.flagReason) {
+        case 'Wrong/Swapped item':
+          whatWasReceived = 'भिन्न / बदला हुआ सामान प्राप्त हुआ';
+          break;
+        case 'Damaged':
+          whatWasReceived = 'क्षतिग्रस्त / टूटा हुआ उत्पाद प्राप्त हुआ';
+          break;
+        case 'Used/Worn':
+          whatWasReceived = 'इस्तेमाल किया हुआ / पुराना उत्पाद प्राप्त हुआ';
+          break;
+        case 'Empty package':
+          whatWasReceived = 'खाली पार्सल (सामग्री गायब) प्राप्त हुआ';
+          break;
+        case 'Missing item':
+          whatWasReceived = 'सामग्री अधूरी / गायब प्राप्त हुई';
+          break;
+        default:
+          whatWasReceived = 'अनुचित स्थिति में सामान प्राप्त हुआ';
+      }
+    } else {
+      switch (claim.flagReason) {
+        case 'Wrong/Swapped item':
+          whatWasReceived = 'Different / swapped item received';
+          break;
+        case 'Damaged':
+          whatWasReceived = 'Damaged / broken item received';
+          break;
+        case 'Used/Worn':
+          whatWasReceived = 'Used / worn item received';
+          break;
+        case 'Empty package':
+          whatWasReceived = 'Empty parcel with missing contents';
+          break;
+        case 'Missing item':
+          whatWasReceived = 'Partial shipment with missing items';
+          break;
+        default:
+          whatWasReceived = 'Discrepant return item received';
+      }
+    }
+  }
+
+  return {
+    orderId: rawOrderId,
+    awb: rawAwb,
+    sku: rawSku,
+    dispatchDate,
+    returnDate,
+    whatWasSent,
+    whatWasReceived,
+    notes: claim.notes || ''
+  };
+}
+
+export function generateTemplateDisputeMessage(
+  claim: ClaimItem,
+  dispatch?: RecordingMeta,
+  returnRec?: RecordingMeta,
+  category?: DisputeTemplateCategory,
+  language: DisputeTemplateLanguage = 'en'
+): DisputeRenderResult {
+  const chosenCategory: DisputeTemplateCategory =
+    category ??
+    (claim.flagReason === 'Wrong/Swapped item'
+      ? 'wrong_item'
+      : claim.flagReason === 'Damaged' || claim.flagReason === 'Used/Worn'
+        ? 'damaged'
+        : claim.flagReason === 'Empty package' || claim.flagReason === 'Missing item'
+          ? 'empty'
+          : 'general');
+
+  const templateDef = getDisputeTemplate(chosenCategory, language);
+  const data = buildDisputeTemplateData(claim, dispatch, returnRec, language);
+  return renderDisputeTemplate(templateDef.template, data, language);
 }

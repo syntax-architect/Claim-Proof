@@ -4,7 +4,12 @@
 
 import { getSetting, setSetting } from '../db/schema';
 import { downloadBlob } from '../lib/utils';
-import { photoCollageFileName, vaultSubPath, videoFileName } from '../lib/vaultPaths';
+import {
+  photoCollageFileName,
+  returnVideoFileName,
+  vaultSubPath,
+  videoFileName
+} from '../lib/vaultPaths';
 import { trackFirstRecordingSaved } from './telemetry';
 import type { RecordingType } from '../types';
 
@@ -17,6 +22,7 @@ export interface SaveRecordingInput {
   video: Blob;
   videoMime: string;
   photo: Blob | null;
+  takeIndex?: number;
 }
 
 const VAULT_KEY = 'vault_dir';
@@ -75,7 +81,10 @@ export interface SaveRecordingResult {
 
 export async function saveRecordingFiles(input: SaveRecordingInput): Promise<SaveRecordingResult> {
   const vaultPath = vaultSubPath(input.type, input.startedAt, input.awb);
-  const videoName = videoFileName(input.awb, input.videoMime);
+  const videoName =
+    input.type === 'return'
+      ? returnVideoFileName(input.awb, input.videoMime, input.takeIndex ?? 1)
+      : videoFileName(input.awb, input.videoMime);
   const photoName = photoCollageFileName(input.awb);
   try {
     const root = await vaultRoot();

@@ -49,6 +49,27 @@ export function formatISTShort(ms: number): string {
   }).format(new Date(ms));
 }
 
+/**
+ * Formats a timestamp into `YYYY-MM-DDTHH:mm` in IST for HTML datetime-local inputs.
+ */
+export function formatISTForInput(ms: number): string {
+  const p = istParts(new Date(ms));
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+}
+
+/**
+ * Parses a datetime string (e.g. `2026-10-31T16:35`) into epoch ms,
+ * interpreting the wall-clock time strictly in Indian Standard Time (UTC+05:30).
+ */
+export function parseISTDateTime(dateTimeStr: string): number {
+  if (!dateTimeStr) return Date.now();
+  const clean = dateTimeStr.split('+')[0].split('Z')[0].trim();
+  const withSeconds = clean.length === 16 ? `${clean}:00` : clean;
+  const isoWithOffset = `${withSeconds}+05:30`;
+  const parsed = new Date(isoWithOffset).getTime();
+  return isNaN(parsed) ? Date.now() : parsed;
+}
+
 /** `31-Oct`. */
 export function ddMmm(ms: number): string {
   const p = istParts(new Date(ms));
@@ -77,7 +98,7 @@ export type DeadlineTone = 'ok' | 'warn' | 'urgent' | 'expired';
 
 export function deadlineTone(msLeft: number): DeadlineTone {
   if (msLeft <= 0) return 'expired';
-  if (msLeft <= 8 * 3_600_000) return 'urgent';
+  if (msLeft <= 6 * 3_600_000) return 'urgent';
   if (msLeft <= 24 * 3_600_000) return 'warn';
   return 'ok';
 }

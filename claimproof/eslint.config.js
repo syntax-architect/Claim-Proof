@@ -47,6 +47,13 @@ export default tseslint.config(
       'jsx-a11y/click-events-have-key-events': 'warn',
       'jsx-a11y/no-static-element-interactions': 'warn',
       'jsx-a11y/no-noninteractive-tabindex': ['error', { roles: ['tabpanel', 'region'] }],
+      'jsx-a11y/label-has-associated-control': [
+        'error',
+        {
+          assert: 'either',
+          depth: 5
+        }
+      ],
       // Code quality rules
       '@typescript-eslint/no-unused-vars': [
         'error',

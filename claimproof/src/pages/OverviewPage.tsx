@@ -277,7 +277,12 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
     const all = await db.claims.toArray();
     const won = all.filter((c) => c.status === 'won').length;
     const lost = all.filter((c) => c.status === 'lost').length;
-    return { won, lost, rate: won + lost > 0 ? Math.round((won / (won + lost)) * 100) : null };
+    const resolved = won + lost;
+    return {
+      won,
+      lost,
+      rate: resolved >= 10 ? Math.round((won / resolved) * 100) : null
+    };
   }, []);
 
   const nearestClaim = pendingClaims && pendingClaims.length > 0 ? pendingClaims[0] : undefined;
@@ -445,12 +450,16 @@ export default function OverviewPage({ navigate }: { navigate: (r: Route) => voi
         <StaggerItem>
           <StatCard
             icon={TrendingUp}
-            label="Claims resolved"
+            label="Dispute resolution rate"
             value={
               claimStats?.rate === null || claimStats?.rate === undefined ? '—' : claimStats.rate
             }
             suffix={claimStats?.rate !== null && claimStats?.rate !== undefined ? '%' : undefined}
-            sub={`${claimStats?.won ?? 0} approved · ${claimStats?.lost ?? 0} rejected`}
+            sub={
+              claimStats?.rate === null
+                ? `${claimStats?.won ?? 0} won · ${claimStats?.lost ?? 0} lost (${(claimStats?.won ?? 0) + (claimStats?.lost ?? 0)}/10 to unlock %)`
+                : `${claimStats?.won ?? 0} won · ${claimStats?.lost ?? 0} lost (your own results)`
+            }
             tone="warn"
           />
         </StaggerItem>

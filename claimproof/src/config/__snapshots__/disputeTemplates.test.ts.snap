@@ -1,0 +1,249 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Dispute Templates — Config & Rendering Engine > 1. Snapshot tests for each template with sample data > renders snapshot for damaged template in en 1`] = `
+"Subject: Damaged return received for Order ORD-2026-98124 (AWB: DELHIVERY789123)
+
+Dear Seller Support Team,
+
+We are submitting details regarding a damaged return parcel for Order ORD-2026-98124.
+
+Order Information:
+- Order ID: ORD-2026-98124
+- AWB / Tracking: DELHIVERY789123
+- Product Sent: KURTI-CHANDERI-M (Size: M, Qty: 1) (SKU: KURTI-CHANDERI-M)
+- Dispatch Date: 24-Oct-2026 11:30:00 AM IST
+- Return Received Date: 27-Oct-2026 04:15:20 PM IST
+- Damage Observed: Torn and damaged fabric with missing tags
+
+Evidence Details:
+Continuous video was recorded for both outbound packing and inbound unboxing.
+- The dispatch recording from 24-Oct-2026 11:30:00 AM IST shows KURTI-CHANDERI-M (Size: M, Qty: 1) was intact, unused, and carefully packed.
+- The return unboxing recording from 27-Oct-2026 04:15:20 PM IST shows the parcel seal opened on camera, revealing the damage: Torn and damaged fabric with missing tags.
+
+We kindly request you to inspect the attached evidence and approve the compensation claim for the damaged item.
+
+Thank you for your understanding and prompt support.
+
+Sincerely,
+Seller
+
+Additional Notes: Return parcel outer seal was broken upon receipt
+"
+`;
+
+exports[`Dispute Templates — Config & Rendering Engine > 1. Snapshot tests for each template with sample data > renders snapshot for damaged template in hi 1`] = `
+"विषय: आर्डर ORD-2026-98124 (AWB: DELHIVERY789123) के क्षतिग्रस्त रिटर्न के संबंध में
+
+प्रिय सेलर सपोर्ट टीम,
+
+हम आर्डर ORD-2026-98124 के क्षतिग्रस्त रिटर्न पार्सल के संबंध में विवरण प्रस्तुत कर रहे हैं।
+
+आर्डर विवरण:
+- आर्डर आईडी: ORD-2026-98124
+- AWB / ट्रैकिंग नंबर: DELHIVERY789123
+- भेजा गया सामान: KURTI-CHANDERI-M (मात्रा: 1) (SKU: KURTI-CHANDERI-M)
+- डिस्पैच तिथि: 24-Oct-2026 11:30:00 AM IST
+- रिटर्न प्राप्ति तिथि: 27-Oct-2026 04:15:20 PM IST
+- क्षति का विवरण: क्षतिग्रस्त / फटा हुआ उत्पाद प्राप्त हुआ
+
+साक्ष्य विवरण:
+हमारे पास डिस्पैच पैकिंग और रिटर्न अनबॉक्सिंग दोनों का निरंतर वीडियो रिकॉर्ड है।
+- 24-Oct-2026 11:30:00 AM IST के डिस्पैच वीडियो से स्पष्ट है कि KURTI-CHANDERI-M (मात्रा: 1) सही स्थिति में भेजा गया था।
+- 27-Oct-2026 04:15:20 PM IST के रिटर्न अनबॉक्सिंग वीडियो में पार्सल कैमरे के सामने खोलते ही क्षति दर्ज हुई: क्षतिग्रस्त / फटा हुआ उत्पाद प्राप्त हुआ।
+
+कृपया संलग्न साक्ष्य की जांच कर क्षतिग्रस्त वस्तु के लिए क्लेम स्वीकृत करने की कृपा करें।
+
+सहयोग के लिए धन्यवाद।
+
+सादर,
+सेलर
+
+अतिरिक्त टिप्पणी: पार्सल की बाहरी सील टूटी हुई पाई गई
+"
+`;
+
+exports[`Dispute Templates — Config & Rendering Engine > 1. Snapshot tests for each template with sample data > renders snapshot for empty template in en 1`] = `
+"Subject: Empty package return received for Order ORD-2026-98124 (AWB: DELHIVERY789123)
+
+Dear Seller Support Team,
+
+We are writing to share details regarding a return received without its contents for Order ORD-2026-98124.
+
+Order Information:
+- Order ID: ORD-2026-98124
+- AWB / Tracking: DELHIVERY789123
+- Product Sent: KURTI-CHANDERI-M (Size: M, Qty: 1) (SKU: KURTI-CHANDERI-M)
+- Dispatch Date: 24-Oct-2026 11:30:00 AM IST
+- Return Received Date: 27-Oct-2026 04:15:20 PM IST
+- Return Package State: Torn and damaged fabric with missing tags
+
+Evidence Details:
+Continuous, uncut video recordings document both dispatch and return stages.
+- The dispatch recording on 24-Oct-2026 11:30:00 AM IST verifies KURTI-CHANDERI-M (Size: M, Qty: 1) was placed inside the package before sealing.
+- The return unboxing recording on 27-Oct-2026 04:15:20 PM IST documents the outer package condition and confirms the contents inside: Torn and damaged fabric with missing tags.
+
+We kindly ask your team to review the unboxing footage and assist us with approving this dispute claim.
+
+Thank you for your assistance.
+
+Sincerely,
+Seller
+
+Additional Notes: Return parcel outer seal was broken upon receipt
+"
+`;
+
+exports[`Dispute Templates — Config & Rendering Engine > 1. Snapshot tests for each template with sample data > renders snapshot for empty template in hi 1`] = `
+"विषय: आर्डर ORD-2026-98124 (AWB: DELHIVERY789123) में सामग्री प्राप्त न होने के संबंध में
+
+प्रिय सेलर सपोर्ट टीम,
+
+हम आर्डर ORD-2026-98124 के रिटर्न में सामग्री प्राप्त न होने के संबंध में सूचित कर रहे हैं।
+
+आर्डर विवरण:
+- आर्डर आईडी: ORD-2026-98124
+- AWB / ट्रैकिंग नंबर: DELHIVERY789123
+- भेजा गया सामान: KURTI-CHANDERI-M (मात्रा: 1) (SKU: KURTI-CHANDERI-M)
+- डिस्पैच तिथि: 24-Oct-2026 11:30:00 AM IST
+- रिटर्न प्राप्ति तिथि: 27-Oct-2026 04:15:20 PM IST
+- रिटर्न पार्सल की स्थिति: क्षतिग्रस्त / फटा हुआ उत्पाद प्राप्त हुआ
+
+साक्ष्य विवरण:
+डिस्पैच और रिटर्न दोनों चरणों की लगातार बिना कटी हुई वीडियो रिकॉर्डिंग उपलब्ध है।
+- 24-Oct-2026 11:30:00 AM IST की डिस्पैच रिकॉर्डिंग से पुष्टि होती है कि KURTI-CHANDERI-M (मात्रा: 1) पार्सल में रखकर सील किया गया था।
+- 27-Oct-2026 04:15:20 PM IST की रिटर्न अनबॉक्सिंग रिकॉर्डिंग में पार्सल खोलने पर स्थिति दर्ज है: क्षतिग्रस्त / फटा हुआ उत्पाद प्राप्त हुआ।
+
+कृपया अनबॉक्सिंग वीडियो की समीक्षा करें और इस विवाद के समाधान में सहायता प्रदान करें।
+
+आपके सहयोग के लिए धन्यवाद।
+
+सादर,
+सेलर
+
+अतिरिक्त टिप्पणी: पार्सल की बाहरी सील टूटी हुई पाई गई
+"
+`;
+
+exports[`Dispute Templates — Config & Rendering Engine > 1. Snapshot tests for each template with sample data > renders snapshot for general template in en 1`] = `
+"Subject: Return dispute details for Order ORD-2026-98124 (AWB: DELHIVERY789123)
+
+Dear Seller Support Team,
+
+We are sharing the verification details for the customer return on Order ORD-2026-98124.
+
+Order Information:
+- Order ID: ORD-2026-98124
+- AWB / Tracking: DELHIVERY789123
+- Product Sent: KURTI-CHANDERI-M (Size: M, Qty: 1) (SKU: KURTI-CHANDERI-M)
+- Dispatch Date: 24-Oct-2026 11:30:00 AM IST
+- Return Received Date: 27-Oct-2026 04:15:20 PM IST
+- Condition Observed on Return: Torn and damaged fabric with missing tags
+
+Evidence Details:
+We have recorded continuous, uncut video footage covering the dispatch packing process as well as the return unboxing inspection.
+- The dispatch clip shows KURTI-CHANDERI-M (Size: M, Qty: 1) packed and sealed in good condition on 24-Oct-2026 11:30:00 AM IST.
+- The return unboxing clip recorded on 27-Oct-2026 04:15:20 PM IST documents the parcel condition upon delivery and the item received: Torn and damaged fabric with missing tags.
+
+We kindly request your team to review the enclosed details and video documentation, and assist with approving the claim for this return.
+
+Thank you for your time and support.
+
+Sincerely,
+Seller
+
+Additional Notes: Return parcel outer seal was broken upon receipt
+"
+`;
+
+exports[`Dispute Templates — Config & Rendering Engine > 1. Snapshot tests for each template with sample data > renders snapshot for general template in hi 1`] = `
+"विषय: आर्डर ORD-2026-98124 (AWB: DELHIVERY789123) के रिटर्न संबंध में विवरण
+
+प्रिय सेलर सपोर्ट टीम,
+
+हम आर्डर ORD-2026-98124 के ग्राहक रिटर्न के सत्यापन का विवरण प्रस्तुत कर रहे हैं।
+
+आर्डर विवरण:
+- आर्डर आईडी: ORD-2026-98124
+- AWB / ट्रैकिंग नंबर: DELHIVERY789123
+- भेजा गया सामान: KURTI-CHANDERI-M (मात्रा: 1) (SKU: KURTI-CHANDERI-M)
+- डिस्पैच तिथि: 24-Oct-2026 11:30:00 AM IST
+- रिटर्न प्राप्ति तिथि: 27-Oct-2026 04:15:20 PM IST
+- रिटर्न में प्राप्त स्थिति: क्षतिग्रस्त / फटा हुआ उत्पाद प्राप्त हुआ
+
+साक्ष्य विवरण:
+हमारे पास पार्सल की डिस्पैच पैकिंग और रिटर्न अनबॉक्सिंग दोनों की लगातार बिना कटी हुई (uncut) वीडियो रिकॉर्डिंग उपलब्ध है।
+- डिस्पैच वीडियो में 24-Oct-2026 11:30:00 AM IST को KURTI-CHANDERI-M (मात्रा: 1) सही स्थिति में पैक और सील किया गया दिखाई देता है।
+- 27-Oct-2026 04:15:20 PM IST को रिकॉर्ड किए गए रिटर्न अनबॉक्सिंग वीडियो में पार्सल खोलने पर प्राप्त स्थिति दर्ज है: क्षतिग्रस्त / फटा हुआ उत्पाद प्राप्त हुआ।
+
+कृपया संलग्न विवरण और वीडियो रिकॉर्डिंग की समीक्षा करें और इस रिटर्न के लिए क्लेम स्वीकृत करने में सहायता प्रदान करें।
+
+आपके सहयोग के लिए धन्यवाद।
+
+सादर,
+सेलर
+
+अतिरिक्त टिप्पणी: पार्सल की बाहरी सील टूटी हुई पाई गई
+"
+`;
+
+exports[`Dispute Templates — Config & Rendering Engine > 1. Snapshot tests for each template with sample data > renders snapshot for wrong_item template in en 1`] = `
+"Subject: Incorrect item received for Order ORD-2026-98124 (AWB: DELHIVERY789123)
+
+Dear Seller Support Team,
+
+We are writing to report a discrepancy regarding the return received for Order ORD-2026-98124.
+
+Order Information:
+- Order ID: ORD-2026-98124
+- AWB / Tracking: DELHIVERY789123
+- Product Sent: KURTI-CHANDERI-M (Size: M, Qty: 1) (SKU: KURTI-CHANDERI-M)
+- Dispatch Date: 24-Oct-2026 11:30:00 AM IST
+- Return Received Date: 27-Oct-2026 04:15:20 PM IST
+- Item Received in Return: Torn and damaged fabric with missing tags
+
+Evidence Details:
+We maintain uncut video recordings for both outbound packing and inbound return inspection.
+- Dispatch verification on 24-Oct-2026 11:30:00 AM IST shows the item, KURTI-CHANDERI-M (Size: M, Qty: 1), verified by barcode and packed securely.
+- Return unboxing on 27-Oct-2026 04:15:20 PM IST shows the parcel opened on camera, where a different item was found: Torn and damaged fabric with missing tags.
+
+We have retained the package and item as received. We kindly ask you to verify the footage and process appropriate compensation for this order.
+
+Thank you for your assistance.
+
+Sincerely,
+Seller
+
+Additional Notes: Return parcel outer seal was broken upon receipt
+"
+`;
+
+exports[`Dispute Templates — Config & Rendering Engine > 1. Snapshot tests for each template with sample data > renders snapshot for wrong_item template in hi 1`] = `
+"विषय: आर्डर ORD-2026-98124 (AWB: DELHIVERY789123) में भिन्न सामान प्राप्त होने के संबंध में
+
+प्रिय सेलर सपोर्ट टीम,
+
+हम आर्डर ORD-2026-98124 के रिटर्न में प्राप्त सामान में अंतर के संबंध में सूचित कर रहे हैं।
+
+आर्डर विवरण:
+- आर्डर आईडी: ORD-2026-98124
+- AWB / ट्रैकिंग नंबर: DELHIVERY789123
+- भेजा गया सामान: KURTI-CHANDERI-M (मात्रा: 1) (SKU: KURTI-CHANDERI-M)
+- डिस्पैच तिथि: 24-Oct-2026 11:30:00 AM IST
+- रिटर्न प्राप्ति तिथि: 27-Oct-2026 04:15:20 PM IST
+- रिटर्न में प्राप्त सामान: क्षतिग्रस्त / फटा हुआ उत्पाद प्राप्त हुआ
+
+साक्ष्य विवरण:
+हमारे पास डिस्पैच पैकिंग और रिटर्न अनबॉक्सिंग दोनों की बिना कटी हुई वीडियो रिकॉर्डिंग उपलब्ध है।
+- 24-Oct-2026 11:30:00 AM IST के डिस्पैच वीडियो में सामान KURTI-CHANDERI-M (मात्रा: 1) बारकोड जांच के साथ पैक किया गया है।
+- 27-Oct-2026 04:15:20 PM IST को रिटर्न पार्सल कैमरे के सामने खोलने पर भिन्न सामान पाया गया: क्षतिग्रस्त / फटा हुआ उत्पाद प्राप्त हुआ।
+
+हमने प्राप्त पार्सल और सामान को सुरक्षित रखा है। कृपया वीडियो की जांच कर इस आर्डर के लिए उचित क्लेम स्वीकृत करने में सहायता करें।
+
+आपके सहयोग के लिए धन्यवाद।
+
+सादर,
+सेलर
+
+अतिरिक्त टिप्पणी: पार्सल की बाहरी सील टूटी हुई पाई गई
+"
+`;

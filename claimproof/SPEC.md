@@ -56,10 +56,61 @@ A real-time dispute radar and evidence preparation studio for recovering revenue
   * Myntra: 72 hours *[needs verification]*
   * Flipkart SPF: 14 days (336 hours) *[needs verification]*
   * Amazon SAFE-T: 30 days (720 hours) *[needs verification]*
+* **Centralized Marketplace Claim Windows (`src/config/claimWindows.ts`):**
+  * Defines official seller help URLs (`sourceUrl`), dispute window duration (`hours`, `defaultHours`), verification status (`lastVerified`), and a strict `verified: boolean` flag.
+  * Unverified windows display an explicit `"UNVERIFIED, check your seller panel."` warning badge in ClaimRadar and Settings until verified by the seller.
+  * User-customizable: Sellers can edit any marketplace claim window duration and reset back to defaults at any time.
+  * Automatic claim recalculation: Whenever a claim window is edited, existing active claims for that marketplace recalculate their deadline and record an explanatory note: `[Window updated from Xh to Yh on DD-MMM-YYYY HH:mm:ss IST]`.
+* **Global Urgency Alert Banner (`src/components/claims/ClaimUrgencyAlertBanner.tsx`):**
+  * Displays a high-visibility alert banner across every page in the application shell when any active claim is within 24 hours (warning, amber token) or 6 hours (critical, danger token) of expiring.
+  * Provides live ticking countdown and 1-click "Prepare Claim" navigation to ClaimRadar.
+  * Feature Flag: Controlled via `claimRadarUrgencyBanner` in `src/config/featureFlags.ts`.
+* **IST-First Delivery Date Calculation & Edge Case Guards:**
+  * Dispute deadlines are strictly computed in Indian Standard Time (IST, UTC+05:30) from the return delivery date entered by the user.
+  * Past dates guard: Flags returns delivered in the past where the dispute window has already expired, prompting manual filing with proof of delay.
+  * Clock-skew resilience: Resilient against device clock changes without NaN or infinite loops.
+* **Calendar Export & Desktop Reminders:**
+  * **RFC 5545 Calendar Export (`src/lib/calendarExport.ts`):** 1-click export of `.ics` calendar files with embedded 24-hour (`-PT24H`) and 6-hour (`-PT6H`) reminders compatible with Google Calendar, Outlook, and Apple Calendar.
+  * **Optional Browser Notifications (`src/lib/claimNotifications.ts`):** Requests permission with a plain-language explanation dialog (zero marketing promises, 100% private on-device) and fires desktop alerts at 24h and 6h marks.
+  * Feature Flags: `claimCalendarExport` and `claimNotifications` in `src/config/featureFlags.ts`.
 * **Side-by-Side Matcher:** Cross-references the original outbound Dispatch recording against the Return Unboxing recording for the same AWB.
 * **Dispute Dossier Packaging:** Generates marketplace-tailored dispute claim text and packages side-by-side photo collages and video files for 1-click upload to seller support tickets.
+* **Template-Based Dispute Messages (`src/config/disputeTemplates.ts`):**
+  * Multi-language support: English (`en`) and Hindi (`hi`).
+  * Structured categories: General Discrepancy (`general`), Wrong/Swapped Item (`wrong_item`), Damaged Item (`damaged`), and Empty Package/Missing Item (`empty`).
+  * Auto-populated data fields: Order ID, AWB, SKU, dispatch date (IST), return unboxing date (IST), what was sent (with quantity and size), and what was received.
+  * Preview & Highlight: Visual preview prominently highlights missing/unverified fields in amber with informative tags (`[MISSING: ...]`).
+  * Live Customization: Full user editability before copying, accompanied by a dynamic character counter and one-click copy to clipboard.
+  * Polite & Factual Tone: Strictly excludes accusatory words (e.g. fraud, scam, cheat, theft, guarantee) and contains zero legal/policy citations unless explicitly added by the user.
+  * Feature Flag: Controlled via `disputeTemplates` in `src/config/featureFlags.ts`.
+* **1-Click Claim Kit Generator (`src/services/claimKitBuilder.ts`, `src/components/claims/ClaimKitModal.tsx`):**
+  * One-click packaging of dispute evidence into an organized folder (`ClaimKit_{AWB}`) on local disk or downloadable zero-dependency ZIP archive (`ClaimKit_{AWB}.zip`).
+  * Contents:
+    * Outbound dispatch packing video and inbound return unboxing video (prefers MP4 when supported, announces format used).
+    * Extracted key moment still frames saved in `Key_Frames/` subdirectory.
+    * Official Claim Summary Sheet PDF (`Claim_Summary_{AWB}.pdf`) generated client-side via `pdf-lib` with shipment table, barcode verification chain, burnt-in IST timestamps, checklist verification rows, dispute dossier letter, and local-first verification footer.
+    * Standalone dispute dossier letter (`Dispute_Letter_{AWB}.txt`).
+  * Target-size re-encoding setting (default none): re-encodes only when exceeding configured target limit (Meesho 50MB, Amazon 25MB, Flipkart 100MB, custom).
+  * Strict legibility quality gate: enforces `MIN_LEGIBLE_BITRATE = 350,000` bps; throws plain-language actionable error if target size would render text or barcodes unreadable (never silently degrades).
+  * Optional recipient address privacy blur (off by default): masks buyer name and phone on canvas while preserving AWB barcode.
+  * 100% computed locally on device (zero cloud uploads).
+  * Real-time progress bar (0–100%) and cancel button with atomic rollback ensuring zero partial/corrupted files remain.
+  * Robust edge case handling: folder name collision resolution (`ClaimKit_{AWB} (1)`, `(2)`), missing return video handled gracefully with warning, and storage permission revocation detection with actionable recovery.
+  * IndexedDB schema version bump (v4) with automated upgrade migration initializing `claimKitGeneratedAt`.
+  * Feature Flag: Controlled via `claimKitBuilder` in `src/config/featureFlags.ts`.
 
-### 1.4 Evidence Vault
+### 1.4 Money & Claims Ledger (Module D)
+A local-first financial recovery ledger tracking disputes, cash recoveries, and software ROI.
+* **Claims Ledger Table:** Tracks AWB, marketplace, status (`not_filed`, `filed`, `won`, `partly_won`, `lost`), `amountClaimedPaise`, `amountRecoveredPaise`, `filedAt`, `resolvedAt`, and seller `notes`.
+* **Quick Status & Amount Form:** Modal form for instant updates, auto-populating amounts when claims are won, lost, or partly won.
+* **Audit Trail:** Preserves an immutable on-device audit log (`auditTrail`) of all past edits to claim status, amounts, and notes with IST timestamps.
+* **CSV Ledger Import & Export:** Full bidirectional RFC 4180 CSV export and import with field validation, negative/huge amount guards (up to ₹1,00,00,000), and IST formatting.
+* **Money Dashboard & Date Filter:** Real-time totals and counts for filed, won, lost, pending, and recovered disputes across All Time, Today, Last 7 Days, Last 30 Days, and This Month in IST.
+* **Zero Fake Statistics:** Win rate and recovery percentages are strictly suppressed until at least 10 resolved claims exist on the seller's device, then labeled explicitly as "your own results".
+* **Plan Breakeven Meter:** Real-time ROI meter comparing total recovered revenue against user-entered software plan cost, celebrating when the software has paid for itself (hidden when no data/cost entered).
+* **Feature Flag:** Controlled via `moneyLedger` in `src/config/featureFlags.ts`.
+
+### 1.5 Evidence Vault
 A zero-cloud, private local storage engine.
 * **Direct File System Access:** Uses the Chromium File System Access API (`showDirectoryPicker`) to write MP4/WebM videos and JPEG collages directly to the seller's hard drive without server bandwidth or cloud storage fees.
 * **Directory Layout:**

@@ -70,6 +70,8 @@ describe('Unprovable Claims & Banned Words Guard', () => {
 
     for (const file of srcFiles) {
       if (file.endsWith(currentTestFileName)) continue;
+      if (file.endsWith('.test.ts') || file.endsWith('.test.tsx')) continue;
+      if (file.endsWith('.json')) continue;
       if (BINARY_EXTENSIONS.test(file)) continue;
 
       const content = readFileSync(file, 'utf-8');

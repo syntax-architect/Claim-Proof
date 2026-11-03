@@ -1,4 +1,5 @@
 import '@fontsource-variable/inter';
+import '@fontsource-variable/noto-sans-devanagari';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/fraunces';
 import { StrictMode } from 'react';

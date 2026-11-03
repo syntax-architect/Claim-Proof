@@ -33,6 +33,12 @@ export const ROUTE_SEO: Record<string, RouteSeoMetadata> = {
       'Track Meesho SAFE, Flipkart SPF, and Amazon SAFE-T filing deadlines with side-by-side video evidence dossiers for marketplace claims.',
     canonical: `https://${BRAND.domain}/#/claims`
   },
+  money: {
+    title: 'Claims Ledger & ROI — Financial Recovery',
+    description:
+      'Track cash recovered from marketplace claims, compute software ROI, and manage disputed claims ledger stored locally on your device.',
+    canonical: `https://${BRAND.domain}/#/money`
+  },
   vault: {
     title: 'Evidence Vault — Private Local Storage',
     description:
@@ -49,6 +55,12 @@ export const ROUTE_SEO: Record<string, RouteSeoMetadata> = {
     title: `Settings & Preferences — ${BRAND.legalName}`,
     description: `Configure camera sources, barcode scanners, thermal printer label presets, courier defaults, and local vault folders for ${BRAND.name}.`,
     canonical: `https://${BRAND.domain}/#/settings`
+  },
+  'scanner-test': {
+    title: 'Scanner Test & Diagnostics — USB & Camera',
+    description:
+      'Test and diagnose physical USB barcode scanner guns, Bluetooth scanners, and camera barcode readers with millisecond burst diagnostics.',
+    canonical: `https://${BRAND.domain}/#/scanner-test`
   },
   privacy: {
     title: 'Privacy Policy — Local-First Data Protection',
@@ -69,6 +81,11 @@ export const ROUTE_SEO: Record<string, RouteSeoMetadata> = {
     title: `Seller Support & Help Desk — ${BRAND.name}`,
     description: `Get fast help via WhatsApp, email support, and non-sensitive diagnostic export for ${BRAND.name} shipping label studio and AWB recorder.`,
     canonical: `https://${BRAND.domain}/#/support`
+  },
+  pair: {
+    title: `Phone Companion — Camera & Scanner · ${BRAND.name}`,
+    description: `Pair your smartphone as a high-definition packing video camera and barcode scanner with private peer-to-peer WebRTC streaming.`,
+    canonical: `https://${BRAND.domain}/#/pair`
   },
   'not-found': {
     title: `404 — Page Not Found · ${BRAND.name}`,

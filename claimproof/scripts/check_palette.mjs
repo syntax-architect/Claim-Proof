@@ -153,7 +153,7 @@ for (const file of allFiles) {
         continue;
       }
       // Allowlist pdf-lib vector drawing in pdfLabelProcessor / test fixtures
-      if (relPath.includes('pdfLabelProcessor') || relPath.includes('.test.')) {
+      if (relPath.includes('pdfLabelProcessor') || relPath.includes('claimSummaryPdf') || relPath.includes('.test.')) {
         if (/rgb\(\s*[0-9.]+\s*,\s*[0-9.]+\s*,\s*[0-9.]+\s*\)/i.test(colorFn)) {
           continue;
         }

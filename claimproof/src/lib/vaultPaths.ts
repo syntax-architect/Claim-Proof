@@ -26,6 +26,13 @@ export function videoFileName(awb: string, mime: string): string {
   return `${sanitizeAwb(awb)}_Video.${videoExtForMime(mime)}`;
 }
 
+export function returnVideoFileName(awb: string, mime: string, takeIndex = 1): string {
+  const ext = videoExtForMime(mime);
+  return takeIndex > 1
+    ? `${sanitizeAwb(awb)}_Return_Take${takeIndex}.${ext}`
+    : `${sanitizeAwb(awb)}_Return_Video.${ext}`;
+}
+
 export function photoCollageFileName(awb: string): string {
   return `${sanitizeAwb(awb)}_Photo_Collage.jpg`;
 }

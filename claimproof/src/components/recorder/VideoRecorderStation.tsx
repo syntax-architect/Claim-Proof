@@ -5,13 +5,15 @@ import {
   CameraOff,
   CheckCircle2,
   Flag,
+  Flashlight,
   Keyboard,
   Play,
   QrCode,
   ScanLine,
   Square,
   Usb,
-  Video
+  Video,
+  ZoomIn
 } from 'lucide-react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { motion } from 'framer-motion';
@@ -38,11 +40,13 @@ import { RecordingPipeline, type CameraErrorType } from '../../services/recordin
 import { cacheRecordingMedia } from '../../services/mediaLibrary';
 import { saveRecordingFiles } from '../../services/vaultWriter';
 import {
+  DEFAULT_ICE_SERVERS,
   isPhonePairingConfigured,
   pairingQrPayload,
   startPhonePairing,
   type PhonePairingSession
 } from '../../services/phonePairing';
+import { setupDataChannelReceiver } from '../../services/dataChannelTransfer';
 import { planHasFeature, useLicense } from '../../services/licenseService';
 import { usePaywall } from '../../providers/PaywallProvider';
 import { registerActiveRecording } from '../../services/recorderCrashGuard';
@@ -62,7 +66,16 @@ import {
   notifyToast,
   useToast
 } from '../ui';
-import type { CourierPartner, FlagReason, Marketplace, RecordingType } from '../../types';
+import type {
+  ChecklistResultRow,
+  CourierPartner,
+  FlagReason,
+  Marketplace,
+  RecordingMeta,
+  RecordingType
+} from '../../types';
+import { ReturnChecklistOverlay, type StepTickState } from './ReturnChecklistOverlay';
+import { getChecklistProfile, type ReturnCondition } from '../../config/evidenceChecklists';
 
 interface Parcel {
   awb: string;
@@ -268,13 +281,27 @@ export function VideoRecorderStation({ className }: { className?: string }) {
   const [photos, setPhotos] = useState<(string | null)[]>([null, null, null, null]);
   const [flagged, setFlagged] = useState(false);
   const [returnMode, setReturnMode] = useState(false);
+  const [stepTicks, setStepTicks] = useState<Record<string, StepTickState>>({});
+  const [selectedCondition, setSelectedCondition] = useState<ReturnCondition | null>(null);
+  const [linkedDispatch, setLinkedDispatch] = useState<RecordingMeta | null>(null);
+  const [showConditionRequiredWarning, setShowConditionRequiredWarning] = useState(false);
   const [reasonOpen, setReasonOpen] = useState(false);
   const [scanner, setScanner] = useState<{ status: ScannerStatus; detail?: string }>({
     status: 'idle'
   });
   const [pairing, setPairing] = useState<{ code: string; qr: string | null } | null>(null);
   const [pairingBusy, setPairingBusy] = useState(false);
+  const [pairedPhone, setPairedPhone] = useState<{ deviceId: string } | null>(null);
+  const [phoneTransferProgress, setPhoneTransferProgress] = useState<number | null>(null);
+  const [_phoneStream, setPhoneStream] = useState<MediaStream | null>(null);
   const [scanFlash, setScanFlash] = useState(false);
+  const [invalidScanFlash, setInvalidScanFlash] = useState(false);
+  const [hasTorch, setHasTorch] = useState(false);
+  const [torchOn, setTorchOn] = useState(false);
+  const [zoomRange, setZoomRange] = useState<{ min: number; max: number; step: number } | null>(
+    null
+  );
+  const [zoomValue, setZoomValue] = useState(1);
 
   useEffect(() => {
     setRecordingActive(stage === 'recording');
@@ -290,12 +317,17 @@ export function VideoRecorderStation({ className }: { className?: string }) {
   const pipelineRef = useRef<RecordingPipeline | null>(null);
   const scannerRef = useRef<CameraScannerHandle | null>(null);
   const pairingRef = useRef<PhonePairingSession | null>(null);
+  const peerConnRef = useRef<RTCPeerConnection | null>(null);
+  const phoneVideoRef = useRef<HTMLVideoElement | null>(null);
 
   /* Live state mirrors so window-level handlers never see stale closures. */
   const stageRef = useRef<Stage>('idle');
   const parcelRef = useRef<Parcel | null>(null);
   const flaggedRef = useRef(false);
   const returnModeRef = useRef(false);
+  const stepTicksRef = useRef<Record<string, StepTickState>>({});
+  const selectedConditionRef = useRef<ReturnCondition | null>(null);
+  const linkedDispatchRef = useRef<RecordingMeta | null>(null);
   const reasonRef = useRef<FlagReason | null>(null);
   const licenseRef = useRef(license);
   const seqRef = useRef(0);
@@ -307,6 +339,47 @@ export function VideoRecorderStation({ className }: { className?: string }) {
   stageRef.current = stage;
   returnModeRef.current = returnMode;
   elapsedRef.current = elapsed;
+  stepTicksRef.current = stepTicks;
+  selectedConditionRef.current = selectedCondition;
+  linkedDispatchRef.current = linkedDispatch;
+
+  const handleToggleStep = useCallback((stepId: string) => {
+    setStepTicks((prev) => {
+      const current = prev[stepId]?.completed ?? false;
+      const next = !current;
+      const updated: Record<string, StepTickState> = {
+        ...prev,
+        [stepId]: {
+          completed: next,
+          completedAtOffsetSec: next ? elapsedRef.current : undefined
+        }
+      };
+      stepTicksRef.current = updated;
+      return updated;
+    });
+  }, []);
+
+  const handleSelectCondition = useCallback((cond: ReturnCondition) => {
+    setSelectedCondition(cond);
+    selectedConditionRef.current = cond;
+    setShowConditionRequiredWarning(false);
+    if (cond !== 'good') {
+      flaggedRef.current = true;
+      setFlagged(true);
+      const reasonMap: Record<ReturnCondition, FlagReason> = {
+        good: 'Other',
+        wrong_item: 'Wrong/Swapped item',
+        damaged: 'Damaged',
+        empty: 'Empty package',
+        used_worn: 'Used/Worn'
+      };
+      reasonRef.current = reasonMap[cond];
+    } else {
+      flaggedRef.current = false;
+      setFlagged(false);
+      reasonRef.current = null;
+    }
+  }, []);
 
   const canCollage = planHasFeature(license.plan, 'collage');
 
@@ -379,6 +452,32 @@ export function VideoRecorderStation({ className }: { className?: string }) {
       setElapsed(0);
       elapsedRef.current = 0;
       setFlagged(false);
+
+      if (returnModeRef.current) {
+        const linked = await db.recordings
+          .where('awb')
+          .equals(code)
+          .filter((r) => r.type === 'dispatch')
+          .first();
+        setLinkedDispatch(linked ?? null);
+
+        const priorReturns = await db.returnVideos.where('awb').equals(code).count();
+        if (priorReturns > 0) {
+          toast.info(
+            'Prior return video exists',
+            `Recording Take #${priorReturns + 1} for returned AWB ${code}.`
+          );
+        }
+
+        setStepTicks({});
+        stepTicksRef.current = {};
+        setSelectedCondition(null);
+        selectedConditionRef.current = null;
+        setShowConditionRequiredWarning(false);
+      } else {
+        setLinkedDispatch(null);
+      }
+
       playStartBeep();
 
       if (pipeline.isWebM) {
@@ -505,6 +604,50 @@ export function VideoRecorderStation({ className }: { className?: string }) {
         await db.recordings.update(id, { vaultPath: save.vaultPath });
         void trackFirstRecordingSaved();
 
+        if (type === 'return') {
+          const profile = getChecklistProfile(p.marketplace);
+          const completedCount = profile.steps.filter(
+            (s) => stepTicksRef.current[s.id]?.completed
+          ).length;
+
+          const returnVideoId = await db.returnVideos.add({
+            awb: p.awb,
+            orderId: p.orderId,
+            sku: p.sku,
+            size: p.size,
+            qty: p.qty,
+            courier: p.courier,
+            marketplace: p.marketplace,
+            condition: selectedConditionRef.current ?? 'damaged',
+            startedAt,
+            endedAt: Date.now(),
+            durationSec: result.durationSec,
+            videoMime: result.videoMime,
+            videoBytes: result.videoBlob.size,
+            vaultPath: save.vaultPath,
+            linkedDispatchRecordingId: linkedDispatchRef.current?.id,
+            partial: true,
+            checklistCompletedCount: completedCount,
+            checklistTotalCount: profile.steps.length,
+            demo: pipeline.bound === 'demo'
+          });
+
+          const checklistRows: ChecklistResultRow[] = profile.steps.map((step) => {
+            const tick = stepTicksRef.current[step.id];
+            return {
+              returnVideoId,
+              awb: p.awb,
+              stepId: step.id,
+              stepOrder: step.order,
+              title: step.title,
+              completed: tick?.completed ?? false,
+              completedAtOffsetSec: tick?.completedAtOffsetSec,
+              timestamp: Date.now()
+            };
+          });
+          await db.checklistResults.bulkAdd(checklistRows);
+        }
+
         if (wasFlagged && type === 'return') {
           await db.claims.add(
             buildClaimFromFlag({
@@ -622,6 +765,50 @@ export function VideoRecorderStation({ className }: { className?: string }) {
       }
       void trackFirstRecordingSaved();
 
+      if (type === 'return') {
+        const profile = getChecklistProfile(p.marketplace);
+        const completedCount = profile.steps.filter(
+          (s) => stepTicksRef.current[s.id]?.completed
+        ).length;
+
+        const returnVideoId = await db.returnVideos.add({
+          awb: p.awb,
+          orderId: p.orderId,
+          sku: p.sku,
+          size: p.size,
+          qty: p.qty,
+          courier: p.courier,
+          marketplace: p.marketplace,
+          condition: selectedConditionRef.current ?? 'good',
+          startedAt,
+          endedAt: Date.now(),
+          durationSec: result.durationSec,
+          videoMime: result.videoMime,
+          videoBytes: result.videoBlob.size,
+          vaultPath: save.vaultPath,
+          linkedDispatchRecordingId: linkedDispatchRef.current?.id,
+          partial: false,
+          checklistCompletedCount: completedCount,
+          checklistTotalCount: profile.steps.length,
+          demo: pipeline.bound === 'demo'
+        });
+
+        const checklistRows: ChecklistResultRow[] = profile.steps.map((step) => {
+          const tick = stepTicksRef.current[step.id];
+          return {
+            returnVideoId,
+            awb: p.awb,
+            stepId: step.id,
+            stepOrder: step.order,
+            title: step.title,
+            completed: tick?.completed ?? false,
+            completedAtOffsetSec: tick?.completedAtOffsetSec,
+            timestamp: Date.now()
+          };
+        });
+        await db.checklistResults.bulkAdd(checklistRows);
+      }
+
       if (wasFlagged && type === 'return') {
         await db.claims.add(
           buildClaimFromFlag({
@@ -679,12 +866,21 @@ export function VideoRecorderStation({ className }: { className?: string }) {
 
   const requestStop = useCallback(() => {
     if (stageRef.current !== 'recording') return;
+    if (returnModeRef.current && !selectedConditionRef.current) {
+      setShowConditionRequiredWarning(true);
+      playErrorBeep();
+      toast.warn(
+        'Condition tag required',
+        'Please select a package condition (Good, Damaged, Wrong item, Empty, or Used) before saving.'
+      );
+      return;
+    }
     if (flaggedRef.current && returnModeRef.current && !reasonRef.current) {
       setReasonOpen(true);
       return;
     }
     void stopAndPersist();
-  }, [stopAndPersist]);
+  }, [stopAndPersist, toast]);
 
   const flagBadReturn = useCallback(() => {
     if (stageRef.current !== 'recording' || !returnModeRef.current) return;
@@ -742,6 +938,23 @@ export function VideoRecorderStation({ className }: { className?: string }) {
   const flagRef = useRef(flagBadReturn);
   flagRef.current = flagBadReturn;
 
+  const handleToggleTorch = useCallback(async () => {
+    if (!scannerRef.current || !hasTorch) return;
+    const next = !torchOn;
+    const ok = await scannerRef.current.setTorch(next);
+    if (ok) setTorchOn(next);
+  }, [hasTorch, torchOn]);
+
+  const handleZoomChange = useCallback(
+    async (val: number) => {
+      setZoomValue(val);
+      if (scannerRef.current && zoomRange) {
+        await scannerRef.current.setZoom(val);
+      }
+    },
+    [zoomRange]
+  );
+
   const retryCamera = useCallback(async () => {
     const pipeline = pipelineRef.current;
     const video = videoRef.current;
@@ -756,9 +969,20 @@ export function VideoRecorderStation({ className }: { className?: string }) {
       setCameraBlocked(false);
       setCameraError(null);
       toast.success('Camera connected', 'Live webcam stream initialized successfully.');
-      scannerRef.current = await startCameraScanner(video, (code) => handleScanRef.current(code), {
-        onStatus: (status, detail) => setScanner({ status, detail })
+      const sc = await startCameraScanner(video, (code) => handleScanRef.current(code), {
+        onStatus: (status, detail) => setScanner({ status, detail }),
+        onInvalidScan: (raw, err) => {
+          setInvalidScanFlash(true);
+          setTimeout(() => setInvalidScanFlash(false), 400);
+          toast.warn('Invalid barcode', `${err || 'Code not recognized'}. Re-align the label.`);
+        }
       });
+      scannerRef.current = sc;
+      setHasTorch(sc.hasTorch);
+      setTorchOn(sc.isTorchOn());
+      const zRange = sc.getZoomRange();
+      setZoomRange(zRange);
+      if (zRange) setZoomValue(sc.getZoom());
     } else {
       if (err === 'permission_denied') {
         setCameraBlocked(true);
@@ -783,7 +1007,16 @@ export function VideoRecorderStation({ className }: { className?: string }) {
     let cancelled = false;
     const pipeline = new RecordingPipeline();
     pipelineRef.current = pipeline;
-    const hid = startHidListener((code) => void handleScanRef.current(code));
+    const hid = startHidListener((code) => void handleScanRef.current(code), {
+      onInvalidScan: (raw, err) => {
+        setInvalidScanFlash(true);
+        setTimeout(() => setInvalidScanFlash(false), 400);
+        toast.warn(
+          'Invalid scan detected',
+          `${err || 'Barcode did not meet validation rules'}. Check your label.`
+        );
+      }
+    });
 
     void (async () => {
       await new Promise((r) => setTimeout(r, 60));
@@ -798,11 +1031,23 @@ export function VideoRecorderStation({ className }: { className?: string }) {
       if (bound === 'camera') {
         setCameraBlocked(false);
         setCameraError(null);
-        scannerRef.current = await startCameraScanner(
-          video,
-          (code) => void handleScanRef.current(code),
-          { onStatus: (status, detail) => setScanner({ status, detail }) }
-        );
+        const sc = await startCameraScanner(video, (code) => void handleScanRef.current(code), {
+          onStatus: (status, detail) => setScanner({ status, detail }),
+          onInvalidScan: (raw, scanErr) => {
+            setInvalidScanFlash(true);
+            setTimeout(() => setInvalidScanFlash(false), 400);
+            toast.warn(
+              'Invalid barcode',
+              `${scanErr || 'Code not recognized'}. Re-align the label.`
+            );
+          }
+        });
+        scannerRef.current = sc;
+        setHasTorch(sc.hasTorch);
+        setTorchOn(sc.isTorchOn());
+        const zRange = sc.getZoomRange();
+        setZoomRange(zRange);
+        if (zRange) setZoomValue(sc.getZoom());
       } else {
         if (err === 'permission_denied') {
           setCameraBlocked(true);
@@ -892,6 +1137,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
   useEffect(
     () => () => {
       pairingRef.current?.dispose();
+      peerConnRef.current?.close();
     },
     []
   );
@@ -899,14 +1145,134 @@ export function VideoRecorderStation({ className }: { className?: string }) {
   async function startPairingRoom() {
     setPairingBusy(true);
     try {
-      const session = await startPhonePairing((code) => void handleScanRef.current(code));
+      if (pairingRef.current) {
+        pairingRef.current.dispose();
+      }
+      if (peerConnRef.current) {
+        peerConnRef.current.close();
+      }
+
+      // Initialize WebRTC connection with STUN
+      const pc = new RTCPeerConnection({ iceServers: DEFAULT_ICE_SERVERS });
+      peerConnRef.current = pc;
+
+      // Handle remote video stream from companion phone
+      pc.ontrack = (event) => {
+        if (event.streams && event.streams[0]) {
+          setPhoneStream(event.streams[0]);
+          if (phoneVideoRef.current) {
+            phoneVideoRef.current.srcObject = event.streams[0];
+            void phoneVideoRef.current.play().catch(() => {});
+          }
+        }
+      };
+
+      // Handle WebRTC RTCDataChannel for chunked checksummed transfer
+      pc.ondatachannel = (event) => {
+        const dc = event.channel;
+        setupDataChannelReceiver(dc as any, {
+          onProgress: (p: { percent: number }) => {
+            setPhoneTransferProgress(p.percent);
+          },
+          onVerified: async ({ videoBlob, metadata, mime }: any) => {
+            setPhoneTransferProgress(null);
+            playSavedBeep();
+            toast.success(
+              'Phone recording verified',
+              `AWB ${metadata.awb} received and SHA-256 verified directly from phone.`
+            );
+
+            // Save to disk Evidence Vault (Rule 4 & Rule 11)
+            const mode = metadata.mode || 'dispatch';
+            const startedAt = metadata.startedAt || Date.now();
+            const id = await db.recordings.add({
+              awb: metadata.awb,
+              orderId: metadata.orderId,
+              sku: metadata.sku,
+              qty: metadata.qty,
+              size: metadata.size || 'STD',
+              courier: 'Unknown',
+              marketplace: 'Unknown',
+              type: mode,
+              startedAt,
+              endedAt: Date.now(),
+              durationSec: 10,
+              videoMime: mime,
+              videoBytes: videoBlob.size,
+              photoBytes: 0,
+              photoCollage: false,
+              vaultPath: vaultSubPath(mode, startedAt, metadata.awb),
+              demo: false,
+              flagged: false
+            });
+
+            await cacheRecordingMedia(id, videoBlob, null);
+            const save = await saveRecordingFiles({
+              awb: metadata.awb,
+              type: mode,
+              startedAt,
+              video: videoBlob,
+              videoMime: mime,
+              photo: null
+            });
+            await db.recordings.update(id, { vaultPath: save.vaultPath });
+            void trackFirstRecordingSaved();
+          },
+          onError: (err: any) => {
+            setPhoneTransferProgress(null);
+            playErrorBeep();
+            toast.error('Phone transfer verification failed', err.message);
+          }
+        });
+      };
+
+      // ICE candidates back to phone over signaling
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          void pairingRef.current?.sendSignal({
+            type: 'candidate',
+            candidate: event.candidate
+          });
+        }
+      };
+
+      const session = await startPhonePairing({
+        onScan: (code) => void handleScanRef.current(code),
+        onPhoneConnected: ({ deviceId }) => {
+          setPairedPhone({ deviceId });
+          toast.success(
+            'Phone companion paired',
+            `Smartphone camera & scanner active (${deviceId})`
+          );
+        },
+        onPhoneDisconnected: () => {
+          setPairedPhone(null);
+          setPhoneStream(null);
+          toast.info('Phone companion disconnected');
+        },
+        onSignal: async (signal: any) => {
+          if (signal.type === 'offer') {
+            await pc.setRemoteDescription(new RTCSessionDescription(signal.sdp));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            await session.sendSignal({
+              type: 'answer',
+              sdp: answer
+            });
+          } else if (signal.type === 'candidate' && signal.candidate) {
+            await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+          }
+        }
+      });
+
       pairingRef.current = session;
       const { renderUpiQr } = await import('../../lib/upi');
-      const qr = await renderUpiQr(pairingQrPayload(session.code), 180);
+      // 2-minute single-use token in QR payload
+      const qr = await renderUpiQr(pairingQrPayload(session.code, session.token), 180);
       setPairing({ code: session.code, qr });
       toast.success(
         'Pairing room open',
-        `Scan the QR with the phone companion — room ${session.code}`
+        `Scan the QR with your smartphone — 2-minute token active.`
       );
     } catch (e) {
       toast.error('Pairing failed', e instanceof Error ? e.message : String(e));
@@ -993,6 +1359,16 @@ export function VideoRecorderStation({ className }: { className?: string }) {
               />
             )}
 
+            {/* Invalid scan flash ring */}
+            {invalidScanFlash && (
+              <motion.div
+                initial={{ opacity: 0.9, scale: 0.98 }}
+                animate={{ opacity: 0, scale: 1.02 }}
+                transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+                className="pointer-events-none absolute inset-0 z-30 rounded-2xl border-2 border-danger-500 shadow-[0_0_28px_rgba(239,68,68,0.7)]"
+              />
+            )}
+
             {/* Saving feedback overlay */}
             {stage === 'saving' && (
               <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -1016,11 +1392,18 @@ export function VideoRecorderStation({ className }: { className?: string }) {
                 <div className="absolute bottom-16 right-4 h-7 w-7 border-b-2 border-r-2 border-proof-400/60" />
                 <ScanLine className="h-9 w-9 animate-rec-pulse text-success-300" />
                 <div className="mt-4 font-display text-xl font-bold tracking-[0.2em] text-slate-50">
-                  WAITING FOR SCAN
+                  {returnMode ? 'RETURN UNBOXING SCAN' : 'WAITING FOR SCAN'}
                 </div>
                 <div className="mt-2 font-mono text-xs text-slate-400">
-                  Scan an AWB barcode — or type it below and press <Kbd>Enter</Kbd>
+                  {returnMode
+                    ? 'Scan returned parcel AWB barcode to start guided unboxing'
+                    : 'Scan an AWB barcode — or type it below and press Enter'}
                 </div>
+                {returnMode && (
+                  <Badge tone="warn" className="mt-3">
+                    RETURN UNBOXING MODE — Continuous Uncut Video Required
+                  </Badge>
+                )}
                 {mode && (
                   <Badge tone={mode === 'camera' ? 'proof' : 'warn'} className="mt-4">
                     {mode === 'camera' ? 'LIVE CAMERA' : 'DEMO CAMERA'}
@@ -1030,7 +1413,7 @@ export function VideoRecorderStation({ className }: { className?: string }) {
             )}
 
             {/* Recording HUD */}
-            {stage === 'recording' && (
+            {stage === 'recording' && !returnMode && (
               <>
                 <div className="pointer-events-none absolute inset-0 bg-black/15" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4">
@@ -1070,6 +1453,20 @@ export function VideoRecorderStation({ className }: { className?: string }) {
               </div>
             )}
           </div>
+
+          {returnMode && (
+            <ReturnChecklistOverlay
+              marketplace={parcel?.marketplace}
+              elapsedSec={elapsed}
+              isRecording={stage === 'recording'}
+              linkedDispatch={linkedDispatch}
+              selectedCondition={selectedCondition}
+              onSelectCondition={handleSelectCondition}
+              stepTicks={stepTicks}
+              onToggleStep={handleToggleStep}
+              showConditionRequiredWarning={showConditionRequiredWarning}
+            />
+          )}
 
           {/* Scan sink + controls */}
           {stage === 'recording' ? (
@@ -1159,6 +1556,33 @@ export function VideoRecorderStation({ className }: { className?: string }) {
                   : (scanner.detail ?? 'Camera scanner idle')}
             </Badge>
 
+            {hasTorch && (
+              <Button
+                variant={torchOn ? 'primary' : 'secondary'}
+                size="xs"
+                icon={Flashlight}
+                onClick={() => void handleToggleTorch()}
+              >
+                {torchOn ? 'Torch On' : 'Torch Off'}
+              </Button>
+            )}
+
+            {zoomRange && (
+              <div className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-ink-950/80 px-2.5 py-1 text-xs text-slate-300">
+                <ZoomIn className="h-3 w-3 text-slate-400" />
+                <input
+                  type="range"
+                  min={zoomRange.min}
+                  max={zoomRange.max}
+                  step={zoomRange.step}
+                  value={zoomValue}
+                  onChange={(e) => void handleZoomChange(Number(e.target.value))}
+                  className="h-1 w-14 cursor-pointer accent-proof-500"
+                />
+                <span className="font-mono text-[10px]">{zoomValue.toFixed(1)}x</span>
+              </div>
+            )}
+
             <Badge tone={isWebM ? 'warn' : 'proof'}>FORMAT: {containerFormat.toUpperCase()}</Badge>
             {isWebM && (
               <span className="text-[11px] text-warn-400/80">
@@ -1168,9 +1592,17 @@ export function VideoRecorderStation({ className }: { className?: string }) {
 
             {isPhonePairingConfigured() ? (
               pairing ? (
-                <Badge tone="info">
-                  <QrCode className="h-3 w-3" /> Phone room {pairing.code} — open
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge tone={pairedPhone ? 'proof' : 'info'}>
+                    <QrCode className="h-3 w-3 mr-1" />
+                    {pairedPhone
+                      ? `Phone ${pairedPhone.deviceId} connected`
+                      : `Phone room ${pairing.code} — open`}
+                  </Badge>
+                  {phoneTransferProgress !== null && (
+                    <Badge tone="warn">Receiving video {phoneTransferProgress}%</Badge>
+                  )}
+                </div>
               ) : (
                 <Button
                   variant="ghost"
@@ -1186,7 +1618,9 @@ export function VideoRecorderStation({ className }: { className?: string }) {
             )}
           </div>
 
-          {pairing?.qr && (
+          <video ref={phoneVideoRef} playsInline autoPlay muted className="hidden" />
+
+          {pairing?.qr && !pairedPhone && (
             <Card className="flex items-center gap-4 p-4">
               <img
                 src={pairing.qr}
@@ -1196,7 +1630,8 @@ export function VideoRecorderStation({ className }: { className?: string }) {
               <div className="min-w-0">
                 <div className="font-display text-sm font-bold text-white">Room {pairing.code}</div>
                 <div className="mt-1 text-xs text-slate-400">
-                  Open the phone companion, scan this QR — its camera scans land here instantly.
+                  Scan this QR with your smartphone. Pairs via short-lived (2-minute) token over
+                  WebRTC peer-to-peer.
                 </div>
               </div>
             </Card>

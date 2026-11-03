@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../db/schema';
 import {
+  buildDisputeTemplateData,
   deleteClaim,
   findDispatchEvidence,
   findReturnEvidence,
   generateDisputeText,
+  generateTemplateDisputeMessage,
   saveDisputeText,
   updateClaimStatus
 } from './claimEngine';
@@ -297,6 +299,85 @@ describe('claimEngine — evidence pairing & dispute generation', () => {
       expect(text).toContain('Amazon SAFE-T claim');
       expect(text).toContain('Return unboxing video: not available for this parcel.');
       expect(text).toContain('Amazon SAFE-T · 30 days');
+    });
+
+    it('generates polite, factual dispute message via generateTemplateDisputeMessage in English and Hindi', () => {
+      const claim: ClaimItem = {
+        awb: 'MEESHO-12345',
+        orderId: 'ORD-98765',
+        marketplace: 'Meesho',
+        courier: 'Valmo',
+        sku: 'LEHENGA-GOLD',
+        qty: 1,
+        flagReason: 'Wrong/Swapped item',
+        notes: '',
+        returnScanAt: baseTime,
+        deadlineAt: baseTime + 72 * 3600 * 1000,
+        status: 'pending',
+        disputeText: ''
+      };
+
+      // English
+      const enRes = generateTemplateDisputeMessage(
+        claim,
+        mockDispatch,
+        mockReturn,
+        'wrong_item',
+        'en'
+      );
+      expect(enRes.missingFields).toHaveLength(0);
+      expect(enRes.text).toContain(
+        'Subject: Incorrect item received for Order ORD-98765 (AWB: MEESHO-12345)'
+      );
+      expect(enRes.text).toContain('Dear Seller Support Team,');
+      expect(enRes.text).toContain('LEHENGA-GOLD');
+      expect(enRes.text).toContain('Different / swapped item received');
+      expect(enRes.text).not.toMatch(/fraud|scam|guarantee/i);
+
+      // Hindi
+      const hiRes = generateTemplateDisputeMessage(
+        claim,
+        mockDispatch,
+        mockReturn,
+        'wrong_item',
+        'hi'
+      );
+      expect(hiRes.missingFields).toHaveLength(0);
+      expect(hiRes.text).toContain(
+        'विषय: आर्डर ORD-98765 (AWB: MEESHO-12345) में भिन्न सामान प्राप्त होने के संबंध में'
+      );
+      expect(hiRes.text).toContain('प्रिय सेलर सपोर्ट टीम,');
+      expect(hiRes.text).toContain('LEHENGA-GOLD');
+      expect(hiRes.text).toContain('भिन्न / बदला हुआ सामान प्राप्त हुआ');
+      expect(hiRes.text).not.toMatch(/धोखा|फ्रॉड|गारंटी/);
+    });
+
+    it('builds template data and flags missing fields when orderId is UNKNOWN and dispatch is missing', () => {
+      const claim: ClaimItem = {
+        awb: 'AWB-INCOMPLETE',
+        orderId: 'UNKNOWN',
+        marketplace: 'Flipkart',
+        courier: 'Ekart',
+        sku: 'TOP-BLACK',
+        qty: 1,
+        flagReason: 'Damaged',
+        notes: '',
+        returnScanAt: baseTime,
+        deadlineAt: baseTime + 336 * 3600 * 1000,
+        status: 'pending',
+        disputeText: ''
+      };
+
+      const data = buildDisputeTemplateData(claim, undefined, undefined, 'en');
+      expect(data.orderId).toBe('');
+      expect(data.dispatchDate).toBe('');
+      expect(data.awb).toBe('AWB-INCOMPLETE');
+
+      const res = generateTemplateDisputeMessage(claim, undefined, undefined, 'damaged', 'en');
+      expect(res.missingFields).toContain('orderId');
+      expect(res.missingFields).toContain('dispatchDate');
+      expect(res.text).toContain('[MISSING: Order ID]');
+      expect(res.text).toContain('[MISSING: Dispatch Date]');
     });
   });
 });

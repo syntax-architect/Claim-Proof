@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_CLAIM_WINDOW_HOURS,
@@ -22,13 +23,17 @@ describe('claimRules engine: marketplace windows, deadline math & boundaries', (
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-10-31T12:00:00.000Z'));
-    localStorage.clear();
+    if (typeof localStorage !== 'undefined') {
+      localStorage.clear();
+    }
     resetCustomClaimWindows();
   });
 
   afterEach(() => {
     vi.useRealTimers();
-    localStorage.clear();
+    if (typeof localStorage !== 'undefined') {
+      localStorage.clear();
+    }
     resetCustomClaimWindows();
   });
 
@@ -103,6 +108,7 @@ describe('claimRules engine: marketplace windows, deadline math & boundaries', (
         expect(config).toBeDefined();
         expect(config.hours).toBe(expectedHours);
         expect(config.lastVerified).toBe(UNVERIFIED_STATUS);
+        expect(config.verified).toBe(false);
         expect(isClaimWindowUnverified(marketplace)).toBe(true);
 
         if (expectedSourceUrlPrefix) {
@@ -120,7 +126,7 @@ describe('claimRules engine: marketplace windows, deadline math & boundaries', (
       expect(claimWindowHours('NonExistent' as unknown as Marketplace)).toBe(72);
       expect(claimWindowLabel('NonExistent' as unknown as Marketplace)).toBe('Standard · 72 hours');
       expect(isClaimWindowUnverified('NonExistent' as unknown as Marketplace)).toBe(true);
-      expect(UNVERIFIED_LABEL).toBe('UNVERIFIED - check your seller panel');
+      expect(UNVERIFIED_LABEL).toBe('UNVERIFIED, check your seller panel.');
     });
 
     it('recognizes verified marketplaces when lastVerified is set to a confirmed date', () => {
@@ -240,13 +246,13 @@ describe('claimRules engine: marketplace windows, deadline math & boundaries', (
 
       // Exactly 24 hours boundary: 'warn'
       expect(deadlineTone(24 * 3600 * 1000)).toBe('warn');
-      // In between 8h and 24h: 'warn'
+      // In between 6h and 24h: 'warn'
       expect(deadlineTone(12 * 3600 * 1000)).toBe('warn');
-      expect(deadlineTone(8 * 3600 * 1000 + 1)).toBe('warn');
+      expect(deadlineTone(6 * 3600 * 1000 + 1)).toBe('warn');
 
-      // Exactly 8 hours boundary: 'urgent'
-      expect(deadlineTone(8 * 3600 * 1000)).toBe('urgent');
-      // Less than 8 hours: 'urgent'
+      // Exactly 6 hours boundary: 'urgent'
+      expect(deadlineTone(6 * 3600 * 1000)).toBe('urgent');
+      // Less than 6 hours: 'urgent'
       expect(deadlineTone(3600 * 1000)).toBe('urgent');
       expect(deadlineTone(1)).toBe('urgent');
 

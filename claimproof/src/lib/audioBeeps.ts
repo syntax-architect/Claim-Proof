@@ -88,6 +88,16 @@ export function playScanBeep(): void {
   tone(1046.5, 0, 0.07, 'sine', 0.2);
 }
 
+/** Crisp high sine tone — valid barcode scan confirmation. */
+export function playGoodScanBeep(): void {
+  tone(1046.5, 0, 0.07, 'sine', 0.22);
+}
+
+/** Distinct descending sawtooth buzz — invalid or rejected barcode scan. */
+export function playInvalidScanBeep(): void {
+  tone(280, 0, 0.18, 'sawtooth', 0.18, 140);
+}
+
 /** Low sawtooth growl — error / quota reached. */
 export function playErrorBeep(): void {
   tone(196, 0, 0.32, 'sawtooth', 0.14, 130.8);

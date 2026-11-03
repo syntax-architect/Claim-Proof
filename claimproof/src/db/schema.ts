@@ -1,11 +1,13 @@
 import Dexie, { type Table } from 'dexie';
 import { BRAND } from '../config/brand';
 import type {
+  ChecklistResultRow,
   ClaimItem,
   DailyUsage,
   LabelBatchSummary,
   LicenseState,
   RecordingMeta,
+  ReturnVideoMeta,
   StoredOrder
 } from '../types';
 
@@ -33,12 +35,33 @@ const DB_STORES_V1 = {
   media_cache: 'id, savedAt'
 };
 
+const DB_STORES_V2 = {
+  ...DB_STORES_V1,
+  returnVideos: '++id, awb, orderId, condition, startedAt, linkedDispatchRecordingId, partial',
+  checklistResults: '++id, returnVideoId, awb, stepId, completed, timestamp'
+};
+
+const DB_STORES_V3 = {
+  ...DB_STORES_V2,
+  claims: '++id, awb, status, marketplace, deadlineAt, returnScanAt, filedAt, resolvedAt'
+};
+
+const DB_STORES_V4 = {
+  ...DB_STORES_V3,
+  claims:
+    '++id, awb, status, marketplace, deadlineAt, returnScanAt, filedAt, resolvedAt, claimKitGeneratedAt'
+};
+
 export class SabootDB extends Dexie {
   /** SmartLabel SKU+ extracted labels (the AWB "memory" the recorder matches against). */
   orders!: Table<StoredOrder, number>;
   batches!: Table<LabelBatchSummary, string>;
   /** SABOOT AWB recordings metadata (sub-millisecond search by AWB / SKU / courier). */
   recordings!: Table<RecordingMeta, number>;
+  /** Return unboxing guided videos linked to packing/claims. */
+  returnVideos!: Table<ReturnVideoMeta, number>;
+  /** Individual checklist step ticks & timestamp offsets for return unboxing. */
+  checklistResults!: Table<ChecklistResultRow, number>;
   /** ClaimRadar flagged-return queue. */
   claims!: Table<ClaimItem, number>;
   license_state!: Table<KVRow<LicenseState>, string>;
@@ -52,6 +75,37 @@ export class SabootDB extends Dexie {
   constructor(dbName: string = BRAND.dbName) {
     super(dbName);
     this.version(1).stores(DB_STORES_V1);
+    this.version(2).stores(DB_STORES_V2);
+    this.version(3)
+      .stores(DB_STORES_V3)
+      .upgrade(async (tx) => {
+        await tx
+          .table('claims')
+          .toCollection()
+          .modify((claim) => {
+            if (claim.amountClaimedPaise === undefined) claim.amountClaimedPaise = 0;
+            if (claim.amountRecoveredPaise === undefined) claim.amountRecoveredPaise = 0;
+            if (!Array.isArray(claim.auditTrail)) claim.auditTrail = [];
+            if (typeof claim.notes !== 'string') claim.notes = claim.notes || '';
+            if (claim.status === 'pending' || claim.status === 'prepared') {
+              claim.status = 'not_filed';
+            } else if (claim.status === 'submitted') {
+              claim.status = 'filed';
+            }
+          });
+      });
+    this.version(4)
+      .stores(DB_STORES_V4)
+      .upgrade(async (tx) => {
+        await tx
+          .table('claims')
+          .toCollection()
+          .modify((claim) => {
+            if (claim.claimKitGeneratedAt === undefined) {
+              claim.claimKitGeneratedAt = 0;
+            }
+          });
+      });
   }
 }
 

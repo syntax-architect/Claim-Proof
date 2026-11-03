@@ -217,7 +217,7 @@ export type BadgeTone = 'neutral' | 'proof' | 'warn' | 'danger' | 'info' | 'outl
 const BADGE_TONES: Record<BadgeTone, string> = {
   neutral: 'bg-ink-700/80 text-slate-300 border border-line',
   proof: 'bg-proof-500/15 text-proof-300 border border-proof-500/30',
-  warn: 'bg-warn-500/15 text-[#854d0c] dark:text-warn-300 border border-warn-500/30',
+  warn: 'bg-warn-500/15 text-warn-300 border border-warn-500/30',
   danger: 'bg-danger-500/15 text-danger-300 border border-danger-500/30',
   info: 'bg-info-500/15 text-info-300 border border-info-500/30',
   outline: 'bg-transparent text-slate-400 border border-line-bright',
